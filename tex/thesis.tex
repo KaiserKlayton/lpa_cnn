@@ -1,0 +1,67 @@
+\documentclass[12pt]{article}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\graphicspath{ {images/} }
+
+\linespread{1.5}
+      	
+\setlength{\oddsidemargin}{0.25in}
+\setlength{\textwidth}{6in}
+\setlength{\topmargin}{0in}
+\setlength{\textheight}{8.5in}
+
+\newcommand{\doctitle}{Low Precision Arithmetic for Convolutional Neural Network Inference}
+\title{\doctitle}
+\author{C. Clayton Violand\footnote{MSc Program in Cognitive Systems, Universit\"at Potsdam.}}
+
+\begin{document}
+\maketitle
+
+
+
+
+
+
+
+
+
+
+\begin{abstract}
+It is well-known in principle that the full precision of computer hardware (e.g. 32 or 64 bit floats) is not really needed for neural networks. By design they have to be robust against small perturbations in the data and also the activations of units in higher layers (i.e. dropout). Thus, there is a recent trend of people moving to low-precision calculations in order to speed up inference in deep neural networks. In fact, the new nVidia GPUs coming out at the end of this year will feature an 8-bit integer mode specifically for inference in deep Neural Networks, which in theory runs 4x as fast as single precision floats. However, there are few studies on when exactly low precision is enough and how much speed this can bring. This thesis deals with the implementation of neural networks with different computing precisions, and how well they still work depending on the Neural Network architecture. It also explores the gain in speed obtainable on different architectures.
+\end{abstract}
+
+\section{Introduction}
+Computation in convolutional neural networks require large matrix multiplication and dot product operations, with the heavy lifting of the computation being performed by the convolutional layer. As such, they are costly and can be slow at inference time. Different methods exist to implement convolution: the GEMM method is a popular method and involves only one large matrix multiplication operation in the convolutional layer. Still, this operation can be slow due to the size of the matrices and the nature of matrix multiplication, which is intensive. 
+One solution to this problem is reducing the computation precision at the convolutional layer. This would speed up inference. However, it may also reduce performance accuracy. This paper deals with the trade-off between speed and performance accuracy in performing convolution with several different computation precisions. At what point does the lowering of precision on convolution cease to benefit us?
+
+\section{Convolutional Neural Networks}
+Convolutional neural networks are a type of neural network specifically made for image processing. Like normal neural networks, the computation involves neurons with weights and biases that are learnable through training. These weights and biases in each neuron are multiplied with some input matrix, and the dot products of each neuron in the layer is summed with the other neurons. The output is then passed on to a non-linear transformation function.
+
+Images are large and don't work well with normal neural network architecture. An image of moderate size, perhaps 28x28 pixels and 3 channels (RGB), will already require a network with \begin{math}28*28*3 = 2352\end{math} weights for each neuron. Such a network would surely contain mutliple neurons as well. Therefore, it's clear to see how fully-connected neural networks don't scale well to image data. 
+
+Convolutional neural networks solve this through computation in a convolution layer. In such a layer, small weight matrices called kernels, which are a kind of filter, are multiplied with only a section of the input the size of the kernel itself. Several of these kernels iterate over the input in several dot product calculations but nevertheless drastically reduce the amount of parameters, as each iteratino over the input is met by the same kernel.
+
+This duplication of parameters is possible due to the inerhent nature of images. These filters capture patterns in the image. Furthermore, it can be said that a pattern that is useful in one section of the image might also be useful in another section of the image. Therefor, kernel weights are duplicated across dot-product iterations over the input.
+
+
+
+
+
+
+
+
+
+\begin{thebibliography}{10}
+\end{thebibliography}
+
+
+
+
+
+
+
+
+
+
+\end{document}
