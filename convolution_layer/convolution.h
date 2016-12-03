@@ -1,8 +1,8 @@
 #ifndef CONVOLUTION_H
 #define CONVOLUTION_H
  
-#include <iostream>
 #include <eigen3/Eigen/Dense>
+#include <iostream>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;

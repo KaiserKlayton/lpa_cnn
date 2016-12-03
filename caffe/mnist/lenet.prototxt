@@ -25,3 +25,20 @@ layer {
   bottom: "data"
   top: "conv1"
 }
+layer {
+  name: "relu1"
+  type: "ReLU"
+  bottom: "conv1"
+  top: "relu1"
+}
+layer {
+  name: "pool1"
+  type: "Pooling"
+  pooling_param {
+    kernel_size: 2
+    stride: 2
+    pool: MAX
+  }
+  bottom: "relu1"
+  top: "pool1"
+}

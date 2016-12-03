@@ -3,12 +3,9 @@
 
 #include <armadillo>
 #include <eigen3/Eigen/Dense>
-#include <iostream>
-#include <fstream>
 
 using Eigen::MatrixXd;
 using Eigen::Map;
-using namespace std;
 
 template <typename M>
 M load_csv_arma(const std::string & path);

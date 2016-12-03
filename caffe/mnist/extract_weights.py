@@ -4,6 +4,7 @@ __author__ = "C. Clayton Violand"
 __copyright__ = "Copyright 2016"
 
 import caffe
+import numpy as np
 
 def main():
     # Specifiy paths here.
@@ -12,8 +13,10 @@ def main():
     W = net.params['conv1'][0].data[...]
     b = net.params['conv1'][1].data[...]
 
-    W.tofile("data/mnist/weights.csv", sep=",")
-    b.tofile("data/mnist/biases.csv", sep=",")
+    W = W.reshape(20,25)
+
+    np.savetxt("data/mnist/weights.csv", W, fmt='%f', delimiter=',')
+    np.savetxt("data/mnist/biases.csv", b, fmt='%f', delimiter=',')
 
 if __name__ == "__main__":
     main()

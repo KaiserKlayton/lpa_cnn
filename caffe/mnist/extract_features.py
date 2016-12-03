@@ -22,10 +22,14 @@ def main():
     out = net.forward()
 
     # Get features.
-    f = net.blobs['conv1'].data[...]
+    f = net.blobs['relu1'].data[...]
     f = f.reshape (20,784)
 
-    np.savetxt('data/mnist/caffe_features.csv', f, fmt='%f', delimiter=',')
+    p = net.blobs['pool1'].data[...]
+    p = p.reshape (20,196)
+
+    np.savetxt('data/mnist/caffe_relu1_features.csv', f, fmt='%f', delimiter=',')
+    np.savetxt('data/mnist/caffe_pool1_features.csv', p, fmt='%f', delimiter=',')
 
 if __name__ == "__main__":
     main()

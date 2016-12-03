@@ -1,5 +1,6 @@
 #include "reader.h"
 #include "convolution_layer/convolution.h"
+#include "pooling_layer/pooling.h"
 
 using Eigen::IOFormat;
 using Eigen::StreamPrecision;
@@ -62,14 +63,14 @@ int main()
         MatrixXd c = im*w.transpose();
         clock_t end = clock();
         double time = (double) (end-start) / CLOCKS_PER_SEC;           
-        cout << time << endl;       
+     //   cout << time << endl;       
 
         // Add biases.
         c.rowwise() += b.transpose();
 
         // Reshape back to image.
         MatrixXd convolved = col2im(c);
-        
+
         // ReLU.
         for(int i=0; i < convolved.rows(); i++) {
             for(int j=0; j < convolved.cols(); j++) {
@@ -80,8 +81,18 @@ int main()
         }
 
         // Write convolved matrix to file.
-        std::string name="data/mnist/features/conv1_" + std::to_string(i) + ".csv";
-        convolved_to_csv(name, convolved);     
+        std::string name = "data/mnist/features/conv1_" + std::to_string(i) + ".csv";
+        convolved_to_csv(name, convolved);
+
+        // Pooling.
+        const int f = 2;
+        const int s = 2;
+
+        MatrixXd pooled = pool(convolved, f, s, im_width, im_height);
+    
+        // Write pooled matrix to file.
+        std::string name2 = "data/mnist/features/pool1_" + std::to_string(i) + ".csv";
+        convolved_to_csv(name2, pooled);
     }
     return 0;
 }
