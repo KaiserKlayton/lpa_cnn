@@ -2,8 +2,6 @@
 
 MatrixXd col2im(MatrixXd c) {
     MatrixXd ct = c.transpose();
-//    cout << ct.rows() << endl;s
-//    cout << ct.cols() << endl;
 
     return ct;
 }
@@ -19,8 +17,6 @@ MatrixXd add_padding(MatrixXd box, int im_height, int im_width, int p1, int p2) 
     
     MatrixXd padded_box(temp.rows()+padding2.rows()+padding2.rows(), temp.cols());  
     padded_box << padding2, temp, padding2;
-//    cout << padded_box.cols() << endl;
-//    cout << padded_box.rows() << endl;
 
     return padded_box;
 }
@@ -33,7 +29,6 @@ MatrixXd kernel2col(MatrixXd kernel) {
     kernel.transposeInPlace();
 
     MatrixXd kcollapsed(Map<VectorXd>(kernel.data(), kernel.cols()*kernel.rows()));
-//    cout << kcollapsed << endl;
 
     return kcollapsed;
 }
@@ -52,8 +47,6 @@ MatrixXd im2col(MatrixXd input, int k_size, int stride) {
     // yB = (B - D / stride) + 1
     int yB = ((m - kRows) / stride) + 1;
     int xB = ((n - kCols) / stride) + 1;
- //   cout << kRows << endl;
- //   cout << kCols << endl; 
     
     MatrixXd result(xB*yB, kRows*kCols);
     
@@ -72,6 +65,37 @@ MatrixXd im2col(MatrixXd input, int k_size, int stride) {
                 }
         }
     }
-//    cout << result << endl;
     return result;
+}
+
+MatrixXd convolve(MatrixXd image, int im_size, int im_height, int im_width, int im_depth, int k_size, int stride, VectorXd b, int p1, int p2, MatrixXd w) {
+    // im2col for each slice, then concatinate slices.
+    MatrixXd im(im_size*im_depth, k_size);
+    for (int d=0; d < im_depth ; d++) {
+        // Take slice out of im_depth.
+        MatrixXd slice = image.block(0,(im_size+1)*d,1,im_size);
+        // Resize slice to be square.
+        Map<MatrixXd> box(slice.data(), im_height, im_width);
+        // Pad box with 0s.
+        MatrixXd padded_box = add_padding(box, im_height, im_width, p1, p2);
+        // im2col on particular slice.
+        MatrixXd col_slice = im2col(padded_box, k_size, stride);
+        // Concatinate col_slice to output 'im'.
+        im.block(0,(im_size+1)*d, im_size, k_size) = col_slice;
+    }  
+
+    // GEMM Multiplication Operation w/ Eigen.
+    clock_t start = clock();    
+    MatrixXd c = im*w.transpose();
+    clock_t end = clock();
+    double time = (double) (end-start) / CLOCKS_PER_SEC;           
+//    cout << time << endl;     
+
+    // Add biases.
+    c.rowwise() += b.transpose();
+
+    // Reshape back to image.
+    MatrixXd convolved = col2im(c);
+
+    return convolved; 
 }

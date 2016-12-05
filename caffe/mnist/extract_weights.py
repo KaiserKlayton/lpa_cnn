@@ -10,13 +10,13 @@ def main():
     # Specifiy paths here.
     net = caffe.Net('caffe/mnist/lenet.prototxt', 'caffe/mnist/lenet_iter_10000.caffemodel', caffe.TEST)
 
-    W = net.params['conv1'][0].data[...]
-    b = net.params['conv1'][1].data[...]
+    Wconv1 = net.params['conv1'][0].data[...]
+    bconv1 = net.params['conv1'][1].data[...]
 
-    W = W.reshape(20,25)
+    Wconv1 = Wconv1.reshape(20,25)
 
-    np.savetxt("data/mnist/weights.csv", W, fmt='%f', delimiter=',')
-    np.savetxt("data/mnist/biases.csv", b, fmt='%f', delimiter=',')
+    np.savetxt("data/mnist/conv1_weights.csv", Wconv1, fmt='%f', delimiter=',')
+    np.savetxt("data/mnist/conv1_biases.csv", bconv1, fmt='%f', delimiter=',')
 
 if __name__ == "__main__":
     main()
