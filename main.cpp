@@ -58,8 +58,8 @@ int main()
         convolved_to_csv(name2, pooled);
 
     // INPUT PREP //
-        const int im_height_2 = sqrt(pooled.cols());
-        const int im_width_2 = sqrt(pooled.cols());
+        const int im_height_2 = ((im_height - f) / s) + 1;
+        const int im_width_2 = ((im_width - f) / s) + 1;
         const int im_depth_2 = pooled.rows();
         const int im_size_2 = pooled.cols();
 
