@@ -16,14 +16,14 @@ void convolved_to_csv(string name, MatrixXd matrix) {
 
 int main() 
 {
-    // Define Images (input).
-    const int im_num = 100; // OPTION
+    // INPUT PREP //
     const int im_height = 28; // OPTION
     const int im_width = 28; // OPTION
     const int im_depth = 1; // OPTION
     const int im_size = im_height*im_width;
     MatrixXd train = read_mnist_train();
 
+    const int im_num = 100; // OPTION
     for(int i=0; i < im_num; i++)  // For every row (image)...
     {   // Parse image with full depth (minus the label).
         MatrixXd image = train.block<1,im_size*im_depth>(i,1); 
@@ -57,6 +57,42 @@ int main()
         std::string name2 = "data/mnist/features/pool1_" + std::to_string(i) + ".csv";
         convolved_to_csv(name2, pooled);
 
+    // INPUT PREP //
+        const int im_height_2 = sqrt(pooled.cols());
+        const int im_width_2 = sqrt(pooled.cols());
+        const int im_depth_2 = pooled.rows();
+        const int im_size_2 = pooled.cols();
+
+     // CONVOLUTION 2 //
+        // Define Kernels.
+        const int k_num_2 = 50; // OPTION
+        const int k_size_2 = 25; // OPTION
+        const int stride_2 = 1; // OPTION
+        const int k_depth_2 = pooled.rows();
+        const int p1_2 = ((stride_2 * im_height_2) - stride_2 - im_height_2 + sqrt(k_size_2)) / 2;
+        const int p2_2 = ((stride_2 * im_width_2) - stride_2 - im_width_2 + sqrt(k_size_2)) / 2;
+        MatrixXd conv2_weights = read_mnist_conv2_weights();
+        MatrixXd w_2 = conv2_weights;
+        // Define Biases.
+        MatrixXd conv2_biases = read_mnist_conv2_biases();
+        VectorXd conv2_b(Map<VectorXd>(conv2_biases.data(), conv2_biases.cols()*conv2_biases.rows()));
+        // Convolve.      
+        MatrixXd convolved_2 = convolve(pooled, im_size_2, im_height_2, im_width_2, im_depth_2, k_size_2, stride_2, conv2_b, p1_2, p2_2, w_2);
+        // Write convolved matrix to file.
+        std::string name_2 = "data/mnist/features/conv2_" + std::to_string(i) + ".csv";
+        convolved_to_csv(name_2, convolved_2);  
+
+     // POOLING 2 //
+        // Define Pooling behaviour.   
+        const int f_2 = 2; //OPTION
+        const int s_2 = 2; //OPTION
+        // Pool.
+        MatrixXd pooled_2 = pool(convolved_2, f_2, s_2, im_width_2, im_height_2);
+        // Write pooled matrix to file.
+        std::string name3 = "data/mnist/features/pool2_" + std::to_string(i) + ".csv";
+        convolved_to_csv(name3, pooled_2);
+
+   
     }
     return 0;
 }

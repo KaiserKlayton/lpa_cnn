@@ -18,5 +18,13 @@ def main():
     np.savetxt("data/mnist/conv1_weights.csv", Wconv1, fmt='%f', delimiter=',')
     np.savetxt("data/mnist/conv1_biases.csv", bconv1, fmt='%f', delimiter=',')
 
+    Wconv2 = net.params['conv2'][0].data[...]
+    bconv2 = net.params['conv2'][1].data[...]
+    print Wconv2.shape
+    Wconv2 = Wconv2.reshape(50,500)
+
+    np.savetxt("data/mnist/conv2_weights.csv", Wconv2, fmt='%f', delimiter=',')
+    np.savetxt("data/mnist/conv2_biases.csv", bconv2, fmt='%f', delimiter=',')
+
 if __name__ == "__main__":
     main()

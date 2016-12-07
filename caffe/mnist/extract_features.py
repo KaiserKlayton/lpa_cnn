@@ -28,8 +28,16 @@ def main():
     pool1 = net.blobs['pool1'].data[...]
     pool1 = pool1.reshape (20,196)
 
+    conv2 = net.blobs['conv2'].data[...]
+    conv2 = conv2.reshape (50,196)
+
+    pool2 = net.blobs['pool2'].data[...]
+    pool2 = pool2.reshape (50,49)
+
     np.savetxt('data/mnist/caffe_conv1_features.csv', conv1, fmt='%f', delimiter=',')
     np.savetxt('data/mnist/caffe_pool1_features.csv', pool1, fmt='%f', delimiter=',')
+    np.savetxt('data/mnist/caffe_conv2_features.csv', conv2, fmt='%f', delimiter=',')
+    np.savetxt('data/mnist/caffe_pool2_features.csv', pool2, fmt='%f', delimiter=',')
 
 if __name__ == "__main__":
     main()
