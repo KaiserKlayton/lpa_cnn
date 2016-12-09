@@ -68,20 +68,20 @@ MatrixXd im2col(MatrixXd input, int k_size, int stride) {
     return result;
 }
 
-MatrixXd convolve(MatrixXd image, int im_size, int im_height, int im_width, int im_depth, int k_size, int stride, VectorXd b, int p1, int p2, MatrixXd w) {
+MatrixXd convolve(MatrixXd image, int im_size, int im_height, int im_width, int im_depth, int k_size, int stride, VectorXd b, int p1, int p2, MatrixXd w, int output_size) {
     // im2col for each slice, then concatinate slices.
-    MatrixXd im(im_size, k_size*im_depth);
+    MatrixXd im(output_size, k_size*im_depth);
     for (int d=0; d < im_depth ; d++) {
         // Take slice out of im_depth.
         MatrixXd slice = image.block(d,0,1,im_size);
         // Resize slice to be square.
         Map<MatrixXd> box(slice.data(), im_height, im_width);
         // Pad box with 0s.
-        MatrixXd padded_box = add_padding(box, im_height, im_width, p1, p2);
+        MatrixXd padded_box = add_padding(box, im_height, im_width, p1, p2);       
         // im2col on particular slice.
         MatrixXd col_slice = im2col(padded_box, k_size, stride);
         // Concatinate col_slice to output 'im'.
-        im.block(0,k_size*d, im_size, k_size) = col_slice;
+        im.block(0,k_size*d, output_size, k_size) = col_slice; 
 } 
     
     // GEMM Multiplication Operation w/ Eigen.

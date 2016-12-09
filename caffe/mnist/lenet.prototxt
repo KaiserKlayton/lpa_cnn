@@ -20,7 +20,6 @@ layer {
     num_output: 20
     kernel_size: 5
     stride: 1
-    pad: 2
     weight_filler {
       type: "xavier"
     }
@@ -55,7 +54,6 @@ layer {
     num_output: 50
     kernel_size: 5
     stride: 1
-    pad: 2
     weight_filler {
       type: "xavier"
     }
@@ -73,5 +71,26 @@ layer {
     pool: MAX
     kernel_size: 2
     stride: 2
+  }
+}
+layer {
+  name: "ip1"
+  type: "InnerProduct"
+  bottom: "pool2"
+  top: "ip1"
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  inner_product_param {
+    num_output: 500
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+    }
   }
 }

@@ -33,6 +33,18 @@ MatrixXd read_mnist_test() {
 }
 
 
+MatrixXd read_mnist_fc1_weights() {
+    MatrixXd weights = load_csv_arma<MatrixXd>("data/mnist/fc1_weights.csv");
+
+    return weights;
+}
+
+MatrixXd read_mnist_fc1_biases() {
+    MatrixXd biases = load_csv_arma<MatrixXd>("data/mnist/fc1_biases.csv");
+
+    return biases;
+}
+
 MatrixXd read_mnist_conv2_weights() {
     MatrixXd weights = load_csv_arma<MatrixXd>("data/mnist/conv2_weights.csv");
 

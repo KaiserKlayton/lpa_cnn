@@ -23,21 +23,24 @@ def main():
 
     # Get features.
     conv1 = net.blobs['conv1'].data[...]
-    conv1 = conv1.reshape (20,784)
+    conv1 = conv1.reshape (20,576)
 
     pool1 = net.blobs['pool1'].data[...]
-    pool1 = pool1.reshape (20,196)
+    pool1 = pool1.reshape (20,144)
 
     conv2 = net.blobs['conv2'].data[...]
-    conv2 = conv2.reshape (50,196)
+    conv2 = conv2.reshape (50,64)
 
     pool2 = net.blobs['pool2'].data[...]
-    pool2 = pool2.reshape (50,49)
+    pool2 = pool2.reshape (50,16)
+
+    fc1 = net.blobs['ip1'].data[...]
 
     np.savetxt('data/mnist/caffe_conv1_features.csv', conv1, fmt='%f', delimiter=',')
     np.savetxt('data/mnist/caffe_pool1_features.csv', pool1, fmt='%f', delimiter=',')
     np.savetxt('data/mnist/caffe_conv2_features.csv', conv2, fmt='%f', delimiter=',')
     np.savetxt('data/mnist/caffe_pool2_features.csv', pool2, fmt='%f', delimiter=',')
+    np.savetxt('data/mnist/caffe_fc1_features.csv', fc1, fmt='%f', delimiter=',')
 
 if __name__ == "__main__":
     main()

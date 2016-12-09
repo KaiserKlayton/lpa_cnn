@@ -13,6 +13,8 @@ template <typename M>
 M load_binary_arma(const std::string & path);
 MatrixXd read_mnist_train();
 MatrixXd read_mnist_test();
+MatrixXd read_mnist_fc1_weights();
+MatrixXd read_mnist_fc1_biases();
 MatrixXd read_mnist_conv2_weights();
 MatrixXd read_mnist_conv2_biases();
 MatrixXd read_mnist_conv1_weights();
