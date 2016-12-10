@@ -30,5 +30,11 @@ def main():
     np.savetxt("data/mnist/fc1_weights.csv", Wfc1, fmt='%f', delimiter=',')
     np.savetxt("data/mnist/fc1_biases.csv", bfc1, fmt='%f', delimiter=',')
 
+    Wfc2 = net.params['ip2'][0].data[...]
+    bfc2 = net.params['ip2'][1].data[...]
+
+    np.savetxt("data/mnist/fc2_weights.csv", Wfc2, fmt='%f', delimiter=',')
+    np.savetxt("data/mnist/fc2_biases.csv", bfc2, fmt='%f', delimiter=',')
+
 if __name__ == "__main__":
     main()

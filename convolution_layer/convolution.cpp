@@ -68,7 +68,7 @@ MatrixXd im2col(MatrixXd input, int k_size, int stride) {
     return result;
 }
 
-MatrixXd convolve(MatrixXd image, int im_size, int im_height, int im_width, int im_depth, int k_size, int stride, VectorXd b, int p1, int p2, MatrixXd w, int output_size) {
+MatrixXd convolve(MatrixXd image, int im_size, int im_height, int im_width, int im_depth, int k_size, int stride, VectorXd b, int p1, int p2, MatrixXd w, int output_size) {  
     // im2col for each slice, then concatinate slices.
     MatrixXd im(output_size, k_size*im_depth);
     for (int d=0; d < im_depth ; d++) {

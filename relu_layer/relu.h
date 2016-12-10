@@ -7,6 +7,6 @@
 using Eigen::MatrixXd;
 using namespace std;
 
-MatrixXd relu(MatrixXd convolved);
+MatrixXd relu(MatrixXd input);
 
 #endif

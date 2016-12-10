@@ -1,13 +1,14 @@
 #include "reader.h"
 #include "convolution_layer/convolution.h"
 #include "pooling_layer/pooling.h"
+#include "fully_connected_layer/fully_connected.h"
 #include "relu_layer/relu.h"
 
 using Eigen::IOFormat;
 using Eigen::StreamPrecision;
 using Eigen::DontAlignCols;
 
-void convolved_to_csv(string name, MatrixXd matrix) {
+void write_to_csv(string name, MatrixXd matrix) {
     const static IOFormat CSVFormat(StreamPrecision, DontAlignCols, ", ", "\n");
     
     ofstream file(name.c_str());
@@ -50,7 +51,7 @@ int main()
         MatrixXd convolved = convolve(image, im_size, im_height, im_width, im_depth, k_size, stride, conv1_b, p1, p2, w, output_size);               
          // Write convolved matrix to file.
         std::string name = "data/mnist/features/conv1_" + std::to_string(i) + ".csv";
-        convolved_to_csv(name, convolved);
+        write_to_csv(name, convolved);
 
     // POOLING 1 //
         // Define Pooling behaviour.   
@@ -60,15 +61,14 @@ int main()
         MatrixXd pooled = pool(convolved, f, s, output_width, output_height);
         // Write pooled matrix to file.
         std::string name2 = "data/mnist/features/pool1_" + std::to_string(i) + ".csv";
-        convolved_to_csv(name2, pooled);
+        write_to_csv(name2, pooled);
 
-    // INPUT PREP //
+     // CONVOLUTION 2 //
+        // Input Prep.
         const int im_height_2 = ((output_height - f) / s) + 1;
         const int im_width_2 = ((output_width - f) / s) + 1;
         const int im_depth_2 = pooled.rows();
         const int im_size_2 = pooled.cols();
-
-     // CONVOLUTION 2 //
         // Define Kernels.
         const int k_num_2 = 50; // OPTION
         const int k_size_2 = 25; // OPTION
@@ -90,7 +90,7 @@ int main()
         MatrixXd convolved_2 = convolve(pooled, im_size_2, im_height_2, im_width_2, im_depth_2, k_size_2, stride_2, conv2_b, p1_2, p2_2, w_2, output_size_2);
         // Write convolved matrix to file.
         std::string name_2 = "data/mnist/features/conv2_" + std::to_string(i) + ".csv";
-        convolved_to_csv(name_2, convolved_2);  
+        write_to_csv(name_2, convolved_2);  
 
      // POOLING 2 //
         // Define Pooling behaviour.   
@@ -100,18 +100,37 @@ int main()
         MatrixXd pooled_2 = pool(convolved_2, f_2, s_2, output_width_2, output_height_2);
         // Write pooled matrix to file.
         std::string name3 = "data/mnist/features/pool2_" + std::to_string(i) + ".csv";
-        convolved_to_csv(name3, pooled_2);
+        write_to_csv(name3, pooled_2);
 
    // FULLY CONNECTED 1 //
         // Define Weights.
-        //MatrixXd fc1_weights = read_mnist_fc1_weights();
+        MatrixXd fc1_weights = read_mnist_fc1_weights();
         // Define Biases.
-        //MatrixXd fc1_biases = read_mnist_fc1_biases();
-        // Fully Connect.     
+        MatrixXd fc1_biases = read_mnist_fc1_biases();
+        VectorXd fc1_b(Map<VectorXd>(fc1_biases.data(), fc1_biases.cols()*fc1_biases.rows()));
+        // Fully Connect.
+        MatrixXd fc1 = fully_connect(pooled_2, pooled_2.rows(), fc1_weights, fc1_b);
+        // Write fully connected matrix to file.
+        std::string name4 = "data/mnist/features/fc1_" + std::to_string(i) + ".csv";
+        write_to_csv(name4, fc1);
         
     // ReLU 1 //
-                
+        MatrixXd relud_1 = relu(fc1);
+        // Write relud matrix to file.
+        std::string name5 = "data/mnist/features/relu1_" + std::to_string(i) + ".csv";
+        write_to_csv(name5, relud_1);
 
+   // FULLY CONNECTED 2 //
+        // Define Weights.
+        MatrixXd fc2_weights = read_mnist_fc2_weights();
+        // Define Biases.
+        MatrixXd fc2_biases = read_mnist_fc2_biases();
+        VectorXd fc2_b(Map<VectorXd>(fc2_biases.data(), fc2_biases.cols()*fc2_biases.rows()));
+        // Fully Connect.
+        MatrixXd fc2 = fully_connect(relud_1, relud_1.rows(), fc2_weights, fc2_b);
+        // Write fully connected matrix to file.
+        std::string name6 = "data/mnist/features/fc2_" + std::to_string(i) + ".csv";
+        write_to_csv(name6, fc2);
     }
     return 0;
 }

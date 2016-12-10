@@ -36,11 +36,14 @@ def main():
 
     fc1 = net.blobs['ip1'].data[...]
 
+    fc2 = net.blobs['ip2'].data[...]
+
     np.savetxt('data/mnist/caffe_conv1_features.csv', conv1, fmt='%f', delimiter=',')
     np.savetxt('data/mnist/caffe_pool1_features.csv', pool1, fmt='%f', delimiter=',')
     np.savetxt('data/mnist/caffe_conv2_features.csv', conv2, fmt='%f', delimiter=',')
     np.savetxt('data/mnist/caffe_pool2_features.csv', pool2, fmt='%f', delimiter=',')
     np.savetxt('data/mnist/caffe_fc1_features.csv', fc1, fmt='%f', delimiter=',')
+    np.savetxt('data/mnist/caffe_fc2_features.csv', fc2, fmt='%f', delimiter=',')
 
 if __name__ == "__main__":
     main()
