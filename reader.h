@@ -9,8 +9,6 @@ using Eigen::Map;
 
 template <typename M>
 M load_csv_arma(const std::string & path);
-template <typename M>
-M load_binary_arma(const std::string & path);
 MatrixXd read_mnist_train();
 MatrixXd read_mnist_test();
 MatrixXd read_mnist_fc2_weights();
@@ -21,8 +19,16 @@ MatrixXd read_mnist_conv2_weights();
 MatrixXd read_mnist_conv2_biases();
 MatrixXd read_mnist_conv1_weights();
 MatrixXd read_mnist_conv1_biases();
-MatrixXd read_cifar10_batch_1();
-MatrixXd read_cifar10_weights();
-MatrixXd read_cifar10_biases();
+MatrixXd read_cifar10();
+MatrixXd read_cifar10_fc2_weights();
+MatrixXd read_cifar10_fc2_biases();
+MatrixXd read_cifar10_fc1_weights();
+MatrixXd read_cifar10_fc1_biases();
+MatrixXd read_cifar10_conv3_weights();
+MatrixXd read_cifar10_conv3_biases();
+MatrixXd read_cifar10_conv2_weights();
+MatrixXd read_cifar10_conv2_biases();
+MatrixXd read_cifar10_conv1_weights();
+MatrixXd read_cifar10_conv1_biases();
 
 #endif

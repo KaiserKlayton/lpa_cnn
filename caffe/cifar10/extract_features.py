@@ -22,7 +22,8 @@ def main():
 
     images = unpickle("data/cifar10/cifar-10-batches-py/data_batch_1")
     images = images['data']
-    image =  images[1,:].transpose()
+    np.savetxt('data/cifar10/cifar10.csv', images, fmt='%f', delimiter=',')
+    image =  images[0,:].transpose()
     image = image.reshape(1,3072)
     image = image.reshape(1,3,32,32)
     net.blobs['data'].data[...] = image

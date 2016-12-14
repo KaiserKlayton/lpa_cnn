@@ -22,8 +22,7 @@ layer {
     kernel_size: 5
     stride: 1
     weight_filler {
-      type: "gaussian"
-      std: 0.0001
+      type: "xavier"
     }
     bias_filler {
       type: "constant"
@@ -64,8 +63,7 @@ layer {
     kernel_size: 5
     stride: 1
     weight_filler {
-      type: "gaussian"
-      std: 0.01
+      type: "xavier"
     }
     bias_filler {
       type: "constant"
@@ -84,7 +82,7 @@ layer {
   bottom: "conv2"
   top: "pool2"
   pooling_param {
-    pool: AVE
+    pool: MAX
     kernel_size: 3
     stride: 2
   }
@@ -106,8 +104,7 @@ layer {
     kernel_size: 5
     stride: 1
     weight_filler {
-      type: "gaussian"
-      std: 0.01
+      type: "xavier"
     }
     bias_filler {
       type: "constant"
@@ -126,7 +123,7 @@ layer {
   bottom: "conv3"
   top: "pool3"
   pooling_param {
-    pool: AVE
+    pool: MAX
     kernel_size: 3
     stride: 2
   }
@@ -145,8 +142,7 @@ layer {
   inner_product_param {
     num_output: 64
     weight_filler {
-      type: "gaussian"
-      std: 0.1
+      type: "xavier"
     }
     bias_filler {
       type: "constant"
@@ -167,8 +163,7 @@ layer {
   inner_product_param {
     num_output: 10
     weight_filler {
-      type: "gaussian"
-      std: 0.1
+      type: "xavier"
     }
     bias_filler {
       type: "constant"
