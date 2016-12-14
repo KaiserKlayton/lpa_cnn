@@ -3,3 +3,6 @@
 
 # C++ Objects
 *.o
+
+# Cifar10 Data 
+data/cifar10/cifar-10-batches-py

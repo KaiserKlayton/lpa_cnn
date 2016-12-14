@@ -23,16 +23,16 @@ def main():
 
     # Get features.
     conv1 = net.blobs['conv1'].data[...]
-    conv1 = conv1.reshape (20,576)
+    conv1 = conv1.reshape(20,576)
 
     pool1 = net.blobs['pool1'].data[...]
-    pool1 = pool1.reshape (20,144)
+    pool1 = pool1.reshape(20,144)
 
     conv2 = net.blobs['conv2'].data[...]
-    conv2 = conv2.reshape (50,64)
+    conv2 = conv2.reshape(50,64)
 
     pool2 = net.blobs['pool2'].data[...]
-    pool2 = pool2.reshape (50,16)
+    pool2 = pool2.reshape(50,16)
 
     fc1 = net.blobs['ip1'].data[...]
 
