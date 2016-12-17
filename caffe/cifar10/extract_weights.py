@@ -24,9 +24,9 @@ def main():
     np.savetxt("data/cifar10/conv2_weights.csv", Wconv2, fmt='%f', delimiter=',')
     np.savetxt("data/cifar10/conv2_biases.csv", bconv2, fmt='%f', delimiter=',')
 
-    Wconv3 = net.params['conv2'][0].data[...]
-    bconv3 = net.params['conv2'][1].data[...]   
-    Wconv3 = Wconv3.reshape(32,800)
+    Wconv3 = net.params['conv3'][0].data[...]
+    bconv3 = net.params['conv3'][1].data[...]   
+    Wconv3 = Wconv3.reshape(64,800)
 
     np.savetxt("data/cifar10/conv3_weights.csv", Wconv3, fmt='%f', delimiter=',')
     np.savetxt("data/cifar10/conv3_biases.csv", bconv3, fmt='%f', delimiter=',')

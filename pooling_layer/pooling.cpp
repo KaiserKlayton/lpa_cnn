@@ -3,6 +3,7 @@
 MatrixXd pool(MatrixXd convolved, int f, int s, int im_width, int im_height) {
     const int w = ((im_width - f) / s) + 1;
 	const int h = ((im_height - f) / s) + 1;
+    
     MatrixXd pooled(convolved.rows(), w*h);
     for (int i=0; i < convolved.rows(); i++) {
         // Take filter from stack of filters.
