@@ -11,17 +11,17 @@ using Eigen::Matrix;
 using Eigen::RowMajor;
 
 void write_to_csv(string name, MatrixXd matrix) {
-    const static IOFormat CSVFormat(StreamPrecision, DontAlignCols, ", ", "\n");
+	const static IOFormat CSVFormat(StreamPrecision, DontAlignCols, ", ", "\n");
     
-    ofstream file(name.c_str());
-    file << matrix.format(CSVFormat);
+	ofstream file(name.c_str());
+	file << matrix.format(CSVFormat);
 }
 
 int main() 
 {
     // INPUT PREP //
-    const int im_height = 32; // OPTION
-    const int im_width = 32; // OPTION
+	const int im_height = 32; // OPTION
+	const int im_width = 32; // OPTION
     const int im_depth = 3; // OPTION
     const int im_size = im_height*im_width;
     MatrixXd train = read_cifar10();

@@ -47,9 +47,9 @@ int main()
         // Define Biases.
         MatrixXd conv1_biases = read_mnist_conv1_biases();
         VectorXd conv1_b(Map<VectorXd>(conv1_biases.data(), conv1_biases.cols()*conv1_biases.rows()));
-        // Convolve.        
+        // Convolve.
         MatrixXd convolved_1 = convolve(image, im_size, im_height, im_width, im_depth, k_size, stride, conv1_b, p1, p2, w, output_size);               
-         // Write convolved matrix to file.
+        // Write convolved matrix to file.
         std::string name = "data/mnist/features/conv1_" + std::to_string(i) + ".csv";
         write_to_csv(name, convolved_1);
 
