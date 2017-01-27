@@ -153,12 +153,11 @@ class MatrixWithStorage {
  public:
   MatrixWithStorage(int rows, int cols)
       : storage(rows * cols), matrix_map(storage.data(), rows, cols) {}
-  void FillMatrix(MatrixXd z) {
-	int i = 0;
+  void MakeRandom() {
+    static std::mt19937 random_engine;
+    std::uniform_real_distribution<float> distribution(-1, 1);
     for (auto& x : storage) {
-	  std::cout << z(i) << std::endl;
-	  x = static_cast<tScalar>(z(i));
-	  i++;
+      x = static_cast<tScalar>(distribution(random_engine));
     }
   }
   gemmlowp::MatrixMap<const tScalar, tOrder> ConstMap() const {
@@ -239,12 +238,12 @@ void QuantizeMultiplierSmallerThanOne(float real_multiplier,
   *right_shift = s;
 }
 
-MatrixXd glp(int r, int d, int c, MatrixXd a, MatrixXd b) {
+int main() {
   std::cout.precision(3);
 
-  const int rows = r;
-  const int depth = d;
-  const int cols = c;
+  const int rows = 2;
+  const int depth = 4;
+  const int cols = 3;
   const auto kOrder = gemmlowp::MapOrder::ColMajor;
 
   std::cout << "First, let us make some float matrices LHS and RHS, "
@@ -387,6 +386,4 @@ MatrixXd glp(int r, int d, int c, MatrixXd a, MatrixXd b) {
 
   std::cout << "Difference between ACTUAL and REFERENCE float results:\n"
             << diff_float_result << std::endl;
-
-  return a;
 }

@@ -19,7 +19,7 @@ void write_to_csv(string name, MatrixXd matrix) {
 
 int main() 
 {
-    // INPUT PREP //
+  // INPUT PREP //
 	const int im_height = 32; // OPTION
 	const int im_width = 32; // OPTION
     const int im_depth = 3; // OPTION
