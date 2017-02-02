@@ -42,10 +42,35 @@ Images are large and don't work well with normal neural network architecture. An
 
 Convolutional neural networks solve this through computation in a convolution layer. In such a layer, small weight matrices called kernels, which are a kind of filter, are multiplied with only a section of the input the size of the kernel itself. Several of these kernels iterate over the input in several dot product calculations but nevertheless drastically reduce the amount of parameters, as each iteratino over the input is met by the same kernel.
 
-This duplication of parameters is possible due to the inerhent nature of images. These filters capture patterns in the image. Furthermore, it can be said that a pattern that is useful in one section of the image might also be useful in another section of the image. Therefor, kernel weights are duplicated across dot-product iterations over the input.
+This duplication of parameters is possible due to the inerhent nature of images. These filters capture patterns in the image. Furthermore, it can be said that a pattern that is useful in one section of the image might also be useful in another section of the image. Therefore, kernel weights are duplicated across dot-product iterations over the input.
+
+\section{Timing eigen convolution}
+specs: Intel® Core™ i5-2520M CPU @ 2.50GHz × 4
+compile options: -c -O3 -march=native -std=c++11 -msse4.1 -lpthread
+
+There are two convolutions involved in our mnist model. These include one convolution at 576x20x25 (length, depth, width) and another convolution at 64x50x500. a mean time for each of these convolutions (over 100 iterations), respectively, is 0.00006 seconds and 0.000202 seconds.
+
+576x20x25	0.00006044 seconds
+64x50x500	0.00022997 seconds
+
+There are three convolutions involved in our cifar model. These include one convolution at 1024x32x75, one convolution at 256x32x800, and a final convultion at 64x64x800. Respectively, the sampled times are 0.000333, 0.001324, and 0.000742.
+
+1024x32x75	@	0.00042064 seconds
+256x32x800	@	0.00129486 seconds
+64x64x800	@	0.00046174 seconds
 
 
+\section{Timing gemmlowp convolution}
+The times for gemmlowp for mnist are as follows:
 
+576x20x25 @ 0.000069
+64x50x500 @ 0.000171
+
+For cifar: 
+
+1024x32x75	@	0.000316
+256x32x800	@	0.00065
+64x64x800	@	0.000306
 
 
 
