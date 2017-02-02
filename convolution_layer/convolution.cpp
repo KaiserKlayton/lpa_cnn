@@ -83,22 +83,22 @@ std::pair<MatrixXd, double> convolve(MatrixXd image, int im_size, int im_height,
         MatrixXd col_slice = im2col(padded_box, k_size, stride);
         // Concatinate col_slice to output 'im'.
         im.block(0,k_size*d, output_size, k_size) = col_slice; 
-		} 
+    } 
 
     // GEMM Multiplication Operation w/ Eigen.
     clock_t start = clock();    
     MatrixXd c = im*w.transpose();
     clock_t end = clock();
     double time = (double) (end-start) / CLOCKS_PER_SEC;           
-	
-		// GEMM Multiplication Operation w/ Gemmlowp.		
-//		MatrixXd c = glp(im.rows(), im.cols(), w.transpose().cols(), im, w.transpose());
+  
+    // GEMM Multiplication Operation w/ Gemmlowp.    
+//    MatrixXd c = glp(im.rows(), im.cols(), w.transpose().cols(), im, w.transpose());
 
-		// Add biases.
-  	c.rowwise() += b.transpose();
+    // Add biases.
+    c.rowwise() += b.transpose();
 
     // Reshape back to image./    
-		MatrixXd convolved = col2im(c);
+    MatrixXd convolved = col2im(c);
 
     return make_pair(convolved, time);
 }

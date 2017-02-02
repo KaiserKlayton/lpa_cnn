@@ -62,6 +62,9 @@ void SingleThreadGemm(SingleThreadGemmContext* context,
                       MatrixMap<OutputScalar, ResultOrder>* result,
                       const LhsOffset& lhs_offset, const RhsOffset& rhs_offset,
                       const OutputPipelineType& output_pipeline) {
+  
+  clock_t start = clock();  
+
   ScopedProfilingLabel label("gemmlowp::SingleThreadGemm");
 
   assert(lhs.cols() == rhs.rows());
@@ -124,7 +127,6 @@ void SingleThreadGemm(SingleThreadGemmContext* context,
       if (!pack_rhs_once) {
         PackRhs<BitDepthParams>(&packed_rhs, rhs.block(0, c, depth, cs));
       }
-
       Compute(kernel, block_params, &packed_result, packed_lhs, packed_rhs);
 
       UnpackResult<BitDepthParams>(
@@ -133,6 +135,10 @@ void SingleThreadGemm(SingleThreadGemmContext* context,
           lhs_offset, rhs_offset, output_pipeline);
     }
   }
+
+  clock_t end = clock();
+  double time = (double) (end-start) / CLOCKS_PER_SEC;           
+  std::cout << time << std::endl; 
 
   allocator->Decommit();
 }

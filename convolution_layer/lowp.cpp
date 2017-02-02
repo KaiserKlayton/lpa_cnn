@@ -11,7 +11,6 @@
 
 using Eigen::MatrixXd;
 
-
 // We will handle both float and quantized matrices, which we will
 // represent as gemmlowp::MatrixMap.
 // We will need to be able to print them.
@@ -150,10 +149,10 @@ class MatrixWithStorage {
   MatrixWithStorage(int rows, int cols)
       : storage(rows * cols), matrix_map(storage.data(), rows, cols) {}
   void FillMatrix(MatrixXd z) {
-	int i = 0;
+  int i = 0;
     for (auto& x : storage) {
-	  x = static_cast<tScalar>(z(i));
-	  i++;
+    x = static_cast<tScalar>(z(i));
+    i++;
     }
   }
   gemmlowp::MatrixMap<const tScalar, tOrder> ConstMap() const {
@@ -241,9 +240,9 @@ MatrixXd glp(int r, int d, int c, MatrixXd a, MatrixXd b) {
   const int cols = c;
   const auto kOrder = gemmlowp::MapOrder::ColMajor;
 
-  std::cout << "First, let us make some float matrices LHS and RHS, "
-            << "and compute their product.\n"
-            << std::endl;
+//  std::cout << "First, let us make some float matrices LHS and RHS, "
+//            << "and compute their product.\n"
+//            << std::endl;
 
   MatrixWithStorage<float, kOrder> float_lhs(rows, depth);
   float_lhs.FillMatrix(a);
@@ -253,42 +252,42 @@ MatrixXd glp(int r, int d, int c, MatrixXd a, MatrixXd b) {
   auto reference_float_result_map = reference_float_result.Map();
   FloatMatrixMultiplication(float_lhs.ConstMap(), float_rhs.ConstMap(),
                             &reference_float_result_map);
-  std::cout << "Here is the float LHS matrix:\n" << float_lhs << std::endl;
-  std::cout << "Here is the float RHS matrix:\n" << float_rhs << std::endl;
-  std::cout << "Here is the float product (LHS * RHS) matrix obtained by "
-            << "ordinary float matrix multiplication, i.e. as far as we are "
-            << "concerned, the REFERENCE RESULT:\n"
-            << reference_float_result << std::endl;
+//  std::cout << "Here is the float LHS matrix:\n" << float_lhs << std::endl;
+//  std::cout << "Here is the float RHS matrix:\n" << float_rhs << std::endl;
+//  std::cout << "Here is the float product (LHS * RHS) matrix obtained by "
+//            << "ordinary float matrix multiplication, i.e. as far as we are "
+//            << "concerned, the REFERENCE RESULT:\n"
+//            << reference_float_result << std::endl;
 
-  std::cout
-      << "Now we embark on reproducing this result using "
-      << "quantized arithmetic. The code below splits into two parts: "
-      << "quantization code that only needs to run offline (e.g. to "
-      << "generate a quantized neural network workload), and actual "
-      << "runtime quantized code, which is typically performance-critical "
-      << "and where we typically do not want to use any floating-point "
-      << "arithmetic. We want to clearly distinguish between the two.\n"
-      << std::endl;
+//  std::cout
+//      << "Now we embark on reproducing this result using "
+//      << "quantized arithmetic. The code below splits into two parts: "
+//      << "quantization code that only needs to run offline (e.g. to "
+//      << "generate a quantized neural network workload), and actual "
+//      << "runtime quantized code, which is typically performance-critical "
+//      << "and where we typically do not want to use any floating-point "
+//      << "arithmetic. We want to clearly distinguish between the two.\n"
+//      << std::endl;
 
-  std::cout << "The below is OFFLINE QUANTIZATION CODE. We still use some "
-            << "floating-point arithmetic in the process of generating the "
-            << "quantized workload to be run on-device.\n"
-            << std::endl;
+//  std::cout << "The below is OFFLINE QUANTIZATION CODE. We still use some "
+//            << "floating-point arithmetic in the process of generating the "
+//            << "quantized workload to be run on-device.\n"
+//            << std::endl;
 
-  std::cout
-      << "Now, let us choose quantization parameters for these matrices. "
-      << "You might ask, what good is quantization if we need to pick "
-      << "quantization parameters for the result before we can run the "
-      << "quantized computation to obtain the result? The idea is that we "
-      << "target applications such as neural networks, where unknown results "
-      << "are only allowed to vary within preexisting bounds. In practice, the "
-      << "bounds for the results are typically learned during the neural "
-        "network "
-      << "training process. The min and max of the result do not have to be "
-      << "exact. If they are too broad, we just get lower quantization "
-         "accuracy. "
-      << "If they are too narrow, we just get clamping at the bounds.\n"
-      << std::endl;
+//  std::cout
+//      << "Now, let us choose quantization parameters for these matrices. "
+//     << "You might ask, what good is quantization if we need to pick "
+//      << "quantization parameters for the result before we can run the "
+//      << "quantized computation to obtain the result? The idea is that we "
+//      << "target applications such as neural networks, where unknown results "
+//      << "are only allowed to vary within preexisting bounds. In practice, the "
+//      << "bounds for the results are typically learned during the neural "
+//        "network "
+//      << "training process. The min and max of the result do not have to be "
+//      << "exact. If they are too broad, we just get lower quantization "
+//         "accuracy. "
+//      << "If they are too narrow, we just get clamping at the bounds.\n"
+//      << std::endl;
 
   float lhs_min, lhs_max, rhs_min, rhs_max, result_min, result_max;
   FindMinMax(float_lhs.Map(), &lhs_min, &lhs_max);
@@ -298,20 +297,18 @@ MatrixXd glp(int r, int d, int c, MatrixXd a, MatrixXd b) {
   const auto rhs_qparams = ChooseQuantizationParams(rhs_min, rhs_max);
   const auto result_qparams = ChooseQuantizationParams(result_min, result_max);
 
-  std::cout << "For LHS, we have min = " << lhs_min << ", max = " << lhs_max
-            << ", scale = " << lhs_qparams.scale
-            << ", zero_point = " << static_cast<float>(lhs_qparams.zero_point)
-            << std::endl;
-  std::cout << "For RHS, we have min = " << rhs_min << ", max = " << rhs_max
-            << ", scale = " << rhs_qparams.scale
-            << ", zero_point = " << static_cast<float>(rhs_qparams.zero_point)
-            << std::endl;
-  std::cout << "For the result, we have min = " << result_min
-            << ", max = " << result_max << ", scale = " << result_qparams.scale
-            << ", zero_point = "
-            << static_cast<float>(result_qparams.zero_point) << std::endl;
-
-  std::cout << std::endl;
+//  std::cout << "For LHS, we have min = " << lhs_min << ", max = " << lhs_max
+//            << ", scale = " << lhs_qparams.scale
+//            << ", zero_point = " << static_cast<float>(lhs_qparams.zero_point)
+//            << std::endl;
+//  std::cout << "For RHS, we have min = " << rhs_min << ", max = " << rhs_max
+//            << ", scale = " << rhs_qparams.scale
+//            << ", zero_point = " << static_cast<float>(rhs_qparams.zero_point)
+//            << std::endl;
+//  std::cout << "For the result, we have min = " << result_min
+//            << ", max = " << result_max << ", scale = " << result_qparams.scale
+//            << ", zero_point = "
+//            << static_cast<float>(result_qparams.zero_point) << std::endl;
 
   MatrixWithStorage<std::uint8_t, kOrder> uint8_lhs(rows, depth);
   MatrixWithStorage<std::uint8_t, kOrder> uint8_rhs(depth, cols);
@@ -320,8 +317,8 @@ MatrixXd glp(int r, int d, int c, MatrixXd a, MatrixXd b) {
   Quantize(lhs_qparams, float_lhs.Storage(), &uint8_lhs.Storage());
   Quantize(rhs_qparams, float_rhs.Storage(), &uint8_rhs.Storage());
 
-  std::cout << "Quantized uint8 LHS matrix:\n" << uint8_lhs << std::endl;
-  std::cout << "Quantized uint8 RHS matrix:\n" << uint8_rhs << std::endl;
+//  std::cout << "Quantized uint8 LHS matrix:\n" << uint8_lhs << std::endl;
+//  std::cout << "Quantized uint8 RHS matrix:\n" << uint8_rhs << std::endl;
 
   const int lhs_offset = -lhs_qparams.zero_point;
   const int rhs_offset = -rhs_qparams.zero_point;
@@ -334,16 +331,14 @@ MatrixXd glp(int r, int d, int c, MatrixXd a, MatrixXd b) {
   QuantizeMultiplierSmallerThanOne(real_multiplier, &quantized_multiplier,
                                    &right_shift);
 
-  std::cout << "End of OFFLINE QUANTIZATION CODE.\n" << std::endl;
+//  std::cout << "End of OFFLINE QUANTIZATION CODE.\n" << std::endl;
 
-  std::cout << "The below is ON-DEVICE RUNTIME QUANTIZED CODE. "
-            << "This is the part that is performance-critical and may only "
-            << "use quantized arithmetic.\n"
-            << std::endl;
-
-	clock_t start = clock();  
+//  std::cout << "The below is ON-DEVICE RUNTIME QUANTIZED CODE. "
+//            << "This is the part that is performance-critical and may only "
+//            << "use quantized arithmetic.\n"
+//            << std::endl;
   
-	gemmlowp::OutputStageQuantizeDownInt32ToUint8ScaleByFixedPoint
+  gemmlowp::OutputStageQuantizeDownInt32ToUint8ScaleByFixedPoint
       quantize_down_stage;
   quantize_down_stage.result_offset_after_shift = result_offset;
   quantize_down_stage.result_fixedpoint_multiplier = quantized_multiplier;
@@ -354,29 +349,26 @@ MatrixXd glp(int r, int d, int c, MatrixXd a, MatrixXd b) {
 
   auto actual_uint8_result_map = actual_uint8_result.Map();
   gemmlowp::GemmContext gemm_context;
+  
   gemmlowp::GemmWithOutputPipeline<std::uint8_t, std::uint8_t,
                                    gemmlowp::DefaultL8R8BitDepthParams>(
       &gemm_context, uint8_lhs.ConstMap(), uint8_rhs.ConstMap(),
       &actual_uint8_result_map, lhs_offset, rhs_offset, output_pipeline);
 
-  std::cout << "Quantized uint8 result matrix obtained by quantized "
-            << "multiplication:\n"
-            << actual_uint8_result << std::endl;
+//  std::cout << "Quantized uint8 result matrix obtained by quantized "
+//            << "multiplication:\n"
+//            << actual_uint8_result << std::endl;
 
-  clock_t end = clock();
-  double time = (double) (end-start) / CLOCKS_PER_SEC;           
-  std::cout << time << std::endl; 
-
-  std::cout << "End of ON-DEVICE RUNTIME QUANTIZED CODE.\n" << std::endl;
+//  std::cout << "End of ON-DEVICE RUNTIME QUANTIZED CODE.\n" << std::endl;
 
   MatrixWithStorage<float, kOrder> actual_float_result(rows, cols);
   Dequantize(result_qparams, actual_uint8_result.Storage(),
              &actual_float_result.Storage());
-  std::cout
-      << "Here is the actual float product (LHS * RHS) matrix obtained by "
-      << "dequantizing the above uint8 result, i.e. "
-      << "as far as we are concerned, the ACTUAL RESULT:\n"
-      << actual_float_result << std::endl;
+//  std::cout
+//      << "Here is the actual float product (LHS * RHS) matrix obtained by "
+//      << "dequantizing the above uint8 result, i.e. "
+//      << "as far as we are concerned, the ACTUAL RESULT:\n"
+//      << actual_float_result << std::endl;
 
   MatrixWithStorage<float, kOrder> diff_float_result(rows, cols);
   for (int i = 0; i < rows; i++) {
@@ -386,16 +378,16 @@ MatrixXd glp(int r, int d, int c, MatrixXd a, MatrixXd b) {
     }
   }
 
-  std::cout << "Difference between ACTUAL and REFERENCE float results:\n"
-           << diff_float_result << std::endl;
+//  std::cout << "Difference between ACTUAL and REFERENCE float results:\n"
+//            << diff_float_result << std::endl;
 
   // Convert Back To Eigen.
-	MatrixXd result(rows, cols);
-	for (int i = 0; i < rows; i++) {
-		for (int j = 0; j < cols; j++) {
-			result(i,j) = actual_float_result.Map()(i,j);
-		}
-	}
+  MatrixXd result(rows, cols);
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < cols; j++) {
+      result(i,j) = actual_float_result.Map()(i,j);
+    }
+  }
 
-	return result;
+  return result;
 }

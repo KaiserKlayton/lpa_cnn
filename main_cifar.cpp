@@ -11,25 +11,25 @@ using Eigen::Matrix;
 using Eigen::RowMajor;
 
 void write_to_csv(string name, MatrixXd matrix) {
-	const static IOFormat CSVFormat(StreamPrecision, DontAlignCols, ", ", "\n");
+  const static IOFormat CSVFormat(StreamPrecision, DontAlignCols, ", ", "\n");
     
-	ofstream file(name.c_str());
-	file << matrix.format(CSVFormat);
+  ofstream file(name.c_str());
+  file << matrix.format(CSVFormat);
 }
 
 int main() 
 {
   // INPUT PREP //
-	const int im_height = 32; // OPTION
-	const int im_width = 32; // OPTION
+  const int im_height = 32; // OPTION
+  const int im_width = 32; // OPTION
     const int im_depth = 3; // OPTION
     const int im_size = im_height*im_width;
     MatrixXd train = read_cifar10();
 
     const int im_num = 100; // OPTION
-		float total_1 = 0.0;
-		float total_2 = 0.0;
-		float total_3 = 0.0;
+    float total_1 = 0.0;
+    float total_2 = 0.0;
+    float total_3 = 0.0;
     for(int i=0; i < im_num; i++)  // For every row (image)...
     {   // Parse image with full depth (no labels this time).        
         MatrixXd img = train.block<1,im_size*im_depth>(i,0);
@@ -54,15 +54,15 @@ int main()
         MatrixXd conv1_biases = read_cifar10_conv1_biases();
         VectorXd conv1_b(Map<VectorXd>(conv1_biases.data(), conv1_biases.cols()*conv1_biases.rows()));       
         // Convolve.   
-				MatrixXd convolved_1;
-				double time_1;
+        MatrixXd convolved_1;
+        double time_1;
         std::tie(convolved_1, time_1) = convolve(image, im_size, im_height, im_width, im_depth, k_size, stride, conv1_b, p1, p2, w, output_size);               
         // Write convolved matrix to file.
         std::string name = "data/cifar10/features/conv1_" + std::to_string(i) + ".csv";
         write_to_csv(name, convolved_1);
 
-				//Aggregate time_1.
-				total_1 += time_1;
+        //Aggregate time_1.
+        total_1 += time_1;
 
     // POOLING 1 //
         // Define Pooling behaviour.   
@@ -104,15 +104,15 @@ int main()
         MatrixXd conv2_biases = read_cifar10_conv2_biases();
         VectorXd conv2_b(Map<VectorXd>(conv2_biases.data(), conv2_biases.cols()*conv2_biases.rows()));
         // Convolve.      
-				MatrixXd convolved_2;
-				double time_2;
+        MatrixXd convolved_2;
+        double time_2;
         std::tie(convolved_2, time_2) = convolve(relud_1, im_size_2, im_height_2, im_width_2, im_depth_2, k_size_2, stride_2, conv2_b, p1_2, p2_2, w_2, output_size_2);
         // Write convolved matrix to file.
         std::string name_4 = "data/cifar10/features/conv2_" + std::to_string(i) + ".csv";
         write_to_csv(name_4, convolved_2);  
 
-				//Aggregate time_2.
-				total_2 += time_2;
+        //Aggregate time_2.
+        total_2 += time_2;
 
     // ReLU 2 //
         MatrixXd relud_2 = relu(convolved_2);
@@ -155,15 +155,15 @@ int main()
         MatrixXd conv3_biases = read_cifar10_conv3_biases();
         VectorXd conv3_b(Map<VectorXd>(conv3_biases.data(), conv3_biases.cols()*conv3_biases.rows()));
         // Convolve.      
-				MatrixXd convolved_3;
-				double time_3;
+        MatrixXd convolved_3;
+        double time_3;
         std::tie(convolved_3, time_3) = convolve(pooled_2, im_size_3, im_height_3, im_width_3, im_depth_3, k_size_3, stride_3, conv3_b, p1_3, p2_3, w_3, output_size_3);
         // Write convolved matrix to file.
         std::string name_7 = "data/cifar10/features/conv3_" + std::to_string(i) + ".csv";
         write_to_csv(name_7, convolved_3);  
 
-				//Aggregate time_2.
-				total_3 += time_3;
+        //Aggregate time_2.
+        total_3 += time_3;
 
     // ReLU 3 //
         MatrixXd relud_3 = relu(convolved_3);
@@ -206,18 +206,18 @@ int main()
         write_to_csv(name11, fc2);
 
     }
-		//Print means of Time1 Time2 and Time3.
-		float avg_1 = 0.0;		
-		avg_1 = total_1 / im_num;
-		cout << avg_1 << endl;
+    //Print means of Time1 Time2 and Time3.
+    float avg_1 = 0.0;    
+    avg_1 = total_1 / im_num;
+    cout << avg_1 << endl;
 
-		float avg_2 = 0.0;		
-		avg_2 = total_2 / im_num;
-		cout << avg_2 << endl;
+    float avg_2 = 0.0;    
+    avg_2 = total_2 / im_num;
+    cout << avg_2 << endl;
 
-		float avg_3 = 0.0;		
-		avg_3 = total_3 / im_num;
-		cout << avg_3 << endl;
+    float avg_3 = 0.0;    
+    avg_3 = total_3 / im_num;
+    cout << avg_3 << endl;
 
     return 0;
 }

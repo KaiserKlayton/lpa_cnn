@@ -319,7 +319,8 @@ void benchmark_googlenet(GemmContext* context) {
 void benchmark_small_model(GemmContext* context) {
   // These are the m, n, k sizes for a small model with large batches.
   const int small_model_gemm_sizes[] = {
-      29232, 16, 25, 7308, 6, 400, 203, 3002, 216,
+      //29232, 16, 25, 7308, 6, 400, 203, 3002, 216,
+			576, 20, 25
   };
   assert(sizeof(small_model_gemm_sizes) %
              (3 * sizeof(small_model_gemm_sizes[0])) ==
@@ -341,12 +342,14 @@ void benchmark_small_model(GemmContext* context) {
 void benchmark_all() {
   {
     gemmlowp::GemmContext context;
+		context.set_max_num_threads(1);
     std::cout << "Benchmarking small model GEMMs..." << std::endl;
     gemmlowp::benchmark_small_model(&context);
   }
 
   {
     gemmlowp::GemmContext context;
+		context.set_max_num_threads(1);
     std::cout << "Benchmarking typical GoogLeNet GEMMs..." << std::endl;
     gemmlowp::benchmark_googlenet(&context);
   }

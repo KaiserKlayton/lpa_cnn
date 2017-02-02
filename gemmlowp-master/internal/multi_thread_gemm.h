@@ -588,6 +588,7 @@ void MultiThreadGemm(GemmContextType* context, const KernelBase& kernel,
                      MatrixMap<OutputScalar, ResultOrder>* result,
                      const LhsOffset& lhs_offset, const RhsOffset& rhs_offset,
                      const OutputPipelineType& output_pipeline) {
+
   ScopedProfilingLabel label("gemmlowp::MultiThreadGemm");
 
   assert(lhs.cols() == rhs.rows());
@@ -600,13 +601,14 @@ void MultiThreadGemm(GemmContextType* context, const KernelBase& kernel,
   assert(cols > 0);
   assert(depth > 0);
 
-  const int thread_count = HowManyThreads<KernelFormat::kRows>(
-      context->max_num_threads(), rows, cols, depth);
-  if (thread_count == 1) {
+//  const int thread_count = HowManyThreads<KernelFormat::kRows>(
+//     context->max_num_threads(), rows, cols, depth);
+  const int thread_count = 1;
+  if (thread_count == 1) { 
     return SingleThreadGemm<KernelFormat, InputScalar, OutputScalar,
                             BitDepthParams>(context, kernel, lhs, rhs, result,
                                             lhs_offset, rhs_offset,
-                                            output_pipeline);
+                                            output_pipeline); 
   }
   assert(thread_count > 1);
 
@@ -655,7 +657,7 @@ void MultiThreadGemm(GemmContextType* context, const KernelBase& kernel,
           TaskType;
       auto task = new TaskType(kernel, lhs_block, packed_rhs, result,
                                MatrixBlockBounds(start_row, c, block_rows, cs),
-                               lhs_offset, rhs_offset, output_pipeline);
+                               lhs_offset, rhs_offset, output_pipeline);     
       if (thread < workers_count) {
         workers_pool->StartWorker(thread, task);
       } else {
@@ -664,7 +666,7 @@ void MultiThreadGemm(GemmContextType* context, const KernelBase& kernel,
         task->Run();
         delete task;
       }
-    }
+    } 
     // Wait for the workers.
     workers_pool->Wait();
   }
