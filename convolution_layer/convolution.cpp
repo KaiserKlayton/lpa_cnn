@@ -69,7 +69,7 @@ MatrixXd im2col(MatrixXd input, int k_size, int stride) {
     return result;
 }
 
-MatrixXd convolve(MatrixXd image, int im_size, int im_height, int im_width, int im_depth, int k_size, int stride, VectorXd b, int p1, int p2, MatrixXd w, int output_size) {  
+std::pair<MatrixXd, double> convolve(MatrixXd image, int im_size, int im_height, int im_width, int im_depth, int k_size, int stride, VectorXd b, int p1, int p2, MatrixXd w, int output_size) {  
     // im2col for each slice, then concatinate slices.
     MatrixXd im(output_size, k_size*im_depth);
     for (int d=0; d < im_depth ; d++) {
@@ -90,16 +90,15 @@ MatrixXd convolve(MatrixXd image, int im_size, int im_height, int im_width, int 
     MatrixXd c = im*w.transpose();
     clock_t end = clock();
     double time = (double) (end-start) / CLOCKS_PER_SEC;           
-    cout << time << endl; 
 	
 		// GEMM Multiplication Operation w/ Gemmlowp.		
 //		MatrixXd c = glp(im.rows(), im.cols(), w.transpose().cols(), im, w.transpose());
 
-  	// Add biases.
+		// Add biases.
   	c.rowwise() += b.transpose();
 
     // Reshape back to image./    
 		MatrixXd convolved = col2im(c);
 
-    return convolved;
+    return make_pair(convolved, time);
 }
