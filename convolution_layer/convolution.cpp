@@ -86,13 +86,15 @@ std::pair<MatrixXd, double> convolve(MatrixXd image, int im_size, int im_height,
     } 
 
     // GEMM Multiplication Operation w/ Eigen.
-    clock_t start = clock();    
-    MatrixXd c = im*w.transpose();
-    clock_t end = clock();
-    double time = (double) (end-start) / CLOCKS_PER_SEC;           
+//    clock_t start = clock();    
+//    MatrixXd c = im*w.transpose();
+//    clock_t end = clock();
+//    double time = (double) (end-start) / CLOCKS_PER_SEC;           
   
-    // GEMM Multiplication Operation w/ Gemmlowp.    
-//    MatrixXd c = glp(im.rows(), im.cols(), w.transpose().cols(), im, w.transpose());
+    // GEMM Multiplication Operation w/ Gemmlowp.
+    MatrixXd c;
+    double time;
+    std::tie(c, time) = glp(im.rows(), im.cols(), w.transpose().cols(), im, w.transpose());
 
     // Add biases.
     c.rowwise() += b.transpose();

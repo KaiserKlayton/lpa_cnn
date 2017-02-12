@@ -233,7 +233,7 @@ void QuantizeMultiplierSmallerThanOne(float real_multiplier,
   *right_shift = s;
 }
 
-MatrixXd glp(int r, int d, int c, MatrixXd a, MatrixXd b) {
+std::pair<MatrixXd, double> glp(int r, int d, int c, MatrixXd a, MatrixXd b) {
   std::cout.precision(3);
   const int rows = r;
   const int depth = d;
@@ -338,6 +338,8 @@ MatrixXd glp(int r, int d, int c, MatrixXd a, MatrixXd b) {
 //            << "use quantized arithmetic.\n"
 //            << std::endl;
   
+  clock_t start = clock();
+
   gemmlowp::OutputStageQuantizeDownInt32ToUint8ScaleByFixedPoint
       quantize_down_stage;
   quantize_down_stage.result_offset_after_shift = result_offset;
@@ -354,6 +356,9 @@ MatrixXd glp(int r, int d, int c, MatrixXd a, MatrixXd b) {
                                    gemmlowp::DefaultL8R8BitDepthParams>(
       &gemm_context, uint8_lhs.ConstMap(), uint8_rhs.ConstMap(),
       &actual_uint8_result_map, lhs_offset, rhs_offset, output_pipeline);
+
+  clock_t end = clock();
+  double time = (double) (end-start) / CLOCKS_PER_SEC;           
 
 //  std::cout << "Quantized uint8 result matrix obtained by quantized "
 //            << "multiplication:\n"
@@ -389,5 +394,5 @@ MatrixXd glp(int r, int d, int c, MatrixXd a, MatrixXd b) {
     }
   }
 
-  return result;
+  return std::make_pair(result, time);
 }

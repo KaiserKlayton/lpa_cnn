@@ -63,8 +63,6 @@ void SingleThreadGemm(SingleThreadGemmContext* context,
                       const LhsOffset& lhs_offset, const RhsOffset& rhs_offset,
                       const OutputPipelineType& output_pipeline) {
   
-  clock_t start = clock();  
-
   ScopedProfilingLabel label("gemmlowp::SingleThreadGemm");
 
   assert(lhs.cols() == rhs.rows());
@@ -135,10 +133,6 @@ void SingleThreadGemm(SingleThreadGemmContext* context,
           lhs_offset, rhs_offset, output_pipeline);
     }
   }
-
-  clock_t end = clock();
-  double time = (double) (end-start) / CLOCKS_PER_SEC;           
-  std::cout << time << std::endl; 
 
   allocator->Decommit();
 }
