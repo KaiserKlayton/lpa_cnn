@@ -138,23 +138,25 @@ int main()
     MatrixXd fc2_biases = read_cifar10_fc2_biases();
     VectorXd fc2_b(Map<VectorXd>(fc2_biases.data(), fc2_biases.cols()*fc2_biases.rows()));
     
-    float total_1 = 0.0;
-    float total_2 = 0.0;
-    float total_3 = 0.0;
+    // Define Times.
+    float gemm_time_total = 0.0;
+    float run_time_total = 0.0;
+    // Read in images.
     const int im_num = 100; // OPTION
     MatrixXd train = read_cifar10();
     for(int i=0; i < im_num; i++)  // For every row (image)...
     {  
+        clock_t run_time_start = clock();  
+
         // Parse image with full depth (no labels this time).        
         MatrixXd img = train.block<1,im_size*im_depth>(i,0);
         MatrixXd image = Map<Matrix<double, im_depth, im_size, RowMajor>>(img.data());
      
         // Convolve 1.   
         MatrixXd convolved_1;
-        double time_1;
-        std::tie(convolved_1, time_1) = convolve(image, im_size, im_height, im_width, im_depth, k_size, stride, conv1_b, p1, p2, w, output_size);               
-        //Aggregate time_1.
-        total_1 += time_1;
+        double gemm_time_1;
+        double offline_time_1;
+        std::tie(convolved_1, gemm_time_1, offline_time_1) = convolve(image, im_size, im_height, im_width, im_depth, k_size, stride, conv1_b, p1, p2, w, output_size);               
 
         // Pool 1.
         MatrixXd pooled_1 = pool(convolved_1, f, s, output_width, output_height);
@@ -164,10 +166,9 @@ int main()
 
         // Convolve 2.
         MatrixXd convolved_2;
-        double time_2;
-        std::tie(convolved_2, time_2) = convolve(relud_1, im_size_2, im_height_2, im_width_2, im_depth_2, k_size_2, stride_2, conv2_b, p1_2, p2_2, w_2, output_size_2);
-        //Aggregate time_2.
-        total_2 += time_2;
+        double gemm_time_2;
+        double offline_time_2;
+        std::tie(convolved_2, gemm_time_2, offline_time_2) = convolve(relud_1, im_size_2, im_height_2, im_width_2, im_depth_2, k_size_2, stride_2, conv2_b, p1_2, p2_2, w_2, output_size_2);
 
         // ReLU 2.
         MatrixXd relud_2 = relu(convolved_2);
@@ -177,10 +178,9 @@ int main()
 
         // Convolve 3.      
         MatrixXd convolved_3;
-        double time_3;
-        std::tie(convolved_3, time_3) = convolve(pooled_2, im_size_3, im_height_3, im_width_3, im_depth_3, k_size_3, stride_3, conv3_b, p1_3, p2_3, w_3, output_size_3);  
-        //Aggregate time_2.
-        total_3 += time_3;
+        double gemm_time_3;
+        double offline_time_3;
+        std::tie(convolved_3, gemm_time_3, offline_time_3) = convolve(pooled_2, im_size_3, im_height_3, im_width_3, im_depth_3, k_size_3, stride_3, conv3_b, p1_3, p2_3, w_3, output_size_3);  
 
         // ReLU 3.
         MatrixXd relud_3 = relu(convolved_3);
@@ -193,6 +193,15 @@ int main()
 
         // Fully Connect 2.
         MatrixXd fc2 = fully_connect(fc1, fc1.rows(), fc2_weights, fc2_b);
+
+        clock_t run_time_end = clock();
+        double run_time = (double) (run_time_end-run_time_start) / CLOCKS_PER_SEC;
+
+        //Aggregate run_time_total.
+        run_time_total += (run_time - offline_time_1 - offline_time_2 - offline_time_3);
+    
+        //Aggregate gemm_time_total.
+        gemm_time_total += gemm_time_1 + gemm_time_2 + gemm_time_3;
 
         // Write features to file.
         std::string name = "data/cifar10/features/conv1_" + std::to_string(i) + ".csv";
@@ -219,18 +228,16 @@ int main()
         write_to_csv(name11, fc2);
     }
 
-    //Print means of Time1 Time2 and Time3.
-    float avg_1 = 0.0;    
-    avg_1 = total_1 / im_num;
-    cout << avg_1 << endl;
+    // Print average timings.
+    cout << "-----------------------------" << endl;
 
-    float avg_2 = 0.0;    
-    avg_2 = total_2 / im_num;
-    cout << avg_2 << endl;
+    float avg_run_time = 0.0;            
+    avg_run_time = run_time_total / im_num;
+    cout << "average online run time: " << avg_run_time << endl;
 
-    float avg_3 = 0.0;    
-    avg_3 = total_3 / im_num;
-    cout << avg_3 << endl;
+    float avg_gemm_time = 0.0;
+    avg_gemm_time = gemm_time_total / im_num;
+    cout << "average total time for GEMM: " << avg_gemm_time << endl;
 
     return 0;
 }

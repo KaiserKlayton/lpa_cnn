@@ -98,31 +98,33 @@ int main()
     MatrixXd fc2_biases = read_mnist_fc2_biases();
     VectorXd fc2_b(Map<VectorXd>(fc2_biases.data(), fc2_biases.cols()*fc2_biases.rows()));
 
-    float total_1 = 0.0;
-    float total_2 = 0.0;      
+    // Define Times.
+    float gemm_time_total = 0.0;
+    float run_time_total = 0.0;
+    // Read in images.
     const int im_num = 100; // OPTION
     MatrixXd train = read_mnist_train();
     for(int i=0; i < im_num; i++)  // For every row (image)...
     {   
+        clock_t run_time_start = clock();         
+
         // Parse image with full depth (minus the label).
         MatrixXd image = train.block<1,im_size*im_depth>(i,1); 
             
         // Convolve 1.
         MatrixXd convolved_1;
-        double time_1;
-        std::tie(convolved_1, time_1) = convolve(image, im_size, im_height, im_width, im_depth, k_size, stride, conv1_b, p1, p2, w, output_size);               
-        //Aggregate time_1.
-        total_1 += time_1;
+        double gemm_time_1;
+        double offline_time_1;
+        std::tie(convolved_1, gemm_time_1, offline_time_1) = convolve(image, im_size, im_height, im_width, im_depth, k_size, stride, conv1_b, p1, p2, w, output_size);               
 
         // Pool 1.
         MatrixXd pooled_1 = pool(convolved_1, f, s, output_width, output_height);
 
         // Convolve 2.      
         MatrixXd convolved_2;
-        double time_2;
-        std::tie(convolved_2, time_2) = convolve(pooled_1, im_size_2, im_height_2, im_width_2, im_depth_2, k_size_2, stride_2, conv2_b, p1_2, p2_2, w_2, output_size_2);
-        //Aggregate time_2.
-        total_2 += time_2;
+        double gemm_time_2;
+        double offline_time_2;
+        std::tie(convolved_2, gemm_time_2, offline_time_2) = convolve(pooled_1, im_size_2, im_height_2, im_width_2, im_depth_2, k_size_2, stride_2, conv2_b, p1_2, p2_2, w_2, output_size_2);
 
         // Pool 2.
         MatrixXd pooled_2 = pool(convolved_2, f_2, s_2, output_width_2, output_height_2);
@@ -135,6 +137,15 @@ int main()
 
         // Fully Connect 2.
         MatrixXd fc2 = fully_connect(relud_1, relud_1.rows(), fc2_weights, fc2_b);
+
+        clock_t run_time_end = clock();
+        double run_time = (double) (run_time_end-run_time_start) / CLOCKS_PER_SEC;
+
+        //Aggregate run_time_total.
+        run_time_total += (run_time - offline_time_1 - offline_time_2);
+    
+        //Aggregate gemm_time_total.
+        gemm_time_total += gemm_time_1 + gemm_time_2;
 
         // Write features to file.
         std::string name = "data/mnist/features/conv1_" + std::to_string(i) + ".csv";
@@ -153,14 +164,16 @@ int main()
         write_to_csv(name6, fc2);
     }
 
-    //Print means of Time1 and Time2.
-    float avg_1 = 0.0;            
-    avg_1 = total_1 / im_num;
-    cout << avg_1 << endl;
+    // Print average timings.
+    cout << "-----------------------------" << endl;
 
-    float avg_2 = 0.0;            
-    avg_2 = total_2 / im_num;
-    cout << avg_2 << endl;
+    float avg_run_time = 0.0;            
+    avg_run_time = run_time_total / im_num;
+    cout << "average online run time: " << avg_run_time << endl;
+
+    float avg_gemm_time = 0.0;
+    avg_gemm_time = gemm_time_total / im_num;
+    cout << "average total time for GEMM: " << avg_gemm_time << endl;
 
     return 0; 
 }

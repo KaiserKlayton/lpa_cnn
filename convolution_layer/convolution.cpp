@@ -69,7 +69,7 @@ MatrixXd im2col(MatrixXd input, int k_size, int stride) {
     return result;
 }
 
-std::pair<MatrixXd, double> convolve(MatrixXd image, int im_size, int im_height, int im_width, int im_depth, int k_size, int stride, VectorXd b, int p1, int p2, MatrixXd w, int output_size) {  
+std::tuple<MatrixXd, double, double> convolve(MatrixXd image, int im_size, int im_height, int im_width, int im_depth, int k_size, int stride, VectorXd b, int p1, int p2, MatrixXd w, int output_size) {  
     // im2col for each slice, then concatinate slices.
     MatrixXd im(output_size, k_size*im_depth);
     for (int d=0; d < im_depth ; d++) {
@@ -86,21 +86,23 @@ std::pair<MatrixXd, double> convolve(MatrixXd image, int im_size, int im_height,
     } 
 
     // GEMM Multiplication Operation w/ Eigen.
-//    clock_t start = clock();    
-//    MatrixXd c = im*w.transpose();
-//    clock_t end = clock();
-//    double time = (double) (end-start) / CLOCKS_PER_SEC;           
+    clock_t start = clock();    
+    MatrixXd c = im*w.transpose();
+    clock_t end = clock();
+    double gemm_time = (double) (end-start) / CLOCKS_PER_SEC;   
+    double offline_time = 0;        
   
     // GEMM Multiplication Operation w/ Gemmlowp.
-    MatrixXd c;
-    double time;
-    std::tie(c, time) = glp(im.rows(), im.cols(), w.transpose().cols(), im, w.transpose());
+//    MatrixXd c;
+//    double gemm_time;
+//    double offline_time;
+//    std::tie(c, gemm_time, offline_time) = glp(im.rows(), im.cols(), w.transpose().cols(), im, w.transpose());
 
     // Add biases.
     c.rowwise() += b.transpose();
-
+ 
     // Reshape back to image./    
     MatrixXd convolved = col2im(c);
 
-    return make_pair(convolved, time);
+    return make_tuple(convolved, gemm_time, offline_time);
 }

@@ -233,7 +233,9 @@ void QuantizeMultiplierSmallerThanOne(float real_multiplier,
   *right_shift = s;
 }
 
-std::pair<MatrixXd, double> glp(int r, int d, int c, MatrixXd a, MatrixXd b) {
+std::tuple<MatrixXd, double, double> glp(int r, int d, int c, MatrixXd a, MatrixXd b) {
+  clock_t convert_from_eigen_start = clock();
+
   std::cout.precision(3);
   const int rows = r;
   const int depth = d;
@@ -248,6 +250,12 @@ std::pair<MatrixXd, double> glp(int r, int d, int c, MatrixXd a, MatrixXd b) {
   float_lhs.FillMatrix(a);
   MatrixWithStorage<float, kOrder> float_rhs(depth, cols);
   float_rhs.FillMatrix(b);
+
+  clock_t convert_from_eigen_end = clock();
+  double convert_from_eigen_time = (double) (convert_from_eigen_end-convert_from_eigen_start) / CLOCKS_PER_SEC;           
+
+  clock_t get_params_start = clock();  
+
   MatrixWithStorage<float, kOrder> reference_float_result(rows, cols);
   auto reference_float_result_map = reference_float_result.Map();
   FloatMatrixMultiplication(float_lhs.ConstMap(), float_rhs.ConstMap(),
@@ -297,6 +305,9 @@ std::pair<MatrixXd, double> glp(int r, int d, int c, MatrixXd a, MatrixXd b) {
   const auto rhs_qparams = ChooseQuantizationParams(rhs_min, rhs_max);
   const auto result_qparams = ChooseQuantizationParams(result_min, result_max);
 
+  clock_t get_params_end = clock();
+  double get_params_time = (double) (get_params_end-get_params_start) / CLOCKS_PER_SEC; 
+
 //  std::cout << "For LHS, we have min = " << lhs_min << ", max = " << lhs_max
 //            << ", scale = " << lhs_qparams.scale
 //            << ", zero_point = " << static_cast<float>(lhs_qparams.zero_point)
@@ -310,12 +321,20 @@ std::pair<MatrixXd, double> glp(int r, int d, int c, MatrixXd a, MatrixXd b) {
 //            << ", zero_point = "
 //            << static_cast<float>(result_qparams.zero_point) << std::endl;
 
-  MatrixWithStorage<std::uint8_t, kOrder> uint8_lhs(rows, depth);
+  clock_t quantize_offline_start = clock();
+
   MatrixWithStorage<std::uint8_t, kOrder> uint8_rhs(depth, cols);
+  Quantize(rhs_qparams, float_rhs.Storage(), &uint8_rhs.Storage());
+
+  clock_t quantize_offline_end = clock();
+  double quantize_offline_time = (double) (quantize_offline_end-quantize_offline_start) / CLOCKS_PER_SEC;
+
+  clock_t quantize_start = clock();
+
+  MatrixWithStorage<std::uint8_t, kOrder> uint8_lhs(rows, depth);
   MatrixWithStorage<std::uint8_t, kOrder> actual_uint8_result(rows, cols);
 
   Quantize(lhs_qparams, float_lhs.Storage(), &uint8_lhs.Storage());
-  Quantize(rhs_qparams, float_rhs.Storage(), &uint8_rhs.Storage());
 
 //  std::cout << "Quantized uint8 LHS matrix:\n" << uint8_lhs << std::endl;
 //  std::cout << "Quantized uint8 RHS matrix:\n" << uint8_rhs << std::endl;
@@ -331,6 +350,9 @@ std::pair<MatrixXd, double> glp(int r, int d, int c, MatrixXd a, MatrixXd b) {
   QuantizeMultiplierSmallerThanOne(real_multiplier, &quantized_multiplier,
                                    &right_shift);
 
+  clock_t quantize_end = clock();
+  double quantize_time = (double) (quantize_end-quantize_start) / CLOCKS_PER_SEC;
+
 //  std::cout << "End of OFFLINE QUANTIZATION CODE.\n" << std::endl;
 
 //  std::cout << "The below is ON-DEVICE RUNTIME QUANTIZED CODE. "
@@ -338,7 +360,7 @@ std::pair<MatrixXd, double> glp(int r, int d, int c, MatrixXd a, MatrixXd b) {
 //            << "use quantized arithmetic.\n"
 //            << std::endl;
   
-  clock_t start = clock();
+  clock_t gemm_start = clock();
 
   gemmlowp::OutputStageQuantizeDownInt32ToUint8ScaleByFixedPoint
       quantize_down_stage;
@@ -357,14 +379,16 @@ std::pair<MatrixXd, double> glp(int r, int d, int c, MatrixXd a, MatrixXd b) {
       &gemm_context, uint8_lhs.ConstMap(), uint8_rhs.ConstMap(),
       &actual_uint8_result_map, lhs_offset, rhs_offset, output_pipeline);
 
-  clock_t end = clock();
-  double time = (double) (end-start) / CLOCKS_PER_SEC;           
+  clock_t gemm_end = clock();
+  double gemm_time = (double) (gemm_end-gemm_start) / CLOCKS_PER_SEC;           
 
 //  std::cout << "Quantized uint8 result matrix obtained by quantized "
 //            << "multiplication:\n"
 //            << actual_uint8_result << std::endl;
 
 //  std::cout << "End of ON-DEVICE RUNTIME QUANTIZED CODE.\n" << std::endl;
+
+  clock_t dequantize_start = clock();
 
   MatrixWithStorage<float, kOrder> actual_float_result(rows, cols);
   Dequantize(result_qparams, actual_uint8_result.Storage(),
@@ -375,16 +399,21 @@ std::pair<MatrixXd, double> glp(int r, int d, int c, MatrixXd a, MatrixXd b) {
 //      << "as far as we are concerned, the ACTUAL RESULT:\n"
 //      << actual_float_result << std::endl;
 
-  MatrixWithStorage<float, kOrder> diff_float_result(rows, cols);
-  for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < cols; j++) {
-      diff_float_result.Map()(i, j) =
-          actual_float_result.Map()(i, j) - reference_float_result.Map()(i, j);
-    }
-  }
+  clock_t dequantize_end = clock();
+  double dequantize_time = (double) (dequantize_end-dequantize_start) / CLOCKS_PER_SEC;
+
+//  MatrixWithStorage<float, kOrder> diff_float_result(rows, cols);
+//  for (int i = 0; i < rows; i++) {
+//    for (int j = 0; j < cols; j++) {
+//      diff_float_result.Map()(i, j) =
+//          actual_float_result.Map()(i, j) - reference_float_result.Map()(i, j);
+//    }
+//  }
 
 //  std::cout << "Difference between ACTUAL and REFERENCE float results:\n"
 //            << diff_float_result << std::endl;
+
+  clock_t convert_to_eigen_start = clock();
 
   // Convert Back To Eigen.
   MatrixXd result(rows, cols);
@@ -394,5 +423,18 @@ std::pair<MatrixXd, double> glp(int r, int d, int c, MatrixXd a, MatrixXd b) {
     }
   }
 
-  return std::make_pair(result, time);
+  clock_t convert_to_eigen_end = clock();
+  double convert_to_eigen_time = (double) (convert_to_eigen_end-convert_to_eigen_start) / CLOCKS_PER_SEC;
+  
+  std::cout << "convert_from_eigen: " << convert_from_eigen_time << std::endl;
+  std::cout << "get_params: " << get_params_time << std::endl;
+  std::cout << "quantize_offline: " << quantize_offline_time << std::endl;
+  std::cout << "quantize: " << quantize_time << std::endl;
+  std::cout << "gemm: " << gemm_time << std::endl;  
+  std::cout << "dequantize: " << dequantize_time << std::endl;
+  std::cout << "convert_to_eigen: " << convert_to_eigen_time << std::endl;
+
+  double offline_time = convert_from_eigen_time + get_params_time + quantize_offline_time + convert_to_eigen_time;
+
+  return std::make_tuple(result, gemm_time, offline_time);
 }
