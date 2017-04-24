@@ -155,3 +155,111 @@ MatrixXd read_cifar10_conv1_biases() {
 
     return biases;
 }
+
+// VGG_CNN_S //
+MatrixXd read_VGG_CNN_S_fc8_weights() {
+    MatrixXd weights = load_csv_arma<MatrixXd>("data/VGG_CNN_S/fc8_weights.csv");
+
+    return weights;
+}
+
+MatrixXd read_VGG_CNN_S_fc8_biases() {
+    MatrixXd biases = load_csv_arma<MatrixXd>("data/VGG_CNN_S/fc8_biases.csv");
+
+    return biases;
+}
+
+MatrixXd read_VGG_CNN_S_fc7_weights() {
+    MatrixXd weights = load_csv_arma<MatrixXd>("data/VGG_CNN_S/fc7_weights.csv");
+
+    return weights;
+}
+
+
+MatrixXd read_VGG_CNN_S_fc7_biases() {
+    MatrixXd biases = load_csv_arma<MatrixXd>("data/VGG_CNN_S/fc7_biases.csv");
+
+    return biases;
+}
+
+
+MatrixXd read_VGG_CNN_S_fc6_weights() {
+    MatrixXd weights = load_csv_arma<MatrixXd>("data/VGG_CNN_S/fc6_weights.csv");
+
+    return weights;
+}
+
+
+MatrixXd read_VGG_CNN_S_fc6_biases() {
+    MatrixXd biases = load_csv_arma<MatrixXd>("data/VGG_CNN_S/fc6_biases.csv");
+
+    return biases;
+}
+
+MatrixXd read_VGG_CNN_S_conv5_weights() {
+    MatrixXd weights = load_csv_arma<MatrixXd>("data/VGG_CNN_S/conv5_weights.csv");
+
+    return weights;
+}
+
+
+MatrixXd read_VGG_CNN_S_conv5_biases() {
+    MatrixXd biases = load_csv_arma<MatrixXd>("data/VGG_CNN_S/conv5_biases.csv");
+
+    return biases;
+}
+
+
+MatrixXd read_VGG_CNN_S_conv4_weights() {
+    MatrixXd weights = load_csv_arma<MatrixXd>("data/VGG_CNN_S/conv4_weights.csv");
+
+    return weights;
+}
+
+
+MatrixXd read_VGG_CNN_S_conv4_biases() {
+    MatrixXd biases = load_csv_arma<MatrixXd>("data/VGG_CNN_S/conv4_biases.csv");
+
+    return biases;
+}
+
+MatrixXd read_VGG_CNN_S_conv3_weights() {
+    MatrixXd weights = load_csv_arma<MatrixXd>("data/VGG_CNN_S/conv3_weights.csv");
+
+    return weights;
+}
+
+
+MatrixXd read_VGG_CNN_S_conv3_biases() {
+    MatrixXd biases = load_csv_arma<MatrixXd>("data/VGG_CNN_S/conv3_biases.csv");
+
+    return biases;
+}
+
+
+MatrixXd read_VGG_CNN_S_conv2_weights() {
+    MatrixXd weights = load_csv_arma<MatrixXd>("data/VGG_CNN_S/conv2_weights.csv");
+
+    return weights;
+}
+
+
+MatrixXd read_VGG_CNN_S_conv2_biases() {
+    MatrixXd biases = load_csv_arma<MatrixXd>("data/VGG_CNN_S/conv2_biases.csv");
+
+    return biases;
+}
+
+
+MatrixXd read_VGG_CNN_S_conv1_weights() {
+    MatrixXd weights = load_csv_arma<MatrixXd>("data/VGG_CNN_S/conv1_weights.csv");
+
+    return weights;
+}
+
+
+MatrixXd read_VGG_CNN_S_conv1_biases() {
+    MatrixXd biases = load_csv_arma<MatrixXd>("data/VGG_CNN_S/conv1_biases.csv");
+
+    return biases;
+}
