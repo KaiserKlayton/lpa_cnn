@@ -3,3 +3,9 @@
 
 # C++ Objects
 *.o
+
+# Caffe Models
+*.caffemodel
+
+# Data Directory
+data/
