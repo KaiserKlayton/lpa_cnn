@@ -4,8 +4,21 @@
 # C++ Objects
 *.o
 
+# Python Byte Code
+*.pyc
+
 # Caffe Models
 *.caffemodel
 
-# Data Directory
-data/
+# Directory Contents
+accuracies/*
+!accuracies/README.md
+
+features/*
+!features/README.md
+
+inputs/*
+!inputs/README.md
+
+weights/*
+!weights/README.md
