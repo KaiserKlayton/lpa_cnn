@@ -63,6 +63,3 @@ def extract_architecture(d):
                         sys.exit("pooling layer with filter size != 2. Edit in .prototxt and try again.")
 
     return architecture
-
-if __name__ == "__main__":
-    extract_architecture("")
