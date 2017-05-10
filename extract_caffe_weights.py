@@ -15,7 +15,7 @@ import numpy as np
 import caffe
 import cPickle
 
-from extract_architecture import extract_architecture
+from helper.extract_architecture import extract_architecture
 
 caffe.set_mode_cpu()
 

@@ -14,22 +14,15 @@ import sys
 
 import numpy as np
 import caffe
-import cPickle
 
-from extract_architecture import extract_architecture
+from helper.extract_architecture import extract_architecture
+from helper.unpickler import unpickle
 
 caffe.set_mode_cpu()
 
-def unpickle(file):
-    fo = open(file, 'rb')
-    dict = cPickle.load(fo)
-    fo.close()
-
-    return dict
-
 def main():    
     dirs = [x[0] for x in os.walk('models/')]
-
+    
     for d in dirs:
         model_match = re.search("models/(.+)", d)
         if model_match:
@@ -38,8 +31,16 @@ def main():
             continue
 
         # Get input data path.
-        input_file = os.listdir("inputs/" + model + "/production/")
-        input_file_path = "inputs/" + model + "/production/" + input_file[0]
+        input_files = os.listdir("inputs/" + model + "/production/")
+        if (len(input_files) > 1):
+            for i in range(len(input_files)):
+                if input_files[i].endswith('.csv'):
+                    continue
+                else:
+                    input_file_path = "inputs/" + model + "/production/" + input_files[i]
+        else:
+            input_file_path = "inputs/" + model + "/production/" + input_files[0]
+        
         try: 
             input_file_path
         except:
@@ -68,9 +69,9 @@ def main():
         net = caffe.Net(prototxt_file_path, model_file_path, caffe.TEST)
 
         # Load (1) image into data blob.
-        if input_file_path.endswith('.binaryporoto'):
-            blob = caffe.proto.caffe_pb2.BlobProto()
+        if input_file_path.endswith('.binaryproto'):
             data = open(input_file_path, 'rb').read()
+            blob = caffe.proto.caffe_pb2.BlobProto()
             blob.ParseFromString(data)
             arr = np.array(caffe.io.blobproto_to_array(blob))
             image = arr[0]
@@ -88,7 +89,7 @@ def main():
             image = image.reshape(1,a['shape']['d'] * a['shape']['w'] * a['shape']['h'])
             image = image.reshape(1,a['shape']['d'], a['shape']['w'], a['shape']['h'])
             net.blobs['data'].data[...] = image
-  
+
         # Forward propogate (1) image.
         out = net.forward()
         

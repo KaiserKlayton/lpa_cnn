@@ -36,7 +36,7 @@ def extract_architecture(d):
                 elif s == 'input_dim':
                     param_match = re.search(s + ': ([0-9]+)', l)
                     if param_match:
-                        architecture['shape'][shape_dims.pop(0)] = param_match.group(1)
+                        architecture['shape'][shape_dims.pop(0)] = int(param_match.group(1))
                 else:
                     sys.exit("Unknown shape format")
 
