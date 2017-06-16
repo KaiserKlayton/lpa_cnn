@@ -78,8 +78,7 @@ def main():
             net.blobs['data'].data[...] = image
         elif input_file_path.endswith('.csv'):
             images = np.loadtxt(input_file_path, delimiter=",")
-            image = images[0,:]        
-            image = images[0,1:(a['shape']['d'] * a['shape']['w'] * a['shape']['h'])+1]    
+            image = images[0,:]    
             image =  image.reshape(1,a['shape']['d'], a['shape']['w'], a['shape']['h'])
             net.blobs['data'].data[...] = image
         elif input_file_path.endswith('.pkl'):
@@ -89,25 +88,25 @@ def main():
             image = image.reshape(1,a['shape']['d'] * a['shape']['w'] * a['shape']['h'])
             image = image.reshape(1,a['shape']['d'], a['shape']['w'], a['shape']['h'])
             net.blobs['data'].data[...] = image
-
+            
         # Forward propogate (1) image.
         out = net.forward()
-        
+
         # Extract and write features for each relevant layer.
         for key in architecture:
             if key == "shape" or "relu" in key:
                 continue
    
             blob = net.blobs[key].data[...]
-   
+
             if len(blob.shape) == 4:
                 blob = blob.reshape(blob.shape[0]*blob.shape[1], blob.shape[2]*blob.shape[3]) 
             elif len(blob.shape) == 3:
-                blob = blob.reshape(blob.shape[0], blob.shape[1], blob.shape[2])
+                blob = blob.reshape(blob.shape[0], blob.shape[1]*blob.shape[2])
             else:
                 pass
-            
-            np.savetxt(os.path.join('features', model, "caffe", key+".csv"), blob, fmt='%f', delimiter=',')
+
+            np.savetxt(os.path.join('features', model, "caffe", key+".csv"), blob, fmt='%.10f', delimiter=',')
 
 if __name__ == "__main__":
     main()

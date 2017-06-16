@@ -51,31 +51,24 @@ def main():
         # Define caffe net.
         net = caffe.Net(prototxt_file_path, model_file_path, caffe.TEST)
 
-        # Extract and write features for each relevant layer.
+        # Extract and write weights for each relevant layer.
         for key in architecture:
             if key == "shape" or "relu" in key or "pool" in key:
                 continue
    
             weight_blob = net.params[key][0].data[...]
             bias_blob = net.params[key][1].data[...]
-   
+
             if len(weight_blob.shape) == 4:
-                weight_blob = weight_blob.reshape(weight_blob.shape[0]*weight_blob.shape[1], weight_blob.shape[2]*weight_blob.shape[3]) 
+                weight_blob = weight_blob.reshape(weight_blob.shape[0], weight_blob.shape[1]*weight_blob.shape[2]*weight_blob.shape[3]) 
             elif len(weight_blob.shape) == 3:
-                weight_blob = weight_blob.reshape(weight_blob.shape[0], weight_blob.shape[1], weight_blob.shape[2])
+                weight_blob = weight_blob.reshape(weight_blob.shape[0], weight_blob.shape[1]*weight_blob.shape[2])
             else:
                 pass
+
+            np.savetxt(os.path.join('weights', model, key+"_weights.csv"), weight_blob, fmt='%.10f', delimiter=',')
             
-            np.savetxt(os.path.join('weights', model, key+"_weights.csv"), weight_blob, fmt='%f', delimiter=',')
-            
-            if len(bias_blob.shape) == 4:
-                bias_blob = bias_blob.reshape(bias_blob.shape[0]*bias_blob.shape[1], bias_blob.shape[2]*bias_blob.shape[3]) 
-            elif len(bias_blob.shape) == 3:
-                bias_blob = bias_blob.reshape(bias_blob.shape[0], bias_blob.shape[1], bias_blob.shape[2])
-            else:
-                pass
-            
-            np.savetxt(os.path.join('weights', model, key+"_biases.csv"), bias_blob, fmt='%f', delimiter=',')
+            np.savetxt(os.path.join('weights', model, key+"_biases.csv"), bias_blob, fmt='%.10f', delimiter=',')
 
 if __name__ == "__main__":
   main()

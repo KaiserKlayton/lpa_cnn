@@ -6,8 +6,8 @@
 #include <iostream>
 #include <random>
 #include <vector>
-#include "../gemmlowp-master/public/gemmlowp.h"
-#include "../gemmlowp-master/public/output_stages.h"
+#include "../../gemmlowp-master/public/gemmlowp.h"
+#include "../../gemmlowp-master/public/output_stages.h"
 
 using Eigen::MatrixXd;
 
