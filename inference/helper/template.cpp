@@ -1,9 +1,12 @@
-#include "inference/helper/reader.h"
-#include "inference/helper/writer.h"
+#include "helper/reader.h"
+#include "helper/writer.h"
 #include "../layers/convolution_layer/convolution.h"
 #include "../layers/pooling_layer/pooling.h"
 #include "../layers/fully_connected_layer/fully_connected.h"
 #include "../layers/relu_layer/relu.h"
+
+using Eigen::Matrix;
+using Eigen::RowMajor;
 
 int main() 
 {
@@ -14,9 +17,19 @@ int main()
     {   
         clock_t run_time_start = clock();    
         
+        MatrixXd img;
+        if ( train.rows() != 1 ) {
+            img = train.block<1,im_size_1*im_depth_1>(i,0);
+        }
+        else {          
+            img = train;
+        }
+        
+        MatrixXd image = Map<Matrix<double, im_depth_1, im_size_1, RowMajor>>(img.data());
         
         clock_t run_time_end = clock();
-        double run_time = (double) (run_time_end-run_time_start) / CLOCKS_PER_SEC;
+        
+        double run_time = (double) (run_time_end-run_time_start) / CLOCKS_PER_SEC;   
     }
 
     cout << "-----------------------------" << endl;
