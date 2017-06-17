@@ -1,0 +1,14 @@
+CC=g++
+CFLAGS=-c -O3 -march=native -std=c++11 -msse4.1
+LDFLAGS=-lpthread
+
+OBJECTS=$(SOURCES:.cpp=.o)
+EXECUTABLE=lpa_cnn.out
+
+all: $(SOURCES) $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECTS) 
+	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)
+
+.cpp.o:
+	$(CC) $(CFLAGS) $< -o $@
