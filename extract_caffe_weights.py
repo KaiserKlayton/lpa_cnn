@@ -66,8 +66,10 @@ def main():
             else:
                 pass
 
-            np.savetxt(os.path.join('weights', model, key+"_weights.csv"), weight_blob, fmt='%.10f', delimiter=',')
+            if not os.path.exists(os.path.join('weights', model)):
+                os.makedirs(os.path.join('weights', model))
             
+            np.savetxt(os.path.join('weights', model, key+"_weights.csv"), weight_blob, fmt='%.10f', delimiter=',')
             np.savetxt(os.path.join('weights', model, key+"_biases.csv"), bias_blob, fmt='%.10f', delimiter=',')
 
 if __name__ == "__main__":

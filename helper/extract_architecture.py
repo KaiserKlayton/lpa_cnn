@@ -40,7 +40,7 @@ def extract_architecture(d):
                 else:
                     sys.exit("Unknown shape format")
 
-        layer_match = re.search('name: "(([a-z]+)[0-9]+)"', l)
+        layer_match = re.search('name: "(([a-z]+)[0-9]+_*[0-9]*)"', l)
         if layer_match:
             if layer_match.group(2) not in layer_types:
                 sys.exit("Unknown layer type: %s") % layer_match.group(2)
@@ -54,12 +54,12 @@ def extract_architecture(d):
                     value = int(param_match.group(1))
                     architecture[layer][p] = value
 
-    # Deal with pooling layers that aren't kernel_size=2
-    for key in architecture:
-        if "pool" in key:
-            for j in architecture[key]:
-                if j == "kernel_size":
-                    if architecture[key][j] != 2:
-                        sys.exit("pooling layer with filter size != 2. Edit in .prototxt and try again.")
+#    # Deal with pooling layers that aren't kernel_size=2
+#    for key in architecture:
+#        if "pool" in key:
+#            for j in architecture[key]:
+#                if j == "kernel_size":
+#                    if architecture[key][j] != 2:
+#                        sys.exit("pooling layer with filter size != 2. Edit in .prototxt and try again.")
 
     return architecture

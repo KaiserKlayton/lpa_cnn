@@ -91,8 +91,8 @@ int main()
 	MatrixXd conv3_biases = load_csv_arma<MatrixXd>("../weights/VGG_CNN_S/conv3_biases.csv");
 	VectorXd conv3_b(Map<VectorXd>(conv3_biases.data(), conv3_biases.cols()*conv3_biases.rows()));
 	
-	const int im_height_4 = (output_height_3);
-	const int im_width_4 = (output_width_3);
+	const int im_height_4 = output_height_3;
+	const int im_width_4 = output_width_3;
 	const int im_depth_4 = k_num_3;
 	const int im_size_4 = im_height_4 * im_width_4;
 	
@@ -114,8 +114,8 @@ int main()
 	MatrixXd conv4_biases = load_csv_arma<MatrixXd>("../weights/VGG_CNN_S/conv4_biases.csv");
 	VectorXd conv4_b(Map<VectorXd>(conv4_biases.data(), conv4_biases.cols()*conv4_biases.rows()));
 	
-	const int im_height_5 = (output_height_4);
-	const int im_width_5 = (output_width_4);
+	const int im_height_5 = output_height_4;
+	const int im_width_5 = output_width_4;
 	const int im_depth_5 = k_num_4;
 	const int im_size_5 = im_height_5 * im_width_5;
 	

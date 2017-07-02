@@ -59,16 +59,16 @@ def main():
                     ])    
                 elif "conv" in second_last_key and not "pool" in last_key or "conv" in last_key:
                     lines.extend([
-                        "const int im_height_%d = (output_height_%d);" % (tick, tick-1),
-                        "const int im_width_%d = (output_width_%d);" % (tick, tick-1),
+                        "const int im_height_%d = output_height_%d;" % (tick, tick-1),
+                        "const int im_width_%d = output_width_%d;" % (tick, tick-1),
                         "const int im_depth_%d = k_num_%d;" % (tick, tick-1),
                         "const int im_size_%d = im_height_%d * im_width_%d;" % (tick, tick, tick),
                         ""
                     ])       
                 else:  
                     lines.extend([                     
-                        "const int im_height_%d = ((output_height_%d - f_%d + 2 * pp1_%d) / s_%d) + 1;" % (tick, tick-1, tick-1, pool_tick-1, tick-1),
-                        "const int im_width_%d = ((output_width_%d - f_%d + 2 * pp2_%d) / s_%d) + 1;" % (tick, tick-1, tick-1, pool_tick-1, tick-1),
+                        "const int im_height_%d = ((output_height_%d - f_%d + 2 * pp1_%d) / s_%d) + 1;" % (tick, tick-1, pool_tick-1, pool_tick-1, pool_tick-1),
+                        "const int im_width_%d = ((output_width_%d - f_%d + 2 * pp2_%d) / s_%d) + 1;" % (tick, tick-1, pool_tick-1, pool_tick-1, pool_tick-1),
                         "const int im_depth_%d = k_num_%d;" % (tick, tick-1),
                         "const int im_size_%d = im_height_%d * im_width_%d;" % (tick, tick, tick),
                         ""

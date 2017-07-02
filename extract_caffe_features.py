@@ -106,6 +106,11 @@ def main():
             else:
                 pass
 
+            if not os.path.exists(os.path.join('features', model)):
+                os.makedirs(os.path.join('features', model, "caffe"))
+                os.makedirs(os.path.join('features', model, "eigen"))
+                os.makedirs(os.path.join('features', model, "gemmlowp"))
+            
             np.savetxt(os.path.join('features', model, "caffe", key+".csv"), blob, fmt='%.10f', delimiter=',')
 
 if __name__ == "__main__":
