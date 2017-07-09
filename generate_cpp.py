@@ -41,10 +41,11 @@ def main():
         first_conv = True
         to_write = []
         lines = []
-        last_key = ""
+        last_type = ""
         for i in a.keys()[1:]:
             i = str(i)    
-            if "conv" in i:
+            i_type = a[i]['type']
+            if i_type == "convolution":
                 if not "pad" in a[i].keys():
                     a[i]['pad'] = 0
                 if not "stride" in a[i].keys():
@@ -57,7 +58,7 @@ def main():
                         "const int im_size_1 = im_height_1*im_width_1;",
                         ""
                     ])    
-                elif "conv" in second_last_key and not "pool" in last_key or "conv" in last_key:
+                elif second_last_type == "convolution" and last_type != "pooling" or last_type == "convolution":
                     lines.extend([
                         "const int im_height_%d = output_height_%d;" % (tick, tick-1),
                         "const int im_width_%d = output_width_%d;" % (tick, tick-1),
@@ -73,7 +74,7 @@ def main():
                         "const int im_size_%d = im_height_%d * im_width_%d;" % (tick, tick, tick),
                         ""
                     ])      
-                
+
                 lines.extend([
                     "const int k_num_%d = %d;" % (tick, a[i]['num_output']),
                     "const int k_size_%d = %d;" % (tick, a[i]['kernel_size'] * a[i]['kernel_size']),
@@ -111,7 +112,7 @@ def main():
                 tick += 1
                 first_conv = False
                 
-            elif "pool" in i:
+            elif i_type == "pooling":
                 if not "pad" in a[i].keys():
                     a[i]['pad'] = 0
                 if not "stride" in a[i].keys():
@@ -137,7 +138,7 @@ def main():
                 
                 pool_tick += 1
                 
-            elif "fc" in i or "ip" in i:
+            elif i_type == "innerproduct":
                 lines.extend([
                     'MatrixXd %s_weights = load_csv_arma<MatrixXd>("../weights/%s/%s_weights.csv");' % (i, m, i),
                     "",
@@ -147,10 +148,10 @@ def main():
                 ])
                 
                 fc_tick += 1
-        
+                    
             first = False
-            second_last_key = last_key
-            last_key = i
+            second_last_type = last_type
+            last_type = a[i]['type']
                                  
         # Get input data path.
         input_files = os.listdir("inputs/" + m + "/production/")
@@ -179,16 +180,20 @@ def main():
         relu_tick = 1
         fc_tick = 1
         gemm_tick = 1
+        eltwise_tick = 1
         gemm_string = ""
         offline_string = ""
         lines_two = []
         for i in a.keys():
             current_index = a.keys().index(i)
             last_output = a.keys()[current_index-1]
+            if i == "shape":
+                a['shape']['type'] = "input"
             if last_output == "shape":
                 last_output = "image"  
             i = str(i)
-            if "conv" in i:                    
+            i_type = a[i]['type']
+            if i_type == "convolution":                    
                 lines_two.extend([
                     "MatrixXd %s;" % i,
                     "double gemm_time_%i;" % tick,
@@ -203,7 +208,7 @@ def main():
                 
                 tick += 1
                 
-            elif "pool" in i:
+            elif i_type == "pooling":
                 lines_two.extend([
                     "MatrixXd %s = pool(%s, f_%i, s_%i, output_width_%i, output_height_%i, pp1_%i, pp2_%i);" % (i, last_output, pool_tick, pool_tick, tick-1, tick-1, pool_tick, pool_tick),
                     ""
@@ -211,7 +216,7 @@ def main():
                     
                 pool_tick += 1
                 
-            elif "relu" in i:
+            elif i_type == "relu":
                 lines_two.extend([
                     "MatrixXd %s = relu(%s);" % (i, last_output),
                     ""
@@ -219,13 +224,21 @@ def main():
                 
                 relu_tick += 1
                 
-            elif "fc" in i or "ip" in i:
+            elif i_type == "innerproduct":
                 lines_two.extend([
                     "MatrixXd %s = fully_connect(%s, %s.rows(), %s_weights, %s_b);" % (i, last_output, last_output, i, i),
                     ""
                 ])
                 
                 fc_tick += 1
+            
+            elif i_type == "eltwise":
+                lines.extend([
+                    "MatrixXd %s = eltwise(%s, %s);" % (i, last_output, a.keys()[current_index-6]),
+                    ""
+                ])
+                
+                eltwise_tick += 1  
 
         for l in lines_two:
             to_write.append((pos, "\t\t"+l+"\n"))
@@ -240,12 +253,13 @@ def main():
         
         name_tick = 1
         for j in a.keys()[1:]:
-            if "conv" in j or "pool" in j or "fc" in j or "ip" in j or "relu" in j:
-                lines_three.extend([
-                'std::string name_%i = "../features/%s/%s_" + std::to_string(i) + ".csv";' % (name_tick, m, j),
-                'write_to_csv(name_%i, %s);' % (name_tick, j),
-             ])
-                name_tick += 1
+            j_type = a[j]['type']
+            
+            lines_three.extend([
+            'std::string name_%i = "../features/%s/%s_" + std::to_string(i) + ".csv";' % (name_tick, m, j),
+            'write_to_csv(name_%i, %s);' % (name_tick, j),
+         ])
+            name_tick += 1
   
         pos = pos + 3
         for l in lines_three:
@@ -264,7 +278,7 @@ def main():
         
         # Makefile.
         makefile_template = open("inference/helper/makefile_template", "r+").readlines()
-        makefile_template.insert(3, "SOURCES= main_%s.cpp helper/writer.cpp ../layers/convolution_layer/convolution.cpp ../layers/convolution_layer/lowp.cpp ../layers/pooling_layer/pooling.cpp ../layers/fully_connected_layer/fully_connected.cpp ../layers/relu_layer/relu.cpp" % m)
+        makefile_template.insert(3, "SOURCES= main_%s.cpp helper/writer.cpp ../layers/convolution_layer/convolution.cpp ../layers/convolution_layer/lowp.cpp ../layers/pooling_layer/pooling.cpp ../layers/fully_connected_layer/fully_connected.cpp ../layers/relu_layer/relu.cpp ../layers/eltwise_layer/eltwise.cpp" % m)
         
         makefile_path = os.path.join("inference", "Makefile." + m)
         makefile = open(makefile_path, "w")

@@ -30,6 +30,9 @@ def main():
         else: 
             continue
 
+        if os.path.exists("features/%s" % model_match.group(1)):
+            continue
+
         # Get input data path.
         input_files = os.listdir("inputs/" + model + "/production/")
         if (len(input_files) > 1):
@@ -93,8 +96,8 @@ def main():
         out = net.forward()
 
         # Extract and write features for each relevant layer.
-        for key in architecture:
-            if key == "shape" or "relu" in key:
+        for key in a:
+            if key == "shape" or a[key]['type'] == "relu":
                 continue
    
             blob = net.blobs[key].data[...]

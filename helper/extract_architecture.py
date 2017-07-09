@@ -14,15 +14,18 @@ import sys
 from collections import OrderedDict
 
 def extract_architecture(d):
-    layer_types = ['conv', 'pool', 'relu', 'ip', 'fc']
-    param_types = ['num_output', 'pad', 'kernel_size', 'stride']
+    layer_types = ['convolution', 'pooling', 'relu', 'eltwise', 'innerproduct']
+    param_types = ['num_output', 'pad', 'kernel_size', 'stride', 'bias_term']
     special_types = ['shape', 'input_dim']
     shape_dims = ['n','d','w','h']
-
+    
     architecture = OrderedDict()
     architecture['shape'] = {}
 
     prototxt_file = open(d,'r').readlines()
+    is_resnet = re.match('name: "ResNet.*"', prototxt_file[0])
+    if is_resnet:
+        is_resnet = True
     for l in prototxt_file:
         for s in special_types:
             if s in l:
@@ -33,33 +36,33 @@ def extract_architecture(d):
                         architecture['shape']['d'] = int(param_match.group(2))
                         architecture['shape']['w'] = int(param_match.group(3))
                         architecture['shape']['h'] = int(param_match.group(4))                           
+                        
                 elif s == 'input_dim':
                     param_match = re.search(s + ': ([0-9]+)', l)
                     if param_match:
                         architecture['shape'][shape_dims.pop(0)] = int(param_match.group(1))
-                else:
-                    sys.exit("Unknown shape format")
-
-        layer_match = re.search('name: "(([a-z]+)[0-9]+_*[0-9]*)"', l)
+    
+        layer_match = re.search('name: "*(.+)"*', l)
         if layer_match:
-            if layer_match.group(2) not in layer_types:
-                sys.exit("Unknown layer type: %s") % layer_match.group(2)
-            layer = layer_match.group(1)
-            architecture[layer] = {}
-          
+            layer_name = layer_match.group(1).replace('"', '')  
+
+        if not "filler" in l:
+            type_match = re.search('type: "*(.+)"*', l)
+            if type_match:
+                layer_type = type_match.group(1).lower().replace('_', '').replace('"', '')
+                if layer_type in layer_types:
+                    architecture[layer_name] = {}
+                    architecture[layer_name]['type'] = layer_type
+                        
         for p in param_types:
             if p in l:
                 param_match = re.search(p + ': ([0-9]+)', l)
+                bias_param_match = re.search(p + ': ([a-z]+)', l)
                 if param_match:
                     value = int(param_match.group(1))
-                    architecture[layer][p] = value
-
-#    # Deal with pooling layers that aren't kernel_size=2
-#    for key in architecture:
-#        if "pool" in key:
-#            for j in architecture[key]:
-#                if j == "kernel_size":
-#                    if architecture[key][j] != 2:
-#                        sys.exit("pooling layer with filter size != 2. Edit in .prototxt and try again.")
-
+                    architecture[layer_name][p] = value
+                if bias_param_match:
+                    value = bias_param_match.group(1).lower()
+                    architecture[layer_name][p] = value
+                                
     return architecture

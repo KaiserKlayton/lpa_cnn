@@ -28,7 +28,10 @@ def main():
             model = model_match.group(1)
         else: 
             continue
-            
+
+        if os.path.exists("weights/%s" % model_match.group(1)):
+            continue
+   
         # Get .prototxt and .caffemodel path.
         for f in os.listdir(d):
             if f.endswith('.prototxt'):
@@ -52,12 +55,11 @@ def main():
         net = caffe.Net(prototxt_file_path, model_file_path, caffe.TEST)
 
         # Extract and write weights for each relevant layer.
-        for key in architecture:
-            if key == "shape" or "relu" in key or "pool" in key:
+        for key in a:
+            if key == "shape" or a[key]['type'] == "relu" or a[key]['type'] == "pooling" or a[key]['type'] == "eltwise":
                 continue
    
             weight_blob = net.params[key][0].data[...]
-            bias_blob = net.params[key][1].data[...]
 
             if len(weight_blob.shape) == 4:
                 weight_blob = weight_blob.reshape(weight_blob.shape[0], weight_blob.shape[1]*weight_blob.shape[2]*weight_blob.shape[3]) 
@@ -70,7 +72,14 @@ def main():
                 os.makedirs(os.path.join('weights', model))
             
             np.savetxt(os.path.join('weights', model, key+"_weights.csv"), weight_blob, fmt='%.10f', delimiter=',')
-            np.savetxt(os.path.join('weights', model, key+"_biases.csv"), bias_blob, fmt='%.10f', delimiter=',')
+            
+            if "bias_term" in a[key].keys():
+                if a[key]['bias_term'] == "false":
+                    bias_blob = np.zeros(weight_blob.shape[0])
+                else:
+                    bias_blob = net.params[key][1].data[...]
+                
+                np.savetxt(os.path.join('weights', model, key+"_biases.csv"), bias_blob, fmt='%.10f', delimiter=',')
 
 if __name__ == "__main__":
   main()
