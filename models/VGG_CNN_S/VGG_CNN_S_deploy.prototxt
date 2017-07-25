@@ -160,9 +160,3 @@ layers {
     num_output: 1000
   }
 }
-layers {
-  bottom: "fc8"
-  top: "prob"
-  name: "prob"
-  type: SOFTMAX
-}
