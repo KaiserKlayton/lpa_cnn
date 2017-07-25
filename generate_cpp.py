@@ -32,74 +32,58 @@ def main():
                 prototxt_file_path = os.path.join(prototxt_dir, f)
                 
         a = extract_architecture(prototxt_file_path)
-
-        pos = 12
-        tick = 1
-        pool_tick = 1
-        fc_tick = 1
+        
+        # Line Position
+        pos = 13 
+        # Triggers
         first = True
         first_conv = True
+        # Ticks
+        tick = 1
+        pool_tick = 1
+        fc_tick = 1  
+        counter = 1
+        # Previous info
+        last_output = ""
+        last_type = ""
+        second_last_output = ""
+        second_last_type = ""
+        
         to_write = []
         lines = []
-        last_type = ""
         for i in a.keys()[1:]:
-            i = str(i)    
+            i = str(i)  
             i_type = a[i]['type']
+            current_index = a.keys().index(i)            
             if i_type == "convolution":
-                if not "pad" in a[i].keys():
-                    a[i]['pad'] = 0
-                if not "stride" in a[i].keys():
-                    a[i]['stride'] = 1
-                if first == True:
+                if "branch1" in last_output:   
+                    if not "pad" in a[i].keys():
+                        a[i]['pad'] = 0
+                    if not "stride" in a[i].keys():
+                        a[i]['stride'] = 1                          
                     lines.extend([
-                        "const int im_height_1 = %d;" % a['shape']['h'],
-                        "const int im_width_1 = %d;" % a['shape']['w'],
-                        "const int im_depth_1 = %d;" % a['shape']['d'],
-                        "const int im_size_1 = im_height_1*im_width_1;",
+                        "const int im_height_%d = im_height_%d;" % (counter, tick-1),
+                        "const int im_width_%d = im_width_%d;" % (counter, tick-1),
+                        "const int im_depth_%d = im_depth_%d;" % (counter, tick-1),
+                        "const int im_size_%d = im_size_%d;" % (counter, tick-1),
                         ""
-                    ])    
-                elif second_last_type == "convolution" and last_type != "pooling" or last_type == "convolution":
-                    lines.extend([
-                        "const int im_height_%d = output_height_%d;" % (tick, tick-1),
-                        "const int im_width_%d = output_width_%d;" % (tick, tick-1),
-                        "const int im_depth_%d = k_num_%d;" % (tick, tick-1),
-                        "const int im_size_%d = im_height_%d * im_width_%d;" % (tick, tick, tick),
-                        ""
-                    ])       
-                else:  
-                    lines.extend([                     
-                        "const int im_height_%d = ((output_height_%d - f_%d + 2 * pp1_%d) / s_%d) + 1;" % (tick, tick-1, pool_tick-1, pool_tick-1, pool_tick-1),
-                        "const int im_width_%d = ((output_width_%d - f_%d + 2 * pp2_%d) / s_%d) + 1;" % (tick, tick-1, pool_tick-1, pool_tick-1, pool_tick-1),
-                        "const int im_depth_%d = k_num_%d;" % (tick, tick-1),
-                        "const int im_size_%d = im_height_%d * im_width_%d;" % (tick, tick, tick),
-                        ""
-                    ])      
+                    ])   
 
-                lines.extend([
-                    "const int k_num_%d = %d;" % (tick, a[i]['num_output']),
-                    "const int k_size_%d = %d;" % (tick, a[i]['kernel_size'] * a[i]['kernel_size']),
-                    "const int stride_%d = %d;" % (tick, a[i]['stride']),
-                    "const int k_depth_%d = im_depth_%d;" % (tick, tick),
-                    "",
-                    "const int p1_%d = %d;" % (tick, a[i]['pad']),
-                    "const int p2_%d = %d;" % (tick, a[i]['pad']),
-                    "",
-                    "const int output_height_%d = (((im_height_%d+(2*p1_%d)) - sqrt(k_size_%d))/stride_%d) + 1;" % (tick, tick, tick, tick, tick),
-                    "const int output_width_%d = (((im_width_%d+(2*p2_%d)) - sqrt(k_size_%d))/stride_%d) + 1;" % (tick, tick, tick, tick, tick),
-                    "const int output_size_%d = output_height_%d * output_width_%d;" % (tick, tick, tick),
-                    ""
-                ])
-                
-                if first_conv == True:
                     lines.extend([
-                        'MatrixXd %s_weights = load_csv_arma<MatrixXd>("../weights/%s/%s_weights.csv");' % (i, m, i),
-                        "Map<MatrixXd> %s_w(%s_weights.data(), k_num_%d, k_size_%d * k_depth_%d);" % (i, i, tick, tick, tick),
+                        "const int k_num_%d = %d;" % (counter, a[i]['num_output']),
+                        "const int k_size_%d = %d;" % (counter, a[i]['kernel_size'] * a[i]['kernel_size']),
+                        "const int stride_%d = %d;" % (counter, a[i]['stride']),
+                        "const int k_depth_%d = im_depth_%d;" % (counter, tick),
                         "",
-                        'MatrixXd %s_biases = load_csv_arma<MatrixXd>("../weights/%s/%s_biases.csv");' % (i, m, i),
-                        "VectorXd %s_b(Map<VectorXd>(%s_biases.data(), %s_biases.cols()*%s_biases.rows()));" % (i, i, i, i),
+                        "const int p1_%d = %d;" % (counter, a[i]['pad']),
+                        "const int p2_%d = %d;" % (counter, a[i]['pad']),
+                        "",
+                        "const int output_height_%d = (((im_height_%d+(2*p1_%d)) - sqrt(k_size_%d))/stride_%d) + 1;" % (counter, counter, counter, counter, counter),
+                        "const int output_width_%d = (((im_width_%d+(2*p2_%d)) - sqrt(k_size_%d))/stride_%d) + 1;" % (counter, counter, counter, counter, counter),
+                        "const int output_size_%d = output_height_%d * output_width_%d;" % (counter, counter, counter),
                         ""
                     ])
-                else:
+                    
                     lines.extend([
                         'MatrixXd %s_weights = load_csv_arma<MatrixXd>("../weights/%s/%s_weights.csv");' % (i, m, i),
                         "MatrixXd %s_w = %s_weights;" % (i, i),
@@ -107,21 +91,89 @@ def main():
                         'MatrixXd %s_biases = load_csv_arma<MatrixXd>("../weights/%s/%s_biases.csv");' % (i, m, i),
                         "VectorXd %s_b(Map<VectorXd>(%s_biases.data(), %s_biases.cols()*%s_biases.rows()));" % (i, i, i, i),
                         ""
+                    ]) 
+                    
+                else:                                   
+                    if not "pad" in a[i].keys():
+                        a[i]['pad'] = 0
+                    if not "stride" in a[i].keys():
+                        a[i]['stride'] = 1            
+                    if first == True:
+                        lines.extend([
+                            "const int im_height_1 = %d;" % a['shape']['h'],
+                            "const int im_width_1 = %d;" % a['shape']['w'],
+                            "const int im_depth_1 = %d;" % a['shape']['d'],
+                            "const int im_size_1 = im_height_1*im_width_1;",
+                            ""
+                        ])                        
+                    elif second_last_type == "convolution" and last_type != "pooling" or second_last_type == "eltwise" and last_type != "pooling" or last_type == "convolution" or last_type == "eltwise":
+                        lines.extend([
+                            "const int im_height_%d = output_height_%d;" % (counter, tick-1),
+                            "const int im_width_%d = output_width_%d;" % (counter, tick-1),
+                            "const int im_depth_%d = k_num_%d;" % (counter, tick-1),
+                            "const int im_size_%d = im_height_%d * im_width_%d;" % (counter, counter, counter),
+                            ""
+                        ])
+                    else:  
+                        lines.extend([                     
+                            "const int im_height_%d = ((output_height_%d - f_%d + 2 * pp1_%d) / s_%d) + 1;" % (counter, tick-1, pool_tick-1, pool_tick-1, pool_tick-1),
+                            "const int im_width_%d = ((output_width_%d - f_%d + 2 * pp2_%d) / s_%d) + 1;" % (counter, tick-1, pool_tick-1, pool_tick-1, pool_tick-1),
+                            "const int im_depth_%d = k_num_%d;" % (counter, tick-1),
+                            "const int im_size_%d = im_height_%d * im_width_%d;" % (counter, counter, counter),
+                            ""
+                        ])      
+
+                    lines.extend([
+                        "const int k_num_%d = %d;" % (counter, a[i]['num_output']),
+                        "const int k_size_%d = %d;" % (counter, a[i]['kernel_size'] * a[i]['kernel_size']),
+                        "const int stride_%d = %d;" % (counter, a[i]['stride']),
+                        "const int k_depth_%d = im_depth_%d;" % (counter, tick),
+                        "",
+                        "const int p1_%d = %d;" % (counter, a[i]['pad']),
+                        "const int p2_%d = %d;" % (counter, a[i]['pad']),
+                        "",
+                        "const int output_height_%d = (((im_height_%d+(2*p1_%d)) - sqrt(k_size_%d))/stride_%d) + 1;" % (counter, counter, counter, counter, counter),
+                        "const int output_width_%d = (((im_width_%d+(2*p2_%d)) - sqrt(k_size_%d))/stride_%d) + 1;" % (counter, counter, counter, counter, counter),
+                        "const int output_size_%d = output_height_%d * output_width_%d;" % (counter, counter, counter),
+                        ""
                     ])
                     
+                    if first_conv == True:
+                        lines.extend([
+                            'MatrixXd %s_weights = load_csv_arma<MatrixXd>("../weights/%s/%s_weights.csv");' % (i, m, i),
+                            "Map<MatrixXd> %s_w(%s_weights.data(), k_num_%d, k_size_%d * k_depth_%d);" % (i, i, tick, tick, tick),
+                            "",
+                            'MatrixXd %s_biases = load_csv_arma<MatrixXd>("../weights/%s/%s_biases.csv");' % (i, m, i),
+                            "VectorXd %s_b(Map<VectorXd>(%s_biases.data(), %s_biases.cols()*%s_biases.rows()));" % (i, i, i, i),
+                            ""
+                        ])
+                    else:
+                        lines.extend([
+                            'MatrixXd %s_weights = load_csv_arma<MatrixXd>("../weights/%s/%s_weights.csv");' % (i, m, i),
+                            "MatrixXd %s_w = %s_weights;" % (i, i),
+                            "",
+                            'MatrixXd %s_biases = load_csv_arma<MatrixXd>("../weights/%s/%s_biases.csv");' % (i, m, i),
+                            "VectorXd %s_b(Map<VectorXd>(%s_biases.data(), %s_biases.cols()*%s_biases.rows()));" % (i, i, i, i),
+                            ""
+                        ])
+                    
+                first_conv = False                                    
+                counter += 1                
                 tick += 1
-                first_conv = False
                 
             elif i_type == "pooling":
                 if not "pad" in a[i].keys():
                     a[i]['pad'] = 0
+                    
                 if not "stride" in a[i].keys():
-                    a[i]['stride'] = 1          
+                    a[i]['stride'] = 1
+                              
                 lines.extend([
                     "const int f_%i = %d;" % (pool_tick, a[i]['kernel_size']),
                     "const int s_%i = %d;" % (pool_tick, a[i]['stride']),
                     ""
                 ])
+                
                 if a[i]['stride'] == 3:
                     lines.extend([
                         "const int pp1_%i = 1;" % pool_tick,
@@ -135,7 +187,6 @@ def main():
                         "" 
                     ]) 
                     
-                
                 pool_tick += 1
                 
             elif i_type == "innerproduct":
@@ -148,11 +199,13 @@ def main():
                 ])
                 
                 fc_tick += 1
-                    
+                                                        
             first = False
+            second_last_output = last_output
+            last_output = i
             second_last_type = last_type
             last_type = a[i]['type']
-                                 
+                       
         # Get input data path.
         input_files = os.listdir("inputs/" + m + "/production/")
         if (len(input_files) > 1):
@@ -183,30 +236,46 @@ def main():
         eltwise_tick = 1
         gemm_string = ""
         offline_string = ""
+        last_output = ""
+        last_type = ""
+        second_last_output = ""
+        second_last_type = ""
         lines_two = []
         for i in a.keys():
             current_index = a.keys().index(i)
-            last_output = a.keys()[current_index-1]
             if i == "shape":
                 a['shape']['type'] = "input"
             if last_output == "shape":
                 last_output = "image"  
             i = str(i)
-            i_type = a[i]['type']
-            if i_type == "convolution":                    
-                lines_two.extend([
-                    "MatrixXd %s;" % i,
-                    "double gemm_time_%i;" % tick,
-                    "double offline_time_%i;" % tick,
-                    "std::tie(%s, gemm_time_%i, offline_time_%i) = convolve(%s, im_size_%i, im_height_%i, im_width_%i, im_depth_%i, k_size_%i, stride_%i, %s_b, p1_%i, p2_%i, %s_w, output_size_%i);" % (i, tick, tick, last_output, tick, tick, tick, tick, tick, tick, i, tick, tick, i, tick),
-                    ""
-                ])
+            i_type = a[i]['type']                                
+            if i_type == "convolution":    
+                if "branch1" in last_output:
+                    lines_two.extend([
+                        "MatrixXd %s;" % i,
+                        "double gemm_time_%i;" % tick,
+                        "double offline_time_%i;" % tick,
+                        "std::tie(%s, gemm_time_%i, offline_time_%i) = convolve(%s, im_size_%i, im_height_%i, im_width_%i, im_depth_%i, k_size_%i, stride_%i, %s_b, p1_%i, p2_%i, %s_w, output_size_%i);" % (i, tick, tick, second_last_output, tick, tick, tick, tick, tick, tick, i, tick, tick, i, tick),
+                        ""
+                    ])
+                    
+                else:                
+                    lines_two.extend([
+                        "MatrixXd %s;" % i,
+                        "double gemm_time_%i;" % tick,
+                        "double offline_time_%i;" % tick,
+                        "std::tie(%s, gemm_time_%i, offline_time_%i) = convolve(%s, im_size_%i, im_height_%i, im_width_%i, im_depth_%i, k_size_%i, stride_%i, %s_b, p1_%i, p2_%i, %s_w, output_size_%i);" % (i, tick, tick, last_output, tick, tick, tick, tick, tick, tick, i, tick, tick, i, tick),
+                        ""
+                    ])
                  
                 offline_string += " - offline_time_%s" % gemm_tick
                 gemm_string += " + gemm_time_%s" % gemm_tick
                 gemm_tick += 1
                 
                 tick += 1
+                
+                if "branch1" in i:
+                    eltwise_input = i
                 
             elif i_type == "pooling":
                 lines_two.extend([
@@ -224,6 +293,9 @@ def main():
                 
                 relu_tick += 1
                 
+                if last_type == "eltwise":
+                    eltwise_input = i
+                
             elif i_type == "innerproduct":
                 lines_two.extend([
                     "MatrixXd %s = fully_connect(%s, %s.rows(), %s_weights, %s_b);" % (i, last_output, last_output, i, i),
@@ -233,13 +305,18 @@ def main():
                 fc_tick += 1
             
             elif i_type == "eltwise":
-                lines.extend([
-                    "MatrixXd %s = eltwise(%s, %s);" % (i, last_output, a.keys()[current_index-6]),
+                lines_two.extend([
+                    "MatrixXd %s = eltwise(%s, %s);" % (i, last_output, eltwise_input),
                     ""
                 ])
                 
                 eltwise_tick += 1  
-
+                
+            second_last_output = last_output
+            last_output = i
+            second_last_type = last_type
+            last_type = a[i]['type']
+                
         for l in lines_two:
             to_write.append((pos, "\t\t"+l+"\n"))
             pos += 1

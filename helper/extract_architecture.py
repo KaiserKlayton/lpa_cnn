@@ -18,14 +18,11 @@ def extract_architecture(d):
     param_types = ['num_output', 'pad', 'kernel_size', 'stride', 'bias_term']
     special_types = ['shape', 'input_dim']
     shape_dims = ['n','d','w','h']
-    
+
     architecture = OrderedDict()
     architecture['shape'] = {}
 
     prototxt_file = open(d,'r').readlines()
-    is_resnet = re.match('name: "ResNet.*"', prototxt_file[0])
-    if is_resnet:
-        is_resnet = True
     for l in prototxt_file:
         for s in special_types:
             if s in l:
@@ -35,16 +32,16 @@ def extract_architecture(d):
                         architecture['shape']['n'] = int(param_match.group(1))
                         architecture['shape']['d'] = int(param_match.group(2))
                         architecture['shape']['w'] = int(param_match.group(3))
-                        architecture['shape']['h'] = int(param_match.group(4))                           
-                        
+                        architecture['shape']['h'] = int(param_match.group(4))
+
                 elif s == 'input_dim':
                     param_match = re.search(s + ': ([0-9]+)', l)
                     if param_match:
                         architecture['shape'][shape_dims.pop(0)] = int(param_match.group(1))
-    
-        layer_match = re.search('name: "*(.+)"*', l)
+
+        layer_match = re.search('\s+name: "*(.+)"*', l)
         if layer_match:
-            layer_name = layer_match.group(1).replace('"', '')  
+            layer_name = layer_match.group(1).replace('"', '')
 
         if not "filler" in l:
             type_match = re.search('type: "*(.+)"*', l)
@@ -53,7 +50,7 @@ def extract_architecture(d):
                 if layer_type in layer_types:
                     architecture[layer_name] = {}
                     architecture[layer_name]['type'] = layer_type
-                        
+
         for p in param_types:
             if p in l:
                 param_match = re.search(p + ': ([0-9]+)', l)
@@ -64,5 +61,5 @@ def extract_architecture(d):
                 if bias_param_match:
                     value = bias_param_match.group(1).lower()
                     architecture[layer_name][p] = value
-                                
+
     return architecture

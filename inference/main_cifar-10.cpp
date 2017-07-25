@@ -4,6 +4,7 @@
 #include "../layers/pooling_layer/pooling.h"
 #include "../layers/fully_connected_layer/fully_connected.h"
 #include "../layers/relu_layer/relu.h"
+#include "../layers/eltwise_layer/eltwise.h"
 
 using Eigen::Matrix;
 using Eigen::RowMajor;

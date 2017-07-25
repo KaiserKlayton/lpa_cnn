@@ -78,8 +78,10 @@ def main():
                     bias_blob = np.zeros(weight_blob.shape[0])
                 else:
                     bias_blob = net.params[key][1].data[...]
+            else:
+                bias_blob = net.params[key][1].data[...]
                 
-                np.savetxt(os.path.join('weights', model, key+"_biases.csv"), bias_blob, fmt='%.10f', delimiter=',')
+            np.savetxt(os.path.join('weights', model, key+"_biases.csv"), bias_blob, fmt='%.10f', delimiter=',')
 
 if __name__ == "__main__":
   main()
