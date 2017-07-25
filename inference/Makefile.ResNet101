@@ -1,0 +1,14 @@
+CC=g++
+CFLAGS=-c -O3 -march=native -std=c++11 -msse4.1
+LDFLAGS=-lpthread
+SOURCES= main_ResNet101.cpp helper/writer.cpp ../layers/convolution_layer/convolution.cpp ../layers/convolution_layer/lowp.cpp ../layers/pooling_layer/pooling.cpp ../layers/fully_connected_layer/fully_connected.cpp ../layers/relu_layer/relu.cpp ../layers/eltwise_layer/eltwise.cpp
+OBJECTS=$(SOURCES:.cpp=.o)
+EXECUTABLE=lpa_cnn.out
+
+all: $(SOURCES) $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECTS) 
+	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)
+
+.cpp.o:
+	$(CC) $(CFLAGS) $< -o $@
