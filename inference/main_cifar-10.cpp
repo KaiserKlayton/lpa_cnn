@@ -108,7 +108,7 @@ int main()
 	MatrixXd ip2_biases = load_csv_arma<MatrixXd>("../weights/cifar-10/ip2_biases.csv");
 	VectorXd ip2_b(Map<VectorXd>(ip2_biases.data(), ip2_biases.cols()*ip2_biases.rows()));
 	
-	const int im_num = 1;
+	const int im_num = 1000;
 	MatrixXd train = load_csv_arma<MatrixXd>("../inputs/cifar-10/production/cifar10.csv");
 	
     float gemm_time_total = 0.0;
@@ -165,28 +165,8 @@ int main()
 		run_time_total += (run_time - offline_time_1 - offline_time_2 - offline_time_3);
 		gemm_time_total += 0.0 + gemm_time_1 + gemm_time_2 + gemm_time_3;
 		
-		std::string name_1 = "../features/cifar-10/conv1_" + std::to_string(i) + ".csv";
-		write_to_csv(name_1, conv1);
-		std::string name_2 = "../features/cifar-10/pool1_" + std::to_string(i) + ".csv";
-		write_to_csv(name_2, pool1);
-		std::string name_3 = "../features/cifar-10/relu1_" + std::to_string(i) + ".csv";
-		write_to_csv(name_3, relu1);
-		std::string name_4 = "../features/cifar-10/conv2_" + std::to_string(i) + ".csv";
-		write_to_csv(name_4, conv2);
-		std::string name_5 = "../features/cifar-10/relu2_" + std::to_string(i) + ".csv";
-		write_to_csv(name_5, relu2);
-		std::string name_6 = "../features/cifar-10/pool2_" + std::to_string(i) + ".csv";
-		write_to_csv(name_6, pool2);
-		std::string name_7 = "../features/cifar-10/conv3_" + std::to_string(i) + ".csv";
-		write_to_csv(name_7, conv3);
-		std::string name_8 = "../features/cifar-10/relu3_" + std::to_string(i) + ".csv";
-		write_to_csv(name_8, relu3);
-		std::string name_9 = "../features/cifar-10/pool3_" + std::to_string(i) + ".csv";
-		write_to_csv(name_9, pool3);
-		std::string name_10 = "../features/cifar-10/ip1_" + std::to_string(i) + ".csv";
-		write_to_csv(name_10, ip1);
-		std::string name_11 = "../features/cifar-10/ip2_" + std::to_string(i) + ".csv";
-		write_to_csv(name_11, ip2);
+		std::string name_1 = "../features/cifar-10/ip2_" + std::to_string(i) + ".csv";
+		write_to_csv(name_1, ip2);
     }
 
     cout << "-----------------------------" << endl;

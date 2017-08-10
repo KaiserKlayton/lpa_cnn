@@ -218,7 +218,8 @@ def main():
             input_file_path = "../inputs/" + m + "/production/" + input_files[0]
             
         lines.extend([
-            "const int im_num = %i;" % a['shape']['n'],
+            #"const int im_num = %i;" % a['shape']['n'],
+            "const int im_num = 1000;",
             'MatrixXd train = load_csv_arma<MatrixXd>("%s");' % input_file_path,
             ""
         ])
@@ -329,14 +330,16 @@ def main():
         ])      
         
         name_tick = 1
+        last_item = a.keys()[-1]
         for j in a.keys()[1:]:
             j_type = a[j]['type']
             
-            lines_three.extend([
-            'std::string name_%i = "../features/%s/%s_" + std::to_string(i) + ".csv";' % (name_tick, m, j),
-            'write_to_csv(name_%i, %s);' % (name_tick, j),
-         ])
-            name_tick += 1
+            if j == last_item:          
+                lines_three.extend([
+                'std::string name_%i = "../features/%s/%s_" + std::to_string(i) + ".csv";' % (name_tick, m, j),
+                'write_to_csv(name_%i, %s);' % (name_tick, j),
+             ])
+                name_tick += 1
   
         pos = pos + 3
         for l in lines_three:

@@ -79,7 +79,7 @@ int main()
 	MatrixXd ip2_biases = load_csv_arma<MatrixXd>("../weights/mnist/ip2_biases.csv");
 	VectorXd ip2_b(Map<VectorXd>(ip2_biases.data(), ip2_biases.cols()*ip2_biases.rows()));
 	
-	const int im_num = 1;
+	const int im_num = 1000;
 	MatrixXd train = load_csv_arma<MatrixXd>("../inputs/mnist/production/mnist_train_100.csv");
 	
     float gemm_time_total = 0.0;
@@ -125,20 +125,8 @@ int main()
 		run_time_total += (run_time - offline_time_1 - offline_time_2);
 		gemm_time_total += 0.0 + gemm_time_1 + gemm_time_2;
 		
-		std::string name_1 = "../features/mnist/conv1_" + std::to_string(i) + ".csv";
-		write_to_csv(name_1, conv1);
-		std::string name_2 = "../features/mnist/pool1_" + std::to_string(i) + ".csv";
-		write_to_csv(name_2, pool1);
-		std::string name_3 = "../features/mnist/conv2_" + std::to_string(i) + ".csv";
-		write_to_csv(name_3, conv2);
-		std::string name_4 = "../features/mnist/pool2_" + std::to_string(i) + ".csv";
-		write_to_csv(name_4, pool2);
-		std::string name_5 = "../features/mnist/ip1_" + std::to_string(i) + ".csv";
-		write_to_csv(name_5, ip1);
-		std::string name_6 = "../features/mnist/relu1_" + std::to_string(i) + ".csv";
-		write_to_csv(name_6, relu1);
-		std::string name_7 = "../features/mnist/ip2_" + std::to_string(i) + ".csv";
-		write_to_csv(name_7, ip2);
+		std::string name_1 = "../features/mnist/ip2_" + std::to_string(i) + ".csv";
+		write_to_csv(name_1, ip2);
     }
 
     cout << "-----------------------------" << endl;

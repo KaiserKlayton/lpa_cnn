@@ -159,7 +159,7 @@ int main()
 	MatrixXd fc8_biases = load_csv_arma<MatrixXd>("../weights/VGG_CNN_S/fc8_biases.csv");
 	VectorXd fc8_b(Map<VectorXd>(fc8_biases.data(), fc8_biases.cols()*fc8_biases.rows()));
 	
-	const int im_num = 1;
+	const int im_num = 1000;
 	MatrixXd train = load_csv_arma<MatrixXd>("../inputs/VGG_CNN_S/production/VGG_CNN_S.csv");
 	
     float gemm_time_total = 0.0;
@@ -236,42 +236,8 @@ int main()
 		run_time_total += (run_time - offline_time_1 - offline_time_2 - offline_time_3 - offline_time_4 - offline_time_5);
 		gemm_time_total += 0.0 + gemm_time_1 + gemm_time_2 + gemm_time_3 + gemm_time_4 + gemm_time_5;
 		
-		std::string name_1 = "../features/VGG_CNN_S/conv1_" + std::to_string(i) + ".csv";
-		write_to_csv(name_1, conv1);
-		std::string name_2 = "../features/VGG_CNN_S/relu1_" + std::to_string(i) + ".csv";
-		write_to_csv(name_2, relu1);
-		std::string name_3 = "../features/VGG_CNN_S/pool1_" + std::to_string(i) + ".csv";
-		write_to_csv(name_3, pool1);
-		std::string name_4 = "../features/VGG_CNN_S/conv2_" + std::to_string(i) + ".csv";
-		write_to_csv(name_4, conv2);
-		std::string name_5 = "../features/VGG_CNN_S/relu2_" + std::to_string(i) + ".csv";
-		write_to_csv(name_5, relu2);
-		std::string name_6 = "../features/VGG_CNN_S/pool2_" + std::to_string(i) + ".csv";
-		write_to_csv(name_6, pool2);
-		std::string name_7 = "../features/VGG_CNN_S/conv3_" + std::to_string(i) + ".csv";
-		write_to_csv(name_7, conv3);
-		std::string name_8 = "../features/VGG_CNN_S/relu3_" + std::to_string(i) + ".csv";
-		write_to_csv(name_8, relu3);
-		std::string name_9 = "../features/VGG_CNN_S/conv4_" + std::to_string(i) + ".csv";
-		write_to_csv(name_9, conv4);
-		std::string name_10 = "../features/VGG_CNN_S/relu4_" + std::to_string(i) + ".csv";
-		write_to_csv(name_10, relu4);
-		std::string name_11 = "../features/VGG_CNN_S/conv5_" + std::to_string(i) + ".csv";
-		write_to_csv(name_11, conv5);
-		std::string name_12 = "../features/VGG_CNN_S/relu5_" + std::to_string(i) + ".csv";
-		write_to_csv(name_12, relu5);
-		std::string name_13 = "../features/VGG_CNN_S/pool5_" + std::to_string(i) + ".csv";
-		write_to_csv(name_13, pool5);
-		std::string name_14 = "../features/VGG_CNN_S/fc6_" + std::to_string(i) + ".csv";
-		write_to_csv(name_14, fc6);
-		std::string name_15 = "../features/VGG_CNN_S/relu6_" + std::to_string(i) + ".csv";
-		write_to_csv(name_15, relu6);
-		std::string name_16 = "../features/VGG_CNN_S/fc7_" + std::to_string(i) + ".csv";
-		write_to_csv(name_16, fc7);
-		std::string name_17 = "../features/VGG_CNN_S/relu7_" + std::to_string(i) + ".csv";
-		write_to_csv(name_17, relu7);
-		std::string name_18 = "../features/VGG_CNN_S/fc8_" + std::to_string(i) + ".csv";
-		write_to_csv(name_18, fc8);
+		std::string name_1 = "../features/VGG_CNN_S/fc8_" + std::to_string(i) + ".csv";
+		write_to_csv(name_1, fc8);
     }
 
     cout << "-----------------------------" << endl;

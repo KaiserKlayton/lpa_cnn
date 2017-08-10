@@ -1,11 +1,11 @@
-\documentclass[12pt]{article}
+\documentclass[12pt]{report}
 \usepackage{listings}
 \usepackage{amsmath}
 \usepackage{graphicx}
 \graphicspath{ {images/} }
 
 \linespread{1.5}
-      	
+
 \setlength{\oddsidemargin}{0.25in}
 \setlength{\textwidth}{6in}
 \setlength{\topmargin}{0in}
@@ -13,6 +13,7 @@
 
 \newcommand{\doctitle}{Low Precision Arithmetic for Convolutional Neural Network Inference}
 \title{\doctitle}
+\newcommand{\matriknum}{779288}
 \author{C. Clayton Violand\footnote{MSc Program in Cognitive Systems, Universit\"at Potsdam.}}
 
 \begin{document}
@@ -41,7 +42,7 @@ It is well-known in principle that the full precision of computer hardware (e.g.
 
 
 \section{Introduction}
-Computation in convolutional neural networks require large matrix multiplication operations, with most of the heavy lifting being performed by the convolutional layer. In the case of the well-known Imagenet architecture, 89\% of CPU processing time is spent on convolutions \cite{gemm}. As such, these networks can be costly and are slow at inference time. Different methods exist to implement convolution: the GEMM method is a popular method and involves only one large matrix multiplication operation in the convolutional layer. Still, this operation can be slow due to the size of the matrices and the nature of matrix multiplication, which is intensive. 
+Computation in convolutional neural networks require large matrix multiplication operations, with most of the heavy lifting being performed by the convolutional layer. In the case of the well-known Imagenet architecture, 89\% of CPU processing time is spent on convolutions. As such, these networks can be costly and are slow at inference time. Different methods exist to implement convolution: the GEMM method is a popular method and involves only one large matrix multiplication operation in the convolutional layer. Still, this operation can be slow due to the size of the matrices and the nature of matrix multiplication, which is intensive. 
 One solution to this problem is to reduce the computation precision at the convolutional layer. This would speed up inference. However, it may also reduce performance accuracy. This paper deals with the trade-off between speed and performance accuracy in performing convolution with different computation precisions.
 
 
@@ -120,51 +121,12 @@ Dimensionality     & Increase In speed using Gemmlowp \\
 
 
 
+
 \clearpage
-\begin{thebibliography}{9}
 
-\bibitem{} 
-http://cs231n.github.io/convolutional-networks/
+\nocite{*}
 
-\bibitem{} 
-http://christopher5106.github.io/deep/learning/2015/09/04/Deep-learning-tutorial-on-Caffe-Technology.html
-
-\bibitem{} 
-https://github.com/BVLC/caffe/wiki/Model-Zoo
-
-\bibitem{} 
-http://stackoverflow.com/questions/39169012/extract-weights-of-network-in-caffe
-
-\bibitem{} 
-https://github.com/BVLC/caffe/issues/20
-
-\bibitem{gemm} 
-https://petewarden.com/2015/04/20/why-gemm-is-at-the-heart-of-deep-learning/
-
-\bibitem{} 
-http://nghiaho.com/?p=1726
-
-\bibitem{} 
-https://github.com/soumith/convnet-benchmarks
-
-\bibitem{} 
-http://static.googleusercontent.com/media/research.google.com/de//pubs/archive/37631.pdf
-
-\bibitem{} 
-https://petewarden.com/2016/05/03/how-to-quantize-neural-networks-with-tensorflow/
-
-\bibitem{} 
-https://github.com/google/gemmlowp
-
-\end{thebibliography}
-
-
-
-
-
-
-
-
-
+\bibliography{references}
+\bibliographystyle{plain}
 
 \end{document}
