@@ -11,14 +11,23 @@
 *.caffemodel
 
 # Directory Contents
-accuracies/*
-!accuracies/README.md
-
 features/*
 !features/README.md
+
+weights/*
+!weights/README.md
 
 inputs/*
 !inputs/README.md
 
-weights/*
-!weights/README.md
+results/*
+!results/README.md
+
+helper/imagenet_tools/imagenet_1000/*
+!helper/imagenet_tools/imagenet_1000/README.md
+
+helper/imagenet_tools/mean_image_reduced/*
+!helper/imagenet_tools/mean_image_reduced/README.md
+
+helper/imagenet_tools/mean_pixel_reduced/*
+!helper/imagenet_tools/mean_pixel_reduced/README.md
