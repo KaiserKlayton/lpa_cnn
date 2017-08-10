@@ -1,2 +1,2 @@
 # weights
-Results from extract_caffe_weights.py will be written here.
+Results from extract_caffe_weights.py are written here.
