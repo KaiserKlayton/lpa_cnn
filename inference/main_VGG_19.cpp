@@ -425,7 +425,7 @@ int main()
 	VectorXd fc8_b(Map<VectorXd>(fc8_biases.data(), fc8_biases.cols()*fc8_biases.rows()));
 	
 	const int im_num = 1000;
-	MatrixXd train = load_csv_arma<MatrixXd>("../inputs/VGG_19/production/VGG_19.csv");
+	MatrixXd train = load_csv_arma<MatrixXd>("../inputs/VGG_19/production/imagenet_pxl_norm_1000.csv");
 	
     float gemm_time_total = 0.0;
     float run_time_total = 0.0;

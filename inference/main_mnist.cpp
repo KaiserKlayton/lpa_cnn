@@ -80,7 +80,7 @@ int main()
 	VectorXd ip2_b(Map<VectorXd>(ip2_biases.data(), ip2_biases.cols()*ip2_biases.rows()));
 	
 	const int im_num = 1000;
-	MatrixXd train = load_csv_arma<MatrixXd>("../inputs/mnist/production/mnist_train_100.csv");
+	MatrixXd train = load_csv_arma<MatrixXd>("../inputs/mnist/production/mnist.1000.csv");
 	
     float gemm_time_total = 0.0;
     float run_time_total = 0.0;

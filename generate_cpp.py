@@ -11,6 +11,7 @@ __copyright__ = "Copyright 2017"
 import os
 import re
 import sys
+import glob
 
 from shutil import copyfile
 
@@ -18,7 +19,8 @@ from helper.extract_architecture import extract_architecture
 
 def main():
     # Get models.
-    models = os.listdir("models/")
+    models = glob.glob('models/*[!.md]')
+    models = [os.path.basename(m) for m in models]
     
     # For every model.
     for m in models:

@@ -1248,7 +1248,7 @@ int main()
 	VectorXd fc1000_b(Map<VectorXd>(fc1000_biases.data(), fc1000_biases.cols()*fc1000_biases.rows()));
 	
 	const int im_num = 1000;
-	MatrixXd train = load_csv_arma<MatrixXd>("../inputs/ResNet50/production/ResNet50.csv");
+	MatrixXd train = load_csv_arma<MatrixXd>("../inputs/ResNet50/production/imagenet_img_norm_1000.csv");
 	
     float gemm_time_total = 0.0;
     float run_time_total = 0.0;
