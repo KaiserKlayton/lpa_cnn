@@ -36,7 +36,7 @@ def main():
         a = extract_architecture(prototxt_file_path)
         
         # Line Position
-        pos = 13 
+        pos = 16
         # Triggers
         first = True
         first_conv = True
@@ -222,15 +222,29 @@ def main():
         lines.extend([
             #"const int im_num = %i;" % a['shape']['n'],
             "const int im_num = 1000;",
-            'MatrixXd train = load_csv_arma<MatrixXd>("%s");' % input_file_path,
+            "",
+            'ifstream infile;',
             ""
         ])
         
         for l in lines:
             to_write.append((pos, "\t"+l+"\n"))
             pos += 1           
-                                           
-        pos = pos + 17
+        
+        pos += 7
+        lines_input = []
+        lines_input.extend([
+            "infile.open(\"%s\");" % input_file_path,
+            "MatrixXd line = load_csv<MatrixXd>(infile, i);",
+            'infile.close();',
+            ""
+        ])   
+        
+        for l in lines_input:
+            to_write.append((pos, "\t\t"+l+"\n"))
+            pos += 1   
+                                      
+        pos = pos + 10
         tick = 1
         pool_tick = 1
         relu_tick = 1

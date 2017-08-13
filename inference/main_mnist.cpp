@@ -1,4 +1,5 @@
 #include "helper/reader.h"
+#include "helper/input_parser.h"
 #include "helper/writer.h"
 #include "../layers/convolution_layer/convolution.h"
 #include "../layers/pooling_layer/pooling.h"
@@ -11,6 +12,8 @@ using Eigen::RowMajor;
 
 int main() 
 {
+    float gemm_time_total = 0.0;
+    float run_time_total = 0.0;
 	const int im_height_1 = 28;
 	const int im_width_1 = 28;
 	const int im_depth_1 = 1;
@@ -80,21 +83,26 @@ int main()
 	VectorXd ip2_b(Map<VectorXd>(ip2_biases.data(), ip2_biases.cols()*ip2_biases.rows()));
 	
 	const int im_num = 1000;
-	MatrixXd train = load_csv_arma<MatrixXd>("../inputs/mnist/production/mnist.1000.csv");
 	
-    float gemm_time_total = 0.0;
-    float run_time_total = 0.0;
+	ifstream infile;
+	
     
     for(int i=0; i < im_num; i++)
     {   
+        cout << i << endl;
+    
         clock_t run_time_start = clock();    
         
+		infile.open("../inputs/mnist/production/mnist.1000.csv");
+		MatrixXd line = load_csv<MatrixXd>(infile, i);
+		infile.close();
+		
         MatrixXd img;
-        if ( train.rows() != 1 ) {
-            img = train.block<1,im_size_1*im_depth_1>(i,0);
+        if ( line.rows() != 1 ) {
+            img = line.block<1,im_size_1*im_depth_1>(i,0);
         }
         else {          
-            img = train;
+            img = line.block<1,im_size_1*im_depth_1>(0,0);
         }
         
         MatrixXd image = Map<Matrix<double, im_depth_1, im_size_1, RowMajor>>(img.data());

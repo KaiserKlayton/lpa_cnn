@@ -3,9 +3,9 @@ Low Precision Arithmetic for Convolutional Neural Network Inference
 
 ## **Dependencies**
 
-gcc 5.4 w/ Eigen 3
+gcc 5.4 w/ Eigen 3 & Armadillo
 
-Python 2.7 w/ numpy & PIL
+Python 2.7 w/ NumPy & PIL
 
 R w/ rPython & Rcpp
 

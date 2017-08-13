@@ -1,4 +1,5 @@
 #include "helper/reader.h"
+#include "helper/input_parser.h"
 #include "helper/writer.h"
 #include "../layers/convolution_layer/convolution.h"
 #include "../layers/pooling_layer/pooling.h"
@@ -16,14 +17,16 @@ int main()
     
     for(int i=0; i < im_num; i++)
     {   
+        cout << i << endl;
+    
         clock_t run_time_start = clock();    
         
         MatrixXd img;
-        if ( train.rows() != 1 ) {
-            img = train.block<1,im_size_1*im_depth_1>(i,0);
+        if ( line.rows() != 1 ) {
+            img = line.block<1,im_size_1*im_depth_1>(i,0);
         }
         else {          
-            img = train;
+            img = line.block<1,im_size_1*im_depth_1>(0,0);
         }
         
         MatrixXd image = Map<Matrix<double, im_depth_1, im_size_1, RowMajor>>(img.data());

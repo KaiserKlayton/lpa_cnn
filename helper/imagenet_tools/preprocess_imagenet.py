@@ -15,8 +15,8 @@ import os
 import sys
 
 ## OPTION ##
-#option = "mean_pixel"
-option = "mean_image"
+option = "mean_pixel"
+#option = "mean_image"
 
 READ_DIR = 'helper/imagenet_tools/imagenet_1000/'
 LABEL_FILE = 'helper/imagenet_tools/imagenet_1000_labels.csv'
@@ -40,6 +40,7 @@ def main():
         pass
     else:
         mean_image = np.load(MEAN_IMAGE)
+        mean_image = np.moveaxis(mean_image, 0, 2)
         
     # Load the labels
     labels = np.genfromtxt(LABEL_FILE, dtype=int, delimiter=',')
@@ -49,10 +50,11 @@ def main():
     result = np.empty((0, 150529))
     for i in sorted(glob.glob(READ_DIR+'*.JPEG')):
         print result.shape
-        image = load_image(i).transpose()
-        
+        image = load_image(i)
+
         if len(image.shape) == 2:
             image = np.stack((image, ) * 3)
+            image = np.moveaxis(image, 0, 2)
             
         if option == "mean_pixel":    
             image[0,:,:] = np.subtract(image[0,:,:], 103.939)
