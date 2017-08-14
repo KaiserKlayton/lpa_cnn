@@ -9,10 +9,10 @@ using Eigen::VectorXd;
 using Eigen::Map;
 using namespace std;
 
-MatrixXd col2im(MatrixXd c);
-MatrixXd add_padding(MatrixXd box, int im_height, int im_width, int p1, int p2);
-MatrixXd kernel2col(MatrixXd kernel);
-MatrixXd im2col(MatrixXd input, int k_size, int stride);
-std::tuple<MatrixXd, double, double> convolve(MatrixXd image, int im_size, int im_height, int im_width, int im_depth, int k_size, int stride, VectorXd b, int p1, int p2, MatrixXd w, int output_size);
+MatrixXd col2im(const MatrixXd &c);
+MatrixXd add_padding(const MatrixXd &box, const int im_height, const int im_width, const int p1, const int p2);
+MatrixXd kernel2col(MatrixXd &kernel);
+MatrixXd im2col(const MatrixXd &input, const int k_size, const int stride);
+std::tuple<MatrixXd, double, double> convolve(const MatrixXd &image, const int im_size, const int im_height, const int im_width, const int im_depth, const int k_size, const int stride, const VectorXd &b, const int p1, const int p2, const MatrixXd &w, const int output_size);
 
 #endif

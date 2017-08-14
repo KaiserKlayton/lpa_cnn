@@ -8,7 +8,7 @@ using Eigen::MatrixXd;
 using Eigen::Map;
 
 template <typename M>
-M load_csv_arma(const std::string & path) {
+M load_csv_arma(const std::string &path) {
     arma::mat X;
     X.load(path, arma::csv_ascii);
 

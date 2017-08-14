@@ -9,6 +9,6 @@ using Eigen::VectorXd;
 using Eigen::Map;
 using namespace std;
 
-MatrixXd fully_connect(MatrixXd input, int k_num, MatrixXd weights, VectorXd biases);
+MatrixXd fully_connect(MatrixXd &input, const int k_num, const MatrixXd &weights, const VectorXd &biases);
 
 #endif

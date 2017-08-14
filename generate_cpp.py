@@ -224,7 +224,6 @@ def main():
             "const int im_num = 1000;",
             "",
             'ifstream infile;',
-            ""
         ])
         
         for l in lines:

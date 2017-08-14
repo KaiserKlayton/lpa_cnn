@@ -1,8 +1,8 @@
 #include "pooling.h"
 
-MatrixXd add_pool_padding(MatrixXd box, int im_height, int im_width, int pp1, int pp2) {
-    int ppa1 = im_width;
-    int ppa2 = im_height+(2*pp1);
+MatrixXd add_pool_padding(const MatrixXd &box, const int im_height, const int im_width, const int pp1, const int pp2) {
+    const int ppa1 = im_width;
+    const int ppa2 = im_height+(2*pp1);
     MatrixXd padding1 = MatrixXd::Zero(ppa1,pp1);
     MatrixXd padding2 = MatrixXd::Zero(pp2,ppa2); 
 
@@ -15,7 +15,7 @@ MatrixXd add_pool_padding(MatrixXd box, int im_height, int im_width, int pp1, in
     return padded_box;
 }
 
-MatrixXd pool(MatrixXd convolved, int f, int s, int im_width, int im_height, int pp1, int pp2) {
+MatrixXd pool(const MatrixXd &convolved, const int f, const int s, const int im_width, const int im_height, const int pp1, const int pp2) {
     const int w = ((im_width - f + 2 * pp1) / s) + 1;
     const int h = ((im_height - f + 2 * pp2) / s) + 1;
     

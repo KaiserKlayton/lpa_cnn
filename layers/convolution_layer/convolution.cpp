@@ -1,15 +1,15 @@
 #include "convolution.h"
 #include "lowp.h"
 
-MatrixXd col2im(MatrixXd c) {
+MatrixXd col2im(MatrixXd &c) {
     MatrixXd ct = c.transpose();
 
     return ct;
 }
 
-MatrixXd add_padding(MatrixXd box, int im_height, int im_width, int p1, int p2) {
-    int pa1 = im_width;
-    int pa2 = im_height+(2*p1);
+MatrixXd add_padding(const MatrixXd &box, const int im_height, const int im_width, const int p1, const int p2) {
+    const int pa1 = im_width;
+    const int pa2 = im_height+(2*p1);
     MatrixXd padding1 = MatrixXd::Zero(pa1,p1);
     MatrixXd padding2 = MatrixXd::Zero(p2,pa2); 
 
@@ -22,10 +22,10 @@ MatrixXd add_padding(MatrixXd box, int im_height, int im_width, int p1, int p2) 
     return padded_box;
 }
 
-MatrixXd kernel2col(MatrixXd kernel) {
+MatrixXd kernel2col(MatrixXd &kernel) {
     // kernel: n x m
-    int m = kernel.rows();
-    int n = kernel.cols();
+    const int m = kernel.rows();
+    const int n = kernel.cols();
 
     kernel.transposeInPlace();
 
@@ -34,20 +34,20 @@ MatrixXd kernel2col(MatrixXd kernel) {
     return kcollapsed;
 }
 
-MatrixXd im2col(MatrixXd input, int k_size, int stride) {
+MatrixXd im2col(const MatrixXd &input, const int k_size, const int stride) {
     // input: A x B
-    int m = input.rows();
-    int n = input.cols();
+    const int m = input.rows();
+    const int n = input.cols();
 
     // kernel: C x D
-    int kRows = sqrt(k_size);
-    int kCols = sqrt(k_size);
+    const int kRows = sqrt(k_size);
+    const int kCols = sqrt(k_size);
 
     // output: xB*yB by C x D
     // yB = (A - C / stride) + 1
     // yB = (B - D / stride) + 1
-    int yB = ((m - kRows) / stride) + 1;
-    int xB = ((n - kCols) / stride) + 1;
+    const int yB = ((m - kRows) / stride) + 1;
+    const int xB = ((n - kCols) / stride) + 1;
     
     MatrixXd result(xB*yB, kRows*kCols);
     
@@ -69,7 +69,7 @@ MatrixXd im2col(MatrixXd input, int k_size, int stride) {
     return result;
 }
 
-std::tuple<MatrixXd, double, double> convolve(MatrixXd image, int im_size, int im_height, int im_width, int im_depth, int k_size, int stride, VectorXd b, int p1, int p2, MatrixXd w, int output_size) {  
+std::tuple<MatrixXd, double, double> convolve(const MatrixXd &image, const int im_size, const int im_height, const int im_width, const int im_depth, const int k_size, const int stride, const VectorXd &b, const int p1, const int p2, const MatrixXd &w, const int output_size) {  
     // im2col for each slice, then concatinate slices.
     MatrixXd im(output_size, k_size*im_depth);
     for (int d=0; d < im_depth ; d++) {

@@ -6,6 +6,6 @@
 
 using Eigen::MatrixXd;
 
-std::tuple<MatrixXd, double, double> glp(int r, int d, int c, MatrixXd a, MatrixXd b);
+std::tuple<MatrixXd, double, double> glp(const int r, const int d, const int c, const MatrixXd &a, const MatrixXd &b);
 
 #endif

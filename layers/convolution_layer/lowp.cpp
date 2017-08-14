@@ -233,7 +233,7 @@ void QuantizeMultiplierSmallerThanOne(float real_multiplier,
   *right_shift = s;
 }
 
-std::tuple<MatrixXd, double, double> glp(int r, int d, int c, MatrixXd a, MatrixXd b) {
+std::tuple<MatrixXd, double, double> glp(const int r, const int d, const int c, const MatrixXd &a, const MatrixXd &b) {
   clock_t convert_from_eigen_start = clock();
 
   std::cout.precision(3);

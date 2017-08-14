@@ -1253,7 +1253,6 @@ int main()
 	const int im_num = 1000;
 	
 	ifstream infile;
-	
     
     for(int i=0; i < im_num; i++)
     {   

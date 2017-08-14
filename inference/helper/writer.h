@@ -10,6 +10,6 @@ using Eigen::DontAlignCols;
 using Eigen::MatrixXd;
 using namespace std;
 
-void write_to_csv(string name, MatrixXd matrix);
+void write_to_csv(const string name, const MatrixXd matrix);
 
 #endif
