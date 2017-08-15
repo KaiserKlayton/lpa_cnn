@@ -14,13 +14,11 @@ int main()
 {
     float gemm_time_total = 0.0;
     float run_time_total = 0.0;
-    
-    for(int i=0; i < im_num; i++)
+
+    for(int i=0; i < im_num; ++i)
     {   
         cout << i << endl;
     
-        clock_t run_time_start = clock();    
-        
         MatrixXd img;
         if ( line.rows() != 1 ) {
             img = line.block<1,im_size_1*im_depth_1>(i,0);
@@ -30,11 +28,15 @@ int main()
         }
         
         MatrixXd image = Map<Matrix<double, im_depth_1, im_size_1, RowMajor>>(img.data());
+
+        clock_t run_time_start = clock();
         
         clock_t run_time_end = clock();
         
         double run_time = (double) (run_time_end-run_time_start) / CLOCKS_PER_SEC;   
     }
+
+    infile.close();
 
     cout << "-----------------------------" << endl;
 

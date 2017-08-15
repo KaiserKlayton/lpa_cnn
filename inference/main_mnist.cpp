@@ -14,6 +14,7 @@ int main()
 {
     float gemm_time_total = 0.0;
     float run_time_total = 0.0;
+
 	const int im_height_1 = 28;
 	const int im_width_1 = 28;
 	const int im_depth_1 = 1;
@@ -85,16 +86,13 @@ int main()
 	const int im_num = 1000;
 	
 	ifstream infile;
-    
-    for(int i=0; i < im_num; i++)
+	infile.open("../inputs/mnist/production/mnist.1000.csv");
+	
+    for(int i=0; i < im_num; ++i)
     {   
         cout << i << endl;
     
-        clock_t run_time_start = clock();    
-        
-		infile.open("../inputs/mnist/production/mnist.1000.csv");
-		MatrixXd line = load_csv<MatrixXd>(infile, i);
-		infile.close();
+		MatrixXd line = load_csv<MatrixXd>(infile);
 		
         MatrixXd img;
         if ( line.rows() != 1 ) {
@@ -105,6 +103,8 @@ int main()
         }
         
         MatrixXd image = Map<Matrix<double, im_depth_1, im_size_1, RowMajor>>(img.data());
+
+        clock_t run_time_start = clock();
         
 		MatrixXd conv1;
 		double gemm_time_1;
@@ -135,6 +135,8 @@ int main()
 		std::string name_1 = "../features/mnist/ip2_" + std::to_string(i) + ".csv";
 		write_to_csv(name_1, ip2);
     }
+
+    infile.close();
 
     cout << "-----------------------------" << endl;
 

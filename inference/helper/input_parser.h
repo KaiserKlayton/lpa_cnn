@@ -9,23 +9,17 @@ using namespace Eigen;
 using namespace std;
 
 template<typename M>
-M load_csv (ifstream &infile, const int i) {
-    string line, csvItem;
+M load_csv (ifstream &infile) {
+    string line, deleteline, csvItem;
     vector<double> values;
-    uint rows = 0;
-    int lineNumber = 0;
-    int lineNumberSought = i;
     while (getline(infile, line)) {
-        if(lineNumber == lineNumberSought) {
-            stringstream lineStream(line);
-            while (getline(lineStream, csvItem, ',')) {
-                values.push_back(stod(csvItem));
-            }
-            ++rows;
-            
-            return Map<const Matrix<typename M::Scalar, M::RowsAtCompileTime, M::ColsAtCompileTime, RowMajor>>(values.data(), rows, values.size()/rows);
+        stringstream lineStream(line);
+        while (getline(lineStream, csvItem, ',')) {
+            values.push_back(stod(csvItem));
         }
-        ++lineNumber;
+        line.replace(line.find(deleteline),deleteline.length(),"");
+
+        return Map<const Matrix<typename M::Scalar, M::RowsAtCompileTime, M::ColsAtCompileTime, RowMajor>>(values.data(), 1, values.size());
     }
 }
 
