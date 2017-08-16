@@ -7,7 +7,7 @@ gcc 5.4 w/ Eigen 3 & Armadillo
 
 Python 2.7 w/ NumPy & PIL
 
-R w/ rPython & Rcpp
+R
 
 ## **Setup**
 
@@ -30,6 +30,6 @@ having the form:
 
 ## **Reproduction**
 
-To reproduce the experiments with the installed models, call `run/run_routine.py`. 
+To reproduce the experiments with the installed models, call `$ bash run_routine.sh`. 
 
 Results are written to `results/`.

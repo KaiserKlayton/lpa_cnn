@@ -3,8 +3,8 @@
 __author__ = "C. Clayton Violand"
 __copyright__ = "Copyright 2017"
 
-## Preps ImageNet input data (1000) for system by subtracting specified mean.
-## Add labels as first column.
+## Preps ImageNet input data (1000) for system by subtracting specified mean (image or pixel).
+## Adds labels as first column.
 ## Writes result to file as csv.
 ##
 

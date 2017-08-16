@@ -5,7 +5,7 @@ __copyright__ = "Copyright 2017"
 
 ## Generates .cpp files and Makefiles from template for model inference execution.
 ## REQUIRED: Caffe .prototxt in: 'models/<model_name>/..'
-##           Template as 'inference/template.cpp'
+##           Template as 'inference/helper/template.cpp'
 ##           
 
 import os
