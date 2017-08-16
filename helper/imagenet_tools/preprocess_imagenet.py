@@ -14,19 +14,6 @@ import glob
 import os
 import sys
 
-## OPTION ##
-option = "mean_pixel"
-#option = "mean_image"
-
-READ_DIR = 'helper/imagenet_tools/imagenet_1000/'
-LABEL_FILE = 'helper/imagenet_tools/imagenet_1000_labels.csv'
-    
-if option == "mean_pixel":
-    WRITE_FILE = 'helper/imagenet_tools/mean_pixel_reduced/imagenet_pxl_norm_1000.csv'
-else:
-    MEAN_IMAGE = 'helper/imagenet_tools/imagenet_mean.npy'
-    WRITE_FILE = 'helper/imagenet_tools/mean_image_reduced/imagenet_img_norm_1000.csv'
-
 def load_image(infile) :
     image = Image.open(infile)
     image.load()
@@ -34,7 +21,18 @@ def load_image(infile) :
     
     return data
 
-def main():   
+def main():
+    print "Taking " + option
+
+    READ_DIR = 'helper/imagenet_tools/imagenet_1000/'
+    LABEL_FILE = 'helper/imagenet_tools/imagenet_1000_labels.csv'
+
+    if option == "mean_pixel":
+        WRITE_FILE = 'helper/imagenet_tools/mean_pixel_reduced/imagenet_pxl_norm_1000.csv'
+    else:
+        MEAN_IMAGE = 'helper/imagenet_tools/imagenet_mean.npy'
+        WRITE_FILE = 'helper/imagenet_tools/mean_image_reduced/imagenet_img_norm_1000.csv'
+
     # Load the mean image
     if option == "mean_pixel":
         pass
@@ -60,7 +58,7 @@ def main():
             image[0,:,:] = np.subtract(image[0,:,:], 103.939)
             image[1,:,:] = np.subtract(image[1,:,:], 116.779)
             image[2,:,:] = np.subtract(image[2,:,:], 123.68)
-        else:
+        elif option == "mean_image":
             image -= mean_image
             
         image = image.reshape(1, image.shape[0] * image.shape[1] * image.shape[2])
@@ -73,4 +71,11 @@ def main():
     np.savetxt(WRITE_FILE, result, fmt='%.10f', delimiter=',')
             
 if __name__ == "__main__":
+    try:
+        option = sys.argv[1]
+        option and option.lower() == "mean_image" or option and option.lower() == "mean_pixel"
+    except IndexError:
+        print "Usage: python preprocess_imagenet.py <mean_image> | <mean_pixel>"
+        sys.exit(1)
+
     main()

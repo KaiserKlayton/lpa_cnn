@@ -13,7 +13,7 @@ To use imagenet_tools:
 
 2. Select your option (mean image or pixel normalization), in the source code of `helper/imagenet_tools/preprocess_imagenet.py`.
 
-3. Run `$ python helper/imagenet_tools/preprocess_imagenet.py`.
+3. Run `$ python helper/imagenet_tools/preprocess_imagenet.py <mean_image> | <mean_pixel>`.
 
 Results are in `helper/imagenet_tools/mean_image_reduced` or `helper/imagenet_tools/mean_pixel_reduced`. 
 

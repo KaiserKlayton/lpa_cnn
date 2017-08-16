@@ -36,7 +36,7 @@ def main():
         a = extract_architecture(prototxt_file_path)
         
         # Line Position
-        pos = 17
+        pos = 33
         # Triggers
         first = True
         first_conv = True
@@ -271,7 +271,7 @@ def main():
                         "MatrixXd %s;" % i,
                         "double gemm_time_%i;" % tick,
                         "double offline_time_%i;" % tick,
-                        "std::tie(%s, gemm_time_%i, offline_time_%i) = convolve(%s, im_size_%i, im_height_%i, im_width_%i, im_depth_%i, k_size_%i, stride_%i, %s_b, p1_%i, p2_%i, %s_w, output_size_%i);" % (i, tick, tick, second_last_output, tick, tick, tick, tick, tick, tick, i, tick, tick, i, tick),
+                        "std::tie(%s, gemm_time_%i, offline_time_%i) = convolve(%s, im_size_%i, im_height_%i, im_width_%i, im_depth_%i, k_size_%i, stride_%i, %s_b, p1_%i, p2_%i, %s_w, output_size_%i, mode);" % (i, tick, tick, second_last_output, tick, tick, tick, tick, tick, tick, i, tick, tick, i, tick),
                         ""
                     ])
                     
@@ -280,7 +280,7 @@ def main():
                         "MatrixXd %s;" % i,
                         "double gemm_time_%i;" % tick,
                         "double offline_time_%i;" % tick,
-                        "std::tie(%s, gemm_time_%i, offline_time_%i) = convolve(%s, im_size_%i, im_height_%i, im_width_%i, im_depth_%i, k_size_%i, stride_%i, %s_b, p1_%i, p2_%i, %s_w, output_size_%i);" % (i, tick, tick, last_output, tick, tick, tick, tick, tick, tick, i, tick, tick, i, tick),
+                        "std::tie(%s, gemm_time_%i, offline_time_%i) = convolve(%s, im_size_%i, im_height_%i, im_width_%i, im_depth_%i, k_size_%i, stride_%i, %s_b, p1_%i, p2_%i, %s_w, output_size_%i, mode);" % (i, tick, tick, last_output, tick, tick, tick, tick, tick, tick, i, tick, tick, i, tick),
                         ""
                     ])
                  

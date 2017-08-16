@@ -7,13 +7,29 @@
 #include "../layers/relu_layer/relu.h"
 #include "../layers/eltwise_layer/eltwise.h"
 
+#include <string.h>
+
 using Eigen::Matrix;
 using Eigen::RowMajor;
 
-int main() 
+int main(int argc, char *argv[])
 {
+    if (argc == 2) {
+        if (!strcmp(argv[1], "eigen") || !strcmp(argv[1], "gemmlowp")) {
+            ;
+        } else {
+            cout << "ERROR --> usage: ./lpa_cnn.out <eigen> | <gemmlowp>" << endl;
+            exit(1);
+        }
+    } else {
+        cout << "ERROR --> usage: ./lpa_cnn.out <eigen> | <gemmlowp>" << endl;
+        exit(1);
+    }
+
     float gemm_time_total = 0.0;
     float run_time_total = 0.0;
+
+    std::string mode = argv[1];
 
     for(int i=0; i < im_num; ++i)
     {   

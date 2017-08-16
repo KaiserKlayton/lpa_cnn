@@ -7,13 +7,29 @@
 #include "../layers/relu_layer/relu.h"
 #include "../layers/eltwise_layer/eltwise.h"
 
+#include <string.h>
+
 using Eigen::Matrix;
 using Eigen::RowMajor;
 
-int main() 
+int main(int argc, char *argv[])
 {
+    if (argc == 2) {
+        if (!strcmp(argv[1], "eigen") || !strcmp(argv[1], "gemmlowp")) {
+            ;
+        } else {
+            cout << "ERROR --> usage: ./lpa_cnn.out <eigen> | <gemmlowp>" << endl;
+            exit(1);
+        }
+    } else {
+        cout << "ERROR --> usage: ./lpa_cnn.out <eigen> | <gemmlowp>" << endl;
+        exit(1);
+    }
+
     float gemm_time_total = 0.0;
     float run_time_total = 0.0;
+
+    std::string mode = argv[1];
 
 	const int im_height_1 = 32;
 	const int im_width_1 = 32;
@@ -138,7 +154,7 @@ int main()
 		MatrixXd conv1;
 		double gemm_time_1;
 		double offline_time_1;
-		std::tie(conv1, gemm_time_1, offline_time_1) = convolve(image, im_size_1, im_height_1, im_width_1, im_depth_1, k_size_1, stride_1, conv1_b, p1_1, p2_1, conv1_w, output_size_1);
+		std::tie(conv1, gemm_time_1, offline_time_1) = convolve(image, im_size_1, im_height_1, im_width_1, im_depth_1, k_size_1, stride_1, conv1_b, p1_1, p2_1, conv1_w, output_size_1, mode);
 		
 		MatrixXd pool1 = pool(conv1, f_1, s_1, output_width_1, output_height_1, pp1_1, pp2_1);
 		
@@ -147,7 +163,7 @@ int main()
 		MatrixXd conv2;
 		double gemm_time_2;
 		double offline_time_2;
-		std::tie(conv2, gemm_time_2, offline_time_2) = convolve(relu1, im_size_2, im_height_2, im_width_2, im_depth_2, k_size_2, stride_2, conv2_b, p1_2, p2_2, conv2_w, output_size_2);
+		std::tie(conv2, gemm_time_2, offline_time_2) = convolve(relu1, im_size_2, im_height_2, im_width_2, im_depth_2, k_size_2, stride_2, conv2_b, p1_2, p2_2, conv2_w, output_size_2, mode);
 		
 		MatrixXd relu2 = relu(conv2);
 		
@@ -156,7 +172,7 @@ int main()
 		MatrixXd conv3;
 		double gemm_time_3;
 		double offline_time_3;
-		std::tie(conv3, gemm_time_3, offline_time_3) = convolve(pool2, im_size_3, im_height_3, im_width_3, im_depth_3, k_size_3, stride_3, conv3_b, p1_3, p2_3, conv3_w, output_size_3);
+		std::tie(conv3, gemm_time_3, offline_time_3) = convolve(pool2, im_size_3, im_height_3, im_width_3, im_depth_3, k_size_3, stride_3, conv3_b, p1_3, p2_3, conv3_w, output_size_3, mode);
 		
 		MatrixXd relu3 = relu(conv3);
 		
