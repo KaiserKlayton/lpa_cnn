@@ -1,0 +1,190 @@
+\documentclass[12pt]{report}
+\usepackage[utf8]{inputenc}
+\usepackage{a4}
+\usepackage[none]{hyphenat} %hyphenation
+\sloppy
+\usepackage{parskip} %no indentation after paragraphs
+\usepackage{umlaute}
+\usepackage{afterpage} %for using \afterpage{\clearpage} (don't push images to the end of a chapter)
+\usepackage{makeidx}
+\usepackage[numbers]{natbib}
+\usepackage{graphicx}
+\usepackage{picins} %provides precise control over the placement of inline graphics
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{dsfont} %math symbols
+\usepackage{tabularx}
+\usepackage{floatflt} %float text around figures and tables
+% Florian Schulze, 06.06.2012
+% v1.0, latest edit: 06.06.2012
+
+\usepackage{enumitem} %resume counting from previous enumerate block
+\usepackage{amsmath,amssymb}
+\usepackage[format=default,font=footnotesize,labelfont=bf]{caption}
+\usepackage{listings} %for listing source code
+\usepackage{color}
+\usepackage{algpseudocode} %for listing pseudocode
+\usepackage{algorithm} %wrap algpseudocode and enrich with label etc.
+\usepackage{float} % for [H] after floats
+
+\titleformat{\paragraph}[hang]{\normalfont\bfseries}{\theparagraph}{.5em}{}
+
+\makeindex
+\frenchspacing
+\sloppy
+
+\pagestyle{headings}
+
+\textwidth16cm
+\textheight22cm
+
+\topmargin0cm
+\oddsidemargin0cm
+\evensidemargin0cm
+
+\newcommand{\bildklein}[3]{  
+	\begin{figure}[hp]
+	\begin{center}
+	\includegraphics[width=0.5\textwidth]{#1}
+	\end{center}
+	\caption[#2]{#3}
+	\end{figure}
+}
+  	
+\newcommand{\bildgross}[3]{  
+	\begin{figure}[hp]
+	\begin{center}
+	\includegraphics[width=0.95\textwidth]{#1}
+	\end{center}
+	\caption[#2]{#3}
+	\end{figure}
+}
+  
+\newcommand{\eqn}[3]{
+	\begin{figure}[hp]
+	\begin{equation}#1\end{equation}
+	\caption[#2]{#3}
+	\end{figure}
+}
+
+\begin{document}
+
+\nocite{*} %include uncited references in bibliography
+\hoffset=5mm
+\thispagestyle{empty}
+
+\begin{center}
+	\bigskip \bigskip \bigskip 
+	\includegraphics[width=0.30\textwidth]{figures/06_Matjpg.jpg} \\
+	\vspace*{0.8cm}
+	{\huge \bf Universität Potsdam} \\
+	\bigskip \bigskip \bigskip
+	{\huge \bf Institut für Informatik und Computational Science} \\
+	\bigskip \bigskip \bigskip
+	{\Large \bf Master's Thesis in Cognitive Systems: Language, Learning and Reasoning} \\
+	\bigskip \bigskip \bigskip \bigskip \bigskip
+	{\Large Low Precision Arithmetic for Convolutional Neural Network Inference} \\        
+	\bigskip \bigskip \bigskip \bigskip
+	{\Large C. Clayton Violand} \\    
+	\bigskip 
+\end{center}
+
+\vfill
+
+\newpage
+\hoffset=5mm
+\thispagestyle{empty}
+
+\begin{center}
+	\bigskip \bigskip \bigskip 
+	\includegraphics[width=0.30\textwidth]{figures/04_Humjpg.jpg} \\
+	\vspace*{0.8cm}
+	{\huge \bf Universität Potsdam} \\
+	\bigskip \bigskip \bigskip
+	{\huge \bf Institut für Informatik und Computational Science } \\
+	\bigskip \bigskip \bigskip
+	{\Large \bf Master's Thesis in Cognitive Systems: Language, Learning and Reasoning} \\
+	\bigskip \bigskip \bigskip \bigskip \bigskip
+	{\Large Low Precision Arithmetic for Convolutional Neural Network Inference} \\
+	\bigskip
+\end{center}
+
+\vfill
+
+\begin{tabular}{ll}
+{\Large \bf Author:} & {\Large C. Clayton Violand} \\\\
+{\Large \bf Advisor:} & {\Large Dr. Niels Landwehr} \\\\
+{\Large \bf Add. Reader:} & {\Large Dr. Paul Prasse} \\\\
+{\Large \bf Submission:} & {\Large 19.08.2017}
+\end{tabular}
+
+\newpage	
+\thispagestyle{empty}
+\hoffset=0mm
+\vspace*{\fill}
+\noindent I assure the single handed composition of this master's thesis only supported by declared resources.\\\\
+Berlin, 19.08.2017\\\\\\\\\\\\
+\noindent \textit{(C. Clayton Violand)}
+
+\newpage
+\thispagestyle{empty}
+\null
+
+\newpage
+\thispagestyle{empty}
+\hoffset=0mm
+\section*{Abstract}	
+\begin{spacing}{1.2}
+\input{abstracte}
+\end{spacing}
+
+\bigskip
+\providecommand{\keywords}[1]{\textbf{Keywords:} #1}
+\keywords{Convolutional Neural Networks, Integer Multiplication, GEMM.}
+
+\section*{Inhaltsangabe}
+\begin{spacing}{1.2}
+\input{abstractd}
+\end{spacing}
+
+\newpage
+\setcounter{page}{1}
+\hoffset=0mm
+\bibliographystyle{wmaainf} % quotation style
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{3}
+\fboxsep 0mm
+
+\tableofcontents
+
+\newpage
+\setlength{\baselineskip}{3ex}
+
+\pagenumbering{roman}  % default is "roman", not "Roman"
+\newpage
+\addcontentsline{toc}{chapter}{List of Figures}
+\listoffigures
+
+\newpage
+\addcontentsline{toc}{chapter}{List of Tables}
+\listoftables
+
+\pagenumbering{arabic}  % default is "roman", not "Roman"
+\begin{spacing}{1.15}
+	\input{chapters/introduction}
+	\input{chapters/setup}
+	\input{chapters/results}
+	\input{chapters/conclusion}
+\end{spacing}
+\newpage
+\thispagestyle{empty}
+\null
+
+\newpage
+\thispagestyle{empty}
+\null
+	
+% Generierung des Literaturverzeichnisses
+\bibliography{references}
+
+\end{document}
