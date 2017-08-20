@@ -7,7 +7,7 @@ gcc 5.4 w/ Eigen 3 & Armadillo
 
 Python 2.7 w/ NumPy & PIL
 
-R
+R w/ gtools
 
 ## **Setup**
 
