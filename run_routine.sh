@@ -29,8 +29,8 @@
 #  $ bash run_routine.sh
 # ------------------------------------------------------------------
 
-set -e 
-  
+set -e
+
 echo """
 #########################################
 ## LPA_CNN | C. Clayton Violand | 2017 ##
@@ -80,12 +80,12 @@ cd inference
 for m in "${MODELS[@]}"
 do
     :
-    echo "compiling inference file for" ${m%/} 
+    echo "compiling inference file for" ${m%/}
     echo "..."
     # Call make on models' Makefile.
     eval make -f Makefile.${m%/}
     echo "..."
-    echo "DONE compiling inference file for" ${m%/} "DONE" 
+    echo "DONE compiling inference file for" ${m%/} "DONE"
     echo "-----------------------------------------------"
 
     for a in "${ARITHMETIC_MODES[@]}"
@@ -107,6 +107,6 @@ cd ..
 
 # Compile the results!
 echo "compiling the results..."
-eval Rscript compile_results.R
+eval Rscript helper/compile_results.R
 echo "compiling the results COMPLETE"
 echo "------------------------------"

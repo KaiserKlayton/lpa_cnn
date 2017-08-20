@@ -9,7 +9,7 @@ using namespace Eigen;
 using namespace std;
 
 template<typename M>
-M load_csv (ifstream &infile) {
+M load_csv(ifstream &infile) {
     string line, deleteline, csvItem;
     vector<double> values;
     while (getline(infile, line)) {

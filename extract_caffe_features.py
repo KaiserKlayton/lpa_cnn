@@ -65,34 +65,39 @@ def main():
         net = caffe.Net(prototxt_file_path, model_file_path, caffe.TEST)
 
         # Load (1) image into data blob.
-        image = np.genfromtxt(input_file_path, delimiter=",", max_rows = 1)
-        image = image[1:len(image)]    
-        image =  image.reshape(1,a['shape']['d'], a['shape']['w'], a['shape']['h'])
-        net.blobs['data'].data[...] = image
+        images = np.genfromtxt(input_file_path, delimiter=",")
+        tick = 0
+        for image in images:
+            image = image[1:len(image)]
+            image =  image.reshape(1,a['shape']['d'], a['shape']['w'], a['shape']['h'])
+            net.blobs['data'].data[...] = image
+
+            # Forward propogate (1) image.
+            out = net.forward()
+
+            # Extract and write features for each relevant layer.
+            for key in a:
+                if key == "shape" or a[key]['type'] == "relu":
+                    continue
+
+                blob = net.blobs[key].data[...]
+
+                if len(blob.shape) == 4:
+                    blob = blob.reshape(blob.shape[0]*blob.shape[1], blob.shape[2]*blob.shape[3]) 
+                elif len(blob.shape) == 3:
+                    blob = blob.reshape(blob.shape[0], blob.shape[1]*blob.shape[2])
+                else:
+                    pass
+
+                if not os.path.exists(os.path.join('features', model)):
+                    os.makedirs(os.path.join('features', model, "caffe"))
+                    os.makedirs(os.path.join('features', model, "eigen"))
+                    os.makedirs(os.path.join('features', model, "gemmlowp"))
+
+                if key == a.keys()[-1]:
+                    np.savetxt(os.path.join('features', model, "caffe", key + "_%s" % tick + ".csv"), blob, fmt='%.10f', delimiter=',')
+
+            tick += 1
             
-        # Forward propogate (1) image.
-        out = net.forward()
-
-        # Extract and write features for each relevant layer.
-        for key in a:
-            if key == "shape" or a[key]['type'] == "relu":
-                continue
-   
-            blob = net.blobs[key].data[...]
-
-            if len(blob.shape) == 4:
-                blob = blob.reshape(blob.shape[0]*blob.shape[1], blob.shape[2]*blob.shape[3]) 
-            elif len(blob.shape) == 3:
-                blob = blob.reshape(blob.shape[0], blob.shape[1]*blob.shape[2])
-            else:
-                pass
-
-            if not os.path.exists(os.path.join('features', model)):
-                os.makedirs(os.path.join('features', model, "caffe"))
-                os.makedirs(os.path.join('features', model, "eigen"))
-                os.makedirs(os.path.join('features', model, "gemmlowp"))
-            
-            np.savetxt(os.path.join('features', model, "caffe", key+".csv"), blob, fmt='%.10f', delimiter=',')
-
 if __name__ == "__main__":
     main()

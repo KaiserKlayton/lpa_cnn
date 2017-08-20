@@ -243,7 +243,7 @@ def main():
             to_write.append((pos, "\t\t"+l+"\n"))
             pos += 1   
                                       
-        pos = pos + 12
+        pos = pos + 7
         tick = 1
         pool_tick = 1
         relu_tick = 1
@@ -351,7 +351,7 @@ def main():
             
             if j == last_item:          
                 lines_three.extend([
-                'std::string name_%i = "../features/%s/%s_" + std::to_string(i) + ".csv";' % (name_tick, m, j),
+                'std::string name_%i = "../features/%s/" + mode + "/%s_" + std::to_string(i) + ".csv";' % (name_tick, m, j),
                 'write_to_csv(name_%i, %s);' % (name_tick, j),
              ])
                 name_tick += 1

@@ -32,31 +32,26 @@ int main(int argc, char *argv[])
     std::string mode = argv[1];
 
     for(int i=0; i < im_num; ++i)
-    {   
+    {
         cout << i << endl;
-    
+
         MatrixXd img;
-        if ( line.rows() != 1 ) {
-            img = line.block<1,im_size_1*im_depth_1>(i,0);
-        }
-        else {          
-            img = line.block<1,im_size_1*im_depth_1>(0,0);
-        }
-        
+        img = line.block<1,im_size_1*im_depth_1>(0,1);
+
         MatrixXd image = Map<Matrix<double, im_depth_1, im_size_1, RowMajor>>(img.data());
 
         clock_t run_time_start = clock();
-        
+
         clock_t run_time_end = clock();
-        
-        double run_time = (double) (run_time_end-run_time_start) / CLOCKS_PER_SEC;   
+
+        double run_time = (double) (run_time_end-run_time_start) / CLOCKS_PER_SEC;
     }
 
     infile.close();
 
     cout << "-----------------------------" << endl;
 
-    float avg_run_time = 0.0;            
+    float avg_run_time = 0.0;
     avg_run_time = run_time_total / im_num;
     cout << "average online run time: " << avg_run_time << endl;
 
@@ -64,5 +59,5 @@ int main(int argc, char *argv[])
     avg_gemm_time = gemm_time_total / im_num;
     cout << "average total time for GEMM: " << avg_gemm_time << endl;
 
-    return 0; 
+    return 0;
 }

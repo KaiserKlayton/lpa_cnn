@@ -2446,23 +2446,18 @@ int main(int argc, char *argv[])
 	infile.open("../inputs/ResNet101/production/imagenet_img_norm_1000.csv");
 	
     for(int i=0; i < im_num; ++i)
-    {   
+    {
         cout << i << endl;
-    
+
 		MatrixXd line = load_csv<MatrixXd>(infile);
 		
         MatrixXd img;
-        if ( line.rows() != 1 ) {
-            img = line.block<1,im_size_1*im_depth_1>(i,0);
-        }
-        else {          
-            img = line.block<1,im_size_1*im_depth_1>(0,0);
-        }
-        
+        img = line.block<1,im_size_1*im_depth_1>(0,1);
+
         MatrixXd image = Map<Matrix<double, im_depth_1, im_size_1, RowMajor>>(img.data());
 
         clock_t run_time_start = clock();
-        
+
 		MatrixXd conv1;
 		double gemm_time_1;
 		double offline_time_1;
@@ -3256,12 +3251,12 @@ int main(int argc, char *argv[])
 		MatrixXd fc1000 = fully_connect(pool5, pool5.rows(), fc1000_weights, fc1000_b);
 		
         clock_t run_time_end = clock();
-        
-        double run_time = (double) (run_time_end-run_time_start) / CLOCKS_PER_SEC;   
+
+        double run_time = (double) (run_time_end-run_time_start) / CLOCKS_PER_SEC;
 		run_time_total += (run_time - offline_time_1 - offline_time_2 - offline_time_3 - offline_time_4 - offline_time_5 - offline_time_6 - offline_time_7 - offline_time_8 - offline_time_9 - offline_time_10 - offline_time_11 - offline_time_12 - offline_time_13 - offline_time_14 - offline_time_15 - offline_time_16 - offline_time_17 - offline_time_18 - offline_time_19 - offline_time_20 - offline_time_21 - offline_time_22 - offline_time_23 - offline_time_24 - offline_time_25 - offline_time_26 - offline_time_27 - offline_time_28 - offline_time_29 - offline_time_30 - offline_time_31 - offline_time_32 - offline_time_33 - offline_time_34 - offline_time_35 - offline_time_36 - offline_time_37 - offline_time_38 - offline_time_39 - offline_time_40 - offline_time_41 - offline_time_42 - offline_time_43 - offline_time_44 - offline_time_45 - offline_time_46 - offline_time_47 - offline_time_48 - offline_time_49 - offline_time_50 - offline_time_51 - offline_time_52 - offline_time_53 - offline_time_54 - offline_time_55 - offline_time_56 - offline_time_57 - offline_time_58 - offline_time_59 - offline_time_60 - offline_time_61 - offline_time_62 - offline_time_63 - offline_time_64 - offline_time_65 - offline_time_66 - offline_time_67 - offline_time_68 - offline_time_69 - offline_time_70 - offline_time_71 - offline_time_72 - offline_time_73 - offline_time_74 - offline_time_75 - offline_time_76 - offline_time_77 - offline_time_78 - offline_time_79 - offline_time_80 - offline_time_81 - offline_time_82 - offline_time_83 - offline_time_84 - offline_time_85 - offline_time_86 - offline_time_87 - offline_time_88 - offline_time_89 - offline_time_90 - offline_time_91 - offline_time_92 - offline_time_93 - offline_time_94 - offline_time_95 - offline_time_96 - offline_time_97 - offline_time_98 - offline_time_99 - offline_time_100 - offline_time_101 - offline_time_102 - offline_time_103 - offline_time_104);
 		gemm_time_total += 0.0 + gemm_time_1 + gemm_time_2 + gemm_time_3 + gemm_time_4 + gemm_time_5 + gemm_time_6 + gemm_time_7 + gemm_time_8 + gemm_time_9 + gemm_time_10 + gemm_time_11 + gemm_time_12 + gemm_time_13 + gemm_time_14 + gemm_time_15 + gemm_time_16 + gemm_time_17 + gemm_time_18 + gemm_time_19 + gemm_time_20 + gemm_time_21 + gemm_time_22 + gemm_time_23 + gemm_time_24 + gemm_time_25 + gemm_time_26 + gemm_time_27 + gemm_time_28 + gemm_time_29 + gemm_time_30 + gemm_time_31 + gemm_time_32 + gemm_time_33 + gemm_time_34 + gemm_time_35 + gemm_time_36 + gemm_time_37 + gemm_time_38 + gemm_time_39 + gemm_time_40 + gemm_time_41 + gemm_time_42 + gemm_time_43 + gemm_time_44 + gemm_time_45 + gemm_time_46 + gemm_time_47 + gemm_time_48 + gemm_time_49 + gemm_time_50 + gemm_time_51 + gemm_time_52 + gemm_time_53 + gemm_time_54 + gemm_time_55 + gemm_time_56 + gemm_time_57 + gemm_time_58 + gemm_time_59 + gemm_time_60 + gemm_time_61 + gemm_time_62 + gemm_time_63 + gemm_time_64 + gemm_time_65 + gemm_time_66 + gemm_time_67 + gemm_time_68 + gemm_time_69 + gemm_time_70 + gemm_time_71 + gemm_time_72 + gemm_time_73 + gemm_time_74 + gemm_time_75 + gemm_time_76 + gemm_time_77 + gemm_time_78 + gemm_time_79 + gemm_time_80 + gemm_time_81 + gemm_time_82 + gemm_time_83 + gemm_time_84 + gemm_time_85 + gemm_time_86 + gemm_time_87 + gemm_time_88 + gemm_time_89 + gemm_time_90 + gemm_time_91 + gemm_time_92 + gemm_time_93 + gemm_time_94 + gemm_time_95 + gemm_time_96 + gemm_time_97 + gemm_time_98 + gemm_time_99 + gemm_time_100 + gemm_time_101 + gemm_time_102 + gemm_time_103 + gemm_time_104;
 		
-		std::string name_1 = "../features/ResNet101/fc1000_" + std::to_string(i) + ".csv";
+		std::string name_1 = "../features/ResNet101/" + mode + "/fc1000_" + std::to_string(i) + ".csv";
 		write_to_csv(name_1, fc1000);
     }
 
@@ -3269,7 +3264,7 @@ int main(int argc, char *argv[])
 
     cout << "-----------------------------" << endl;
 
-    float avg_run_time = 0.0;            
+    float avg_run_time = 0.0;
     avg_run_time = run_time_total / im_num;
     cout << "average online run time: " << avg_run_time << endl;
 
@@ -3277,5 +3272,5 @@ int main(int argc, char *argv[])
     avg_gemm_time = gemm_time_total / im_num;
     cout << "average total time for GEMM: " << avg_gemm_time << endl;
 
-    return 0; 
+    return 0;
 }

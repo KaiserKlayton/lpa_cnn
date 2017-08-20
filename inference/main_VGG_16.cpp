@@ -381,23 +381,18 @@ int main(int argc, char *argv[])
 	infile.open("../inputs/VGG_16/production/imagenet_pxl_norm_1000.csv");
 	
     for(int i=0; i < im_num; ++i)
-    {   
+    {
         cout << i << endl;
-    
+
 		MatrixXd line = load_csv<MatrixXd>(infile);
 		
         MatrixXd img;
-        if ( line.rows() != 1 ) {
-            img = line.block<1,im_size_1*im_depth_1>(i,0);
-        }
-        else {          
-            img = line.block<1,im_size_1*im_depth_1>(0,0);
-        }
-        
+        img = line.block<1,im_size_1*im_depth_1>(0,1);
+
         MatrixXd image = Map<Matrix<double, im_depth_1, im_size_1, RowMajor>>(img.data());
 
         clock_t run_time_start = clock();
-        
+
 		MatrixXd conv1_1;
 		double gemm_time_1;
 		double offline_time_1;
@@ -510,12 +505,12 @@ int main(int argc, char *argv[])
 		MatrixXd fc8 = fully_connect(relu7, relu7.rows(), fc8_weights, fc8_b);
 		
         clock_t run_time_end = clock();
-        
-        double run_time = (double) (run_time_end-run_time_start) / CLOCKS_PER_SEC;   
+
+        double run_time = (double) (run_time_end-run_time_start) / CLOCKS_PER_SEC;
 		run_time_total += (run_time - offline_time_1 - offline_time_2 - offline_time_3 - offline_time_4 - offline_time_5 - offline_time_6 - offline_time_7 - offline_time_8 - offline_time_9 - offline_time_10 - offline_time_11 - offline_time_12 - offline_time_13);
 		gemm_time_total += 0.0 + gemm_time_1 + gemm_time_2 + gemm_time_3 + gemm_time_4 + gemm_time_5 + gemm_time_6 + gemm_time_7 + gemm_time_8 + gemm_time_9 + gemm_time_10 + gemm_time_11 + gemm_time_12 + gemm_time_13;
 		
-		std::string name_1 = "../features/VGG_16/fc8_" + std::to_string(i) + ".csv";
+		std::string name_1 = "../features/VGG_16/" + mode + "/fc8_" + std::to_string(i) + ".csv";
 		write_to_csv(name_1, fc8);
     }
 
@@ -523,7 +518,7 @@ int main(int argc, char *argv[])
 
     cout << "-----------------------------" << endl;
 
-    float avg_run_time = 0.0;            
+    float avg_run_time = 0.0;
     avg_run_time = run_time_total / im_num;
     cout << "average online run time: " << avg_run_time << endl;
 
@@ -531,5 +526,5 @@ int main(int argc, char *argv[])
     avg_gemm_time = gemm_time_total / im_num;
     cout << "average total time for GEMM: " << avg_gemm_time << endl;
 
-    return 0; 
+    return 0;
 }
