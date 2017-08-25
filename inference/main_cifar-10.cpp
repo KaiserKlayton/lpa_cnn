@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
 	
 	const int f_1 = 2;
 	const int s_1 = 2;
+	std::string mode_1 = "max";
 	
 	const int pp1_1 = 0;
 	const int pp2_1 = 0;
@@ -85,6 +86,7 @@ int main(int argc, char *argv[])
 	
 	const int f_2 = 2;
 	const int s_2 = 2;
+	std::string mode_2 = "ave";
 	
 	const int pp1_2 = 0;
 	const int pp2_2 = 0;
@@ -114,6 +116,7 @@ int main(int argc, char *argv[])
 	
 	const int f_3 = 2;
 	const int s_3 = 2;
+	std::string mode_3 = "ave";
 	
 	const int pp1_3 = 0;
 	const int pp2_3 = 0;
@@ -131,7 +134,7 @@ int main(int argc, char *argv[])
 	const int im_num = 1000;
 	
 	ifstream infile;
-	infile.open("../inputs/cifar-10/production/cifar-10.1000.csv");
+	infile.open("../inputs/cifar-10/production/cifar-10_img_norm_1000.csv");
 	
     for(int i=0; i < im_num; ++i)
     {
@@ -151,7 +154,7 @@ int main(int argc, char *argv[])
 		double offline_time_1;
 		std::tie(conv1, gemm_time_1, offline_time_1) = convolve(image, im_size_1, im_height_1, im_width_1, im_depth_1, k_size_1, stride_1, conv1_b, p1_1, p2_1, conv1_w, output_size_1, mode);
 		
-		MatrixXd pool1 = pool(conv1, f_1, s_1, output_width_1, output_height_1, pp1_1, pp2_1);
+		MatrixXd pool1 = pool(conv1, f_1, s_1, output_width_1, output_height_1, pp1_1, pp2_1, mode_1);
 		
 		MatrixXd relu1 = relu(pool1);
 		
@@ -162,7 +165,7 @@ int main(int argc, char *argv[])
 		
 		MatrixXd relu2 = relu(conv2);
 		
-		MatrixXd pool2 = pool(relu2, f_2, s_2, output_width_2, output_height_2, pp1_2, pp2_2);
+		MatrixXd pool2 = pool(relu2, f_2, s_2, output_width_2, output_height_2, pp1_2, pp2_2, mode_2);
 		
 		MatrixXd conv3;
 		double gemm_time_3;
@@ -171,7 +174,7 @@ int main(int argc, char *argv[])
 		
 		MatrixXd relu3 = relu(conv3);
 		
-		MatrixXd pool3 = pool(relu3, f_3, s_3, output_width_3, output_height_3, pp1_3, pp2_3);
+		MatrixXd pool3 = pool(relu3, f_3, s_3, output_width_3, output_height_3, pp1_3, pp2_3, mode_3);
 		
 		MatrixXd ip1 = fully_connect(pool3, pool3.rows(), ip1_weights, ip1_b);
 		

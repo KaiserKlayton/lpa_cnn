@@ -169,10 +169,14 @@ def main():
                     
                 if not "stride" in a[i].keys():
                     a[i]['stride'] = 1
-                              
+
+                if not "pool" in a[i].keys():
+                    a[i]['pool'] = "max"
+
                 lines.extend([
                     "const int f_%i = %d;" % (pool_tick, a[i]['kernel_size']),
                     "const int s_%i = %d;" % (pool_tick, a[i]['stride']),
+                    "std::string mode_%i = \"%s\";" % (pool_tick, a[i]['pool']),
                     ""
                 ])
                 
@@ -295,7 +299,7 @@ def main():
                 
             elif i_type == "pooling":
                 lines_two.extend([
-                    "MatrixXd %s = pool(%s, f_%i, s_%i, output_width_%i, output_height_%i, pp1_%i, pp2_%i);" % (i, last_output, pool_tick, pool_tick, tick-1, tick-1, pool_tick, pool_tick),
+                    "MatrixXd %s = pool(%s, f_%i, s_%i, output_width_%i, output_height_%i, pp1_%i, pp2_%i, mode_%i);" % (i, last_output, pool_tick, pool_tick, tick-1, tick-1, pool_tick, pool_tick, pool_tick),
                     ""
                 ])
                     

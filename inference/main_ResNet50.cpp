@@ -56,6 +56,7 @@ int main(int argc, char *argv[])
 	
 	const int f_1 = 2;
 	const int s_1 = 2;
+	std::string mode_1 = "max";
 	
 	const int pp1_1 = 0;
 	const int pp2_1 = 0;
@@ -1258,6 +1259,7 @@ int main(int argc, char *argv[])
 	
 	const int f_2 = 7;
 	const int s_2 = 1;
+	std::string mode_2 = "max";
 	
 	const int pp1_2 = 0;
 	const int pp2_2 = 0;
@@ -1292,7 +1294,7 @@ int main(int argc, char *argv[])
 		
 		MatrixXd conv1_relu = relu(conv1);
 		
-		MatrixXd pool1 = pool(conv1_relu, f_1, s_1, output_width_1, output_height_1, pp1_1, pp2_1);
+		MatrixXd pool1 = pool(conv1_relu, f_1, s_1, output_width_1, output_height_1, pp1_1, pp2_1, mode_1);
 		
 		MatrixXd res2a_branch1;
 		double gemm_time_2;
@@ -1682,7 +1684,7 @@ int main(int argc, char *argv[])
 		
 		MatrixXd res5c_relu = relu(res5c);
 		
-		MatrixXd pool5 = pool(res5c_relu, f_2, s_2, output_width_53, output_height_53, pp1_2, pp2_2);
+		MatrixXd pool5 = pool(res5c_relu, f_2, s_2, output_width_53, output_height_53, pp1_2, pp2_2, mode_2);
 		
 		MatrixXd fc1000 = fully_connect(pool5, pool5.rows(), fc1000_weights, fc1000_b);
 		

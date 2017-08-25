@@ -79,6 +79,7 @@ int main(int argc, char *argv[])
 	
 	const int f_1 = 2;
 	const int s_1 = 2;
+	std::string mode_1 = "max";
 	
 	const int pp1_1 = 0;
 	const int pp2_1 = 0;
@@ -131,6 +132,7 @@ int main(int argc, char *argv[])
 	
 	const int f_2 = 2;
 	const int s_2 = 2;
+	std::string mode_2 = "max";
 	
 	const int pp1_2 = 0;
 	const int pp2_2 = 0;
@@ -206,6 +208,7 @@ int main(int argc, char *argv[])
 	
 	const int f_3 = 2;
 	const int s_3 = 2;
+	std::string mode_3 = "max";
 	
 	const int pp1_3 = 0;
 	const int pp2_3 = 0;
@@ -281,6 +284,7 @@ int main(int argc, char *argv[])
 	
 	const int f_4 = 2;
 	const int s_4 = 2;
+	std::string mode_4 = "max";
 	
 	const int pp1_4 = 0;
 	const int pp2_4 = 0;
@@ -356,6 +360,7 @@ int main(int argc, char *argv[])
 	
 	const int f_5 = 2;
 	const int s_5 = 2;
+	std::string mode_5 = "max";
 	
 	const int pp1_5 = 0;
 	const int pp2_5 = 0;
@@ -407,7 +412,7 @@ int main(int argc, char *argv[])
 		
 		MatrixXd relu1_2 = relu(conv1_2);
 		
-		MatrixXd pool1 = pool(relu1_2, f_1, s_1, output_width_2, output_height_2, pp1_1, pp2_1);
+		MatrixXd pool1 = pool(relu1_2, f_1, s_1, output_width_2, output_height_2, pp1_1, pp2_1, mode_1);
 		
 		MatrixXd conv2_1;
 		double gemm_time_3;
@@ -423,7 +428,7 @@ int main(int argc, char *argv[])
 		
 		MatrixXd relu2_2 = relu(conv2_2);
 		
-		MatrixXd pool2 = pool(relu2_2, f_2, s_2, output_width_4, output_height_4, pp1_2, pp2_2);
+		MatrixXd pool2 = pool(relu2_2, f_2, s_2, output_width_4, output_height_4, pp1_2, pp2_2, mode_2);
 		
 		MatrixXd conv3_1;
 		double gemm_time_5;
@@ -446,7 +451,7 @@ int main(int argc, char *argv[])
 		
 		MatrixXd relu3_3 = relu(conv3_3);
 		
-		MatrixXd pool3 = pool(relu3_3, f_3, s_3, output_width_7, output_height_7, pp1_3, pp2_3);
+		MatrixXd pool3 = pool(relu3_3, f_3, s_3, output_width_7, output_height_7, pp1_3, pp2_3, mode_3);
 		
 		MatrixXd conv4_1;
 		double gemm_time_8;
@@ -469,7 +474,7 @@ int main(int argc, char *argv[])
 		
 		MatrixXd relu4_3 = relu(conv4_3);
 		
-		MatrixXd pool4 = pool(relu4_3, f_4, s_4, output_width_10, output_height_10, pp1_4, pp2_4);
+		MatrixXd pool4 = pool(relu4_3, f_4, s_4, output_width_10, output_height_10, pp1_4, pp2_4, mode_4);
 		
 		MatrixXd conv5_1;
 		double gemm_time_11;
@@ -492,7 +497,7 @@ int main(int argc, char *argv[])
 		
 		MatrixXd relu5_3 = relu(conv5_3);
 		
-		MatrixXd pool5 = pool(relu5_3, f_5, s_5, output_width_13, output_height_13, pp1_5, pp2_5);
+		MatrixXd pool5 = pool(relu5_3, f_5, s_5, output_width_13, output_height_13, pp1_5, pp2_5, mode_5);
 		
 		MatrixXd fc6 = fully_connect(pool5, pool5.rows(), fc6_weights, fc6_b);
 		
