@@ -46,7 +46,7 @@ def main():
     
     index = 0
     result = np.empty((0, 150529))
-    for i in sorted(glob.glob(READ_DIR+'*.JPEG')):
+    for i in sorted(glob.glob(READ_DIR + '*.JPEG')):
         print result.shape
         image = load_image(i)
 
@@ -75,7 +75,7 @@ if __name__ == "__main__":
         option = sys.argv[1]
         option and option.lower() == "mean_image" or option and option.lower() == "mean_pixel"
     except IndexError:
-        print "Usage: python preprocess_imagenet.py <mean_image> | <mean_pixel>"
+        print "Usage: python helper/preprocess_imagenet.py <mean_image> | <mean_pixel>"
         sys.exit(1)
 
     main()
