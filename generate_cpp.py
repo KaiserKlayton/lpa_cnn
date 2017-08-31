@@ -80,8 +80,8 @@ def main():
                         "const int p1_%d = %d;" % (counter, a[i]['pad']),
                         "const int p2_%d = %d;" % (counter, a[i]['pad']),
                         "",
-                        "const int output_height_%d = (((im_height_%d+(2*p1_%d)) - sqrt(k_size_%d))/stride_%d) + 1;" % (counter, counter, counter, counter, counter),
-                        "const int output_width_%d = (((im_width_%d+(2*p2_%d)) - sqrt(k_size_%d))/stride_%d) + 1;" % (counter, counter, counter, counter, counter),
+                        "const int output_height_%d = static_cast<int>(ceil(static_cast<float>(im_height_%d + 2 * p1_%d - sqrt(k_size_%d)) / stride_%d)) + 1;" % (counter, counter, counter, counter, counter),
+                        "const int output_width_%d = static_cast<int>(ceil(static_cast<float>(im_width_%d + 2 * p2_%d - sqrt(k_size_%d)) / stride_%d)) + 1;" % (counter, counter, counter, counter, counter),
                         "const int output_size_%d = output_height_%d * output_width_%d;" % (counter, counter, counter),
                         ""
                     ])
@@ -118,8 +118,8 @@ def main():
                         ])
                     else:  
                         lines.extend([                     
-                            "const int im_height_%d = ((output_height_%d - f_%d + 2 * pp1_%d) / s_%d) + 1;" % (counter, tick-1, pool_tick-1, pool_tick-1, pool_tick-1),
-                            "const int im_width_%d = ((output_width_%d - f_%d + 2 * pp2_%d) / s_%d) + 1;" % (counter, tick-1, pool_tick-1, pool_tick-1, pool_tick-1),
+                            "const int im_height_%d = static_cast<int>(ceil(static_cast<float>(output_height_%d - f_%d + 2 * pp1_%d) / s_%d)) + 1;" % (counter, tick-1, pool_tick-1, pool_tick-1, pool_tick-1),
+                            "const int im_width_%d = static_cast<int>(ceil(static_cast<float>(output_width_%d - f_%d + 2 * pp2_%d) / s_%d)) + 1;" % (counter, tick-1, pool_tick-1, pool_tick-1, pool_tick-1),
                             "const int im_depth_%d = k_num_%d;" % (counter, tick-1),
                             "const int im_size_%d = im_height_%d * im_width_%d;" % (counter, counter, counter),
                             ""
@@ -134,8 +134,8 @@ def main():
                         "const int p1_%d = %d;" % (counter, a[i]['pad']),
                         "const int p2_%d = %d;" % (counter, a[i]['pad']),
                         "",
-                        "const int output_height_%d = (((im_height_%d+(2*p1_%d)) - sqrt(k_size_%d))/stride_%d) + 1;" % (counter, counter, counter, counter, counter),
-                        "const int output_width_%d = (((im_width_%d+(2*p2_%d)) - sqrt(k_size_%d))/stride_%d) + 1;" % (counter, counter, counter, counter, counter),
+                        "const int output_height_%d = static_cast<int>(ceil(static_cast<float>(im_height_%d + 2 * p1_%d - sqrt(k_size_%d)) / stride_%d)) + 1;" % (counter, counter, counter, counter, counter),
+                        "const int output_width_%d = static_cast<int>(ceil(static_cast<float>(im_width_%d + 2 * p2_%d - sqrt(k_size_%d)) / stride_%d)) + 1;" % (counter, counter, counter, counter, counter),
                         "const int output_size_%d = output_height_%d * output_width_%d;" % (counter, counter, counter),
                         ""
                     ])

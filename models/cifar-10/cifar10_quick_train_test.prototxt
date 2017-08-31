@@ -83,7 +83,7 @@ layer {
   top: "pool2"
   pooling_param {
     pool: AVE
-    kernel_size: 2
+    kernel_size: 3
     stride: 2
   }
 }
@@ -124,7 +124,7 @@ layer {
   top: "pool3"
   pooling_param {
     pool: AVE
-    kernel_size: 2
+    kernel_size: 3
     stride: 2
   }
 }

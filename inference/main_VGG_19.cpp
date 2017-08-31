@@ -44,8 +44,8 @@ int main(int argc, char *argv[])
 	const int p1_1 = 1;
 	const int p2_1 = 1;
 	
-	const int output_height_1 = (((im_height_1+(2*p1_1)) - sqrt(k_size_1))/stride_1) + 1;
-	const int output_width_1 = (((im_width_1+(2*p2_1)) - sqrt(k_size_1))/stride_1) + 1;
+	const int output_height_1 = static_cast<int>(ceil(static_cast<float>(im_height_1 + 2 * p1_1 - sqrt(k_size_1)) / stride_1)) + 1;
+	const int output_width_1 = static_cast<int>(ceil(static_cast<float>(im_width_1 + 2 * p2_1 - sqrt(k_size_1)) / stride_1)) + 1;
 	const int output_size_1 = output_height_1 * output_width_1;
 	
 	MatrixXd conv1_1_weights = load_csv_arma<MatrixXd>("../weights/VGG_19/conv1_1_weights.csv");
@@ -67,8 +67,8 @@ int main(int argc, char *argv[])
 	const int p1_2 = 1;
 	const int p2_2 = 1;
 	
-	const int output_height_2 = (((im_height_2+(2*p1_2)) - sqrt(k_size_2))/stride_2) + 1;
-	const int output_width_2 = (((im_width_2+(2*p2_2)) - sqrt(k_size_2))/stride_2) + 1;
+	const int output_height_2 = static_cast<int>(ceil(static_cast<float>(im_height_2 + 2 * p1_2 - sqrt(k_size_2)) / stride_2)) + 1;
+	const int output_width_2 = static_cast<int>(ceil(static_cast<float>(im_width_2 + 2 * p2_2 - sqrt(k_size_2)) / stride_2)) + 1;
 	const int output_size_2 = output_height_2 * output_width_2;
 	
 	MatrixXd conv1_2_weights = load_csv_arma<MatrixXd>("../weights/VGG_19/conv1_2_weights.csv");
@@ -84,8 +84,8 @@ int main(int argc, char *argv[])
 	const int pp1_1 = 0;
 	const int pp2_1 = 0;
 	
-	const int im_height_3 = ((output_height_2 - f_1 + 2 * pp1_1) / s_1) + 1;
-	const int im_width_3 = ((output_width_2 - f_1 + 2 * pp2_1) / s_1) + 1;
+	const int im_height_3 = static_cast<int>(ceil(static_cast<float>(output_height_2 - f_1 + 2 * pp1_1) / s_1)) + 1;
+	const int im_width_3 = static_cast<int>(ceil(static_cast<float>(output_width_2 - f_1 + 2 * pp2_1) / s_1)) + 1;
 	const int im_depth_3 = k_num_2;
 	const int im_size_3 = im_height_3 * im_width_3;
 	
@@ -97,8 +97,8 @@ int main(int argc, char *argv[])
 	const int p1_3 = 1;
 	const int p2_3 = 1;
 	
-	const int output_height_3 = (((im_height_3+(2*p1_3)) - sqrt(k_size_3))/stride_3) + 1;
-	const int output_width_3 = (((im_width_3+(2*p2_3)) - sqrt(k_size_3))/stride_3) + 1;
+	const int output_height_3 = static_cast<int>(ceil(static_cast<float>(im_height_3 + 2 * p1_3 - sqrt(k_size_3)) / stride_3)) + 1;
+	const int output_width_3 = static_cast<int>(ceil(static_cast<float>(im_width_3 + 2 * p2_3 - sqrt(k_size_3)) / stride_3)) + 1;
 	const int output_size_3 = output_height_3 * output_width_3;
 	
 	MatrixXd conv2_1_weights = load_csv_arma<MatrixXd>("../weights/VGG_19/conv2_1_weights.csv");
@@ -120,8 +120,8 @@ int main(int argc, char *argv[])
 	const int p1_4 = 1;
 	const int p2_4 = 1;
 	
-	const int output_height_4 = (((im_height_4+(2*p1_4)) - sqrt(k_size_4))/stride_4) + 1;
-	const int output_width_4 = (((im_width_4+(2*p2_4)) - sqrt(k_size_4))/stride_4) + 1;
+	const int output_height_4 = static_cast<int>(ceil(static_cast<float>(im_height_4 + 2 * p1_4 - sqrt(k_size_4)) / stride_4)) + 1;
+	const int output_width_4 = static_cast<int>(ceil(static_cast<float>(im_width_4 + 2 * p2_4 - sqrt(k_size_4)) / stride_4)) + 1;
 	const int output_size_4 = output_height_4 * output_width_4;
 	
 	MatrixXd conv2_2_weights = load_csv_arma<MatrixXd>("../weights/VGG_19/conv2_2_weights.csv");
@@ -137,8 +137,8 @@ int main(int argc, char *argv[])
 	const int pp1_2 = 0;
 	const int pp2_2 = 0;
 	
-	const int im_height_5 = ((output_height_4 - f_2 + 2 * pp1_2) / s_2) + 1;
-	const int im_width_5 = ((output_width_4 - f_2 + 2 * pp2_2) / s_2) + 1;
+	const int im_height_5 = static_cast<int>(ceil(static_cast<float>(output_height_4 - f_2 + 2 * pp1_2) / s_2)) + 1;
+	const int im_width_5 = static_cast<int>(ceil(static_cast<float>(output_width_4 - f_2 + 2 * pp2_2) / s_2)) + 1;
 	const int im_depth_5 = k_num_4;
 	const int im_size_5 = im_height_5 * im_width_5;
 	
@@ -150,8 +150,8 @@ int main(int argc, char *argv[])
 	const int p1_5 = 1;
 	const int p2_5 = 1;
 	
-	const int output_height_5 = (((im_height_5+(2*p1_5)) - sqrt(k_size_5))/stride_5) + 1;
-	const int output_width_5 = (((im_width_5+(2*p2_5)) - sqrt(k_size_5))/stride_5) + 1;
+	const int output_height_5 = static_cast<int>(ceil(static_cast<float>(im_height_5 + 2 * p1_5 - sqrt(k_size_5)) / stride_5)) + 1;
+	const int output_width_5 = static_cast<int>(ceil(static_cast<float>(im_width_5 + 2 * p2_5 - sqrt(k_size_5)) / stride_5)) + 1;
 	const int output_size_5 = output_height_5 * output_width_5;
 	
 	MatrixXd conv3_1_weights = load_csv_arma<MatrixXd>("../weights/VGG_19/conv3_1_weights.csv");
@@ -173,8 +173,8 @@ int main(int argc, char *argv[])
 	const int p1_6 = 1;
 	const int p2_6 = 1;
 	
-	const int output_height_6 = (((im_height_6+(2*p1_6)) - sqrt(k_size_6))/stride_6) + 1;
-	const int output_width_6 = (((im_width_6+(2*p2_6)) - sqrt(k_size_6))/stride_6) + 1;
+	const int output_height_6 = static_cast<int>(ceil(static_cast<float>(im_height_6 + 2 * p1_6 - sqrt(k_size_6)) / stride_6)) + 1;
+	const int output_width_6 = static_cast<int>(ceil(static_cast<float>(im_width_6 + 2 * p2_6 - sqrt(k_size_6)) / stride_6)) + 1;
 	const int output_size_6 = output_height_6 * output_width_6;
 	
 	MatrixXd conv3_2_weights = load_csv_arma<MatrixXd>("../weights/VGG_19/conv3_2_weights.csv");
@@ -196,8 +196,8 @@ int main(int argc, char *argv[])
 	const int p1_7 = 1;
 	const int p2_7 = 1;
 	
-	const int output_height_7 = (((im_height_7+(2*p1_7)) - sqrt(k_size_7))/stride_7) + 1;
-	const int output_width_7 = (((im_width_7+(2*p2_7)) - sqrt(k_size_7))/stride_7) + 1;
+	const int output_height_7 = static_cast<int>(ceil(static_cast<float>(im_height_7 + 2 * p1_7 - sqrt(k_size_7)) / stride_7)) + 1;
+	const int output_width_7 = static_cast<int>(ceil(static_cast<float>(im_width_7 + 2 * p2_7 - sqrt(k_size_7)) / stride_7)) + 1;
 	const int output_size_7 = output_height_7 * output_width_7;
 	
 	MatrixXd conv3_3_weights = load_csv_arma<MatrixXd>("../weights/VGG_19/conv3_3_weights.csv");
@@ -219,8 +219,8 @@ int main(int argc, char *argv[])
 	const int p1_8 = 1;
 	const int p2_8 = 1;
 	
-	const int output_height_8 = (((im_height_8+(2*p1_8)) - sqrt(k_size_8))/stride_8) + 1;
-	const int output_width_8 = (((im_width_8+(2*p2_8)) - sqrt(k_size_8))/stride_8) + 1;
+	const int output_height_8 = static_cast<int>(ceil(static_cast<float>(im_height_8 + 2 * p1_8 - sqrt(k_size_8)) / stride_8)) + 1;
+	const int output_width_8 = static_cast<int>(ceil(static_cast<float>(im_width_8 + 2 * p2_8 - sqrt(k_size_8)) / stride_8)) + 1;
 	const int output_size_8 = output_height_8 * output_width_8;
 	
 	MatrixXd conv3_4_weights = load_csv_arma<MatrixXd>("../weights/VGG_19/conv3_4_weights.csv");
@@ -236,8 +236,8 @@ int main(int argc, char *argv[])
 	const int pp1_3 = 0;
 	const int pp2_3 = 0;
 	
-	const int im_height_9 = ((output_height_8 - f_3 + 2 * pp1_3) / s_3) + 1;
-	const int im_width_9 = ((output_width_8 - f_3 + 2 * pp2_3) / s_3) + 1;
+	const int im_height_9 = static_cast<int>(ceil(static_cast<float>(output_height_8 - f_3 + 2 * pp1_3) / s_3)) + 1;
+	const int im_width_9 = static_cast<int>(ceil(static_cast<float>(output_width_8 - f_3 + 2 * pp2_3) / s_3)) + 1;
 	const int im_depth_9 = k_num_8;
 	const int im_size_9 = im_height_9 * im_width_9;
 	
@@ -249,8 +249,8 @@ int main(int argc, char *argv[])
 	const int p1_9 = 1;
 	const int p2_9 = 1;
 	
-	const int output_height_9 = (((im_height_9+(2*p1_9)) - sqrt(k_size_9))/stride_9) + 1;
-	const int output_width_9 = (((im_width_9+(2*p2_9)) - sqrt(k_size_9))/stride_9) + 1;
+	const int output_height_9 = static_cast<int>(ceil(static_cast<float>(im_height_9 + 2 * p1_9 - sqrt(k_size_9)) / stride_9)) + 1;
+	const int output_width_9 = static_cast<int>(ceil(static_cast<float>(im_width_9 + 2 * p2_9 - sqrt(k_size_9)) / stride_9)) + 1;
 	const int output_size_9 = output_height_9 * output_width_9;
 	
 	MatrixXd conv4_1_weights = load_csv_arma<MatrixXd>("../weights/VGG_19/conv4_1_weights.csv");
@@ -272,8 +272,8 @@ int main(int argc, char *argv[])
 	const int p1_10 = 1;
 	const int p2_10 = 1;
 	
-	const int output_height_10 = (((im_height_10+(2*p1_10)) - sqrt(k_size_10))/stride_10) + 1;
-	const int output_width_10 = (((im_width_10+(2*p2_10)) - sqrt(k_size_10))/stride_10) + 1;
+	const int output_height_10 = static_cast<int>(ceil(static_cast<float>(im_height_10 + 2 * p1_10 - sqrt(k_size_10)) / stride_10)) + 1;
+	const int output_width_10 = static_cast<int>(ceil(static_cast<float>(im_width_10 + 2 * p2_10 - sqrt(k_size_10)) / stride_10)) + 1;
 	const int output_size_10 = output_height_10 * output_width_10;
 	
 	MatrixXd conv4_2_weights = load_csv_arma<MatrixXd>("../weights/VGG_19/conv4_2_weights.csv");
@@ -295,8 +295,8 @@ int main(int argc, char *argv[])
 	const int p1_11 = 1;
 	const int p2_11 = 1;
 	
-	const int output_height_11 = (((im_height_11+(2*p1_11)) - sqrt(k_size_11))/stride_11) + 1;
-	const int output_width_11 = (((im_width_11+(2*p2_11)) - sqrt(k_size_11))/stride_11) + 1;
+	const int output_height_11 = static_cast<int>(ceil(static_cast<float>(im_height_11 + 2 * p1_11 - sqrt(k_size_11)) / stride_11)) + 1;
+	const int output_width_11 = static_cast<int>(ceil(static_cast<float>(im_width_11 + 2 * p2_11 - sqrt(k_size_11)) / stride_11)) + 1;
 	const int output_size_11 = output_height_11 * output_width_11;
 	
 	MatrixXd conv4_3_weights = load_csv_arma<MatrixXd>("../weights/VGG_19/conv4_3_weights.csv");
@@ -318,8 +318,8 @@ int main(int argc, char *argv[])
 	const int p1_12 = 1;
 	const int p2_12 = 1;
 	
-	const int output_height_12 = (((im_height_12+(2*p1_12)) - sqrt(k_size_12))/stride_12) + 1;
-	const int output_width_12 = (((im_width_12+(2*p2_12)) - sqrt(k_size_12))/stride_12) + 1;
+	const int output_height_12 = static_cast<int>(ceil(static_cast<float>(im_height_12 + 2 * p1_12 - sqrt(k_size_12)) / stride_12)) + 1;
+	const int output_width_12 = static_cast<int>(ceil(static_cast<float>(im_width_12 + 2 * p2_12 - sqrt(k_size_12)) / stride_12)) + 1;
 	const int output_size_12 = output_height_12 * output_width_12;
 	
 	MatrixXd conv4_4_weights = load_csv_arma<MatrixXd>("../weights/VGG_19/conv4_4_weights.csv");
@@ -335,8 +335,8 @@ int main(int argc, char *argv[])
 	const int pp1_4 = 0;
 	const int pp2_4 = 0;
 	
-	const int im_height_13 = ((output_height_12 - f_4 + 2 * pp1_4) / s_4) + 1;
-	const int im_width_13 = ((output_width_12 - f_4 + 2 * pp2_4) / s_4) + 1;
+	const int im_height_13 = static_cast<int>(ceil(static_cast<float>(output_height_12 - f_4 + 2 * pp1_4) / s_4)) + 1;
+	const int im_width_13 = static_cast<int>(ceil(static_cast<float>(output_width_12 - f_4 + 2 * pp2_4) / s_4)) + 1;
 	const int im_depth_13 = k_num_12;
 	const int im_size_13 = im_height_13 * im_width_13;
 	
@@ -348,8 +348,8 @@ int main(int argc, char *argv[])
 	const int p1_13 = 1;
 	const int p2_13 = 1;
 	
-	const int output_height_13 = (((im_height_13+(2*p1_13)) - sqrt(k_size_13))/stride_13) + 1;
-	const int output_width_13 = (((im_width_13+(2*p2_13)) - sqrt(k_size_13))/stride_13) + 1;
+	const int output_height_13 = static_cast<int>(ceil(static_cast<float>(im_height_13 + 2 * p1_13 - sqrt(k_size_13)) / stride_13)) + 1;
+	const int output_width_13 = static_cast<int>(ceil(static_cast<float>(im_width_13 + 2 * p2_13 - sqrt(k_size_13)) / stride_13)) + 1;
 	const int output_size_13 = output_height_13 * output_width_13;
 	
 	MatrixXd conv5_1_weights = load_csv_arma<MatrixXd>("../weights/VGG_19/conv5_1_weights.csv");
@@ -371,8 +371,8 @@ int main(int argc, char *argv[])
 	const int p1_14 = 1;
 	const int p2_14 = 1;
 	
-	const int output_height_14 = (((im_height_14+(2*p1_14)) - sqrt(k_size_14))/stride_14) + 1;
-	const int output_width_14 = (((im_width_14+(2*p2_14)) - sqrt(k_size_14))/stride_14) + 1;
+	const int output_height_14 = static_cast<int>(ceil(static_cast<float>(im_height_14 + 2 * p1_14 - sqrt(k_size_14)) / stride_14)) + 1;
+	const int output_width_14 = static_cast<int>(ceil(static_cast<float>(im_width_14 + 2 * p2_14 - sqrt(k_size_14)) / stride_14)) + 1;
 	const int output_size_14 = output_height_14 * output_width_14;
 	
 	MatrixXd conv5_2_weights = load_csv_arma<MatrixXd>("../weights/VGG_19/conv5_2_weights.csv");
@@ -394,8 +394,8 @@ int main(int argc, char *argv[])
 	const int p1_15 = 1;
 	const int p2_15 = 1;
 	
-	const int output_height_15 = (((im_height_15+(2*p1_15)) - sqrt(k_size_15))/stride_15) + 1;
-	const int output_width_15 = (((im_width_15+(2*p2_15)) - sqrt(k_size_15))/stride_15) + 1;
+	const int output_height_15 = static_cast<int>(ceil(static_cast<float>(im_height_15 + 2 * p1_15 - sqrt(k_size_15)) / stride_15)) + 1;
+	const int output_width_15 = static_cast<int>(ceil(static_cast<float>(im_width_15 + 2 * p2_15 - sqrt(k_size_15)) / stride_15)) + 1;
 	const int output_size_15 = output_height_15 * output_width_15;
 	
 	MatrixXd conv5_3_weights = load_csv_arma<MatrixXd>("../weights/VGG_19/conv5_3_weights.csv");
@@ -417,8 +417,8 @@ int main(int argc, char *argv[])
 	const int p1_16 = 1;
 	const int p2_16 = 1;
 	
-	const int output_height_16 = (((im_height_16+(2*p1_16)) - sqrt(k_size_16))/stride_16) + 1;
-	const int output_width_16 = (((im_width_16+(2*p2_16)) - sqrt(k_size_16))/stride_16) + 1;
+	const int output_height_16 = static_cast<int>(ceil(static_cast<float>(im_height_16 + 2 * p1_16 - sqrt(k_size_16)) / stride_16)) + 1;
+	const int output_width_16 = static_cast<int>(ceil(static_cast<float>(im_width_16 + 2 * p2_16 - sqrt(k_size_16)) / stride_16)) + 1;
 	const int output_size_16 = output_height_16 * output_width_16;
 	
 	MatrixXd conv5_4_weights = load_csv_arma<MatrixXd>("../weights/VGG_19/conv5_4_weights.csv");
