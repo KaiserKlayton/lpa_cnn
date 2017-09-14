@@ -97,7 +97,7 @@ def main():
                         pass
 
                     if key == a.keys()[-1]:
-                        np.savetxt(os.path.join('features', model, "caffe", key + "_%s" % tick + ".csv"), blob, fmt='%.10f', delimiter=',')
+                        np.savetxt(os.path.join('features', model, "caffe", key + "_%s" % tick + ".csv"), blob, delimiter=',')
 
                 tick += 1
             

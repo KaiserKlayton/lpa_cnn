@@ -33,7 +33,7 @@ def main():
     result = images - mean_image
     
     results = np.hstack((labels, result))
-    np.savetxt(WRITE_FILE, results, fmt='%.10f', delimiter=',')
+    np.savetxt(WRITE_FILE, results, delimiter=',')
     
 if __name__ == "__main__":
     main()

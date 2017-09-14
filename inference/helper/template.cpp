@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 
         clock_t run_time_end = clock();
 
-        double run_time = (double) (run_time_end-run_time_start) / CLOCKS_PER_SEC;
+        float run_time = (float) (run_time_end-run_time_start) / CLOCKS_PER_SEC;
     }
 
     infile.close();

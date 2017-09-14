@@ -233,7 +233,7 @@ void QuantizeMultiplierSmallerThanOne(float real_multiplier,
   *right_shift = s;
 }
 
-std::tuple<MatrixXd, double, double> glp(const int r, const int d, const int c, const MatrixXd &a, const MatrixXd &b) {
+std::tuple<MatrixXd, float, float> glp(const int r, const int d, const int c, const MatrixXd &a, const MatrixXd &b) {
   clock_t convert_from_eigen_start = clock();
 
   std::cout.precision(3);
@@ -252,7 +252,7 @@ std::tuple<MatrixXd, double, double> glp(const int r, const int d, const int c, 
   float_rhs.FillMatrix(b);
 
   clock_t convert_from_eigen_end = clock();
-  double convert_from_eigen_time = (double) (convert_from_eigen_end-convert_from_eigen_start) / CLOCKS_PER_SEC;           
+  float convert_from_eigen_time = (float) (convert_from_eigen_end-convert_from_eigen_start) / CLOCKS_PER_SEC;           
 
   clock_t get_params_start = clock();  
 
@@ -306,7 +306,7 @@ std::tuple<MatrixXd, double, double> glp(const int r, const int d, const int c, 
   const auto result_qparams = ChooseQuantizationParams(result_min, result_max);
 
   clock_t get_params_end = clock();
-  double get_params_time = (double) (get_params_end-get_params_start) / CLOCKS_PER_SEC; 
+  float get_params_time = (float) (get_params_end-get_params_start) / CLOCKS_PER_SEC; 
 
 //  std::cout << "For LHS, we have min = " << lhs_min << ", max = " << lhs_max
 //            << ", scale = " << lhs_qparams.scale
@@ -327,7 +327,7 @@ std::tuple<MatrixXd, double, double> glp(const int r, const int d, const int c, 
   Quantize(rhs_qparams, float_rhs.Storage(), &uint8_rhs.Storage());
 
   clock_t quantize_offline_end = clock();
-  double quantize_offline_time = (double) (quantize_offline_end-quantize_offline_start) / CLOCKS_PER_SEC;
+  float quantize_offline_time = (float) (quantize_offline_end-quantize_offline_start) / CLOCKS_PER_SEC;
 
   clock_t quantize_start = clock();
 
@@ -351,7 +351,7 @@ std::tuple<MatrixXd, double, double> glp(const int r, const int d, const int c, 
                                    &right_shift);
 
   clock_t quantize_end = clock();
-  double quantize_time = (double) (quantize_end-quantize_start) / CLOCKS_PER_SEC;
+  float quantize_time = (float) (quantize_end-quantize_start) / CLOCKS_PER_SEC;
 
 //  std::cout << "End of OFFLINE QUANTIZATION CODE.\n" << std::endl;
 
@@ -380,7 +380,7 @@ std::tuple<MatrixXd, double, double> glp(const int r, const int d, const int c, 
       &actual_uint8_result_map, lhs_offset, rhs_offset, output_pipeline);
 
   clock_t gemm_end = clock();
-  double gemm_time = (double) (gemm_end-gemm_start) / CLOCKS_PER_SEC;           
+  float gemm_time = (float) (gemm_end-gemm_start) / CLOCKS_PER_SEC;           
 
 //  std::cout << "Quantized uint8 result matrix obtained by quantized "
 //            << "multiplication:\n"
@@ -400,7 +400,7 @@ std::tuple<MatrixXd, double, double> glp(const int r, const int d, const int c, 
 //      << actual_float_result << std::endl;
 
   clock_t dequantize_end = clock();
-  double dequantize_time = (double) (dequantize_end-dequantize_start) / CLOCKS_PER_SEC;
+  float dequantize_time = (float) (dequantize_end-dequantize_start) / CLOCKS_PER_SEC;
 
 //  MatrixWithStorage<float, kOrder> diff_float_result(rows, cols);
 //  for (int i = 0; i < rows; i++) {
@@ -424,7 +424,7 @@ std::tuple<MatrixXd, double, double> glp(const int r, const int d, const int c, 
   }
 
   clock_t convert_to_eigen_end = clock();
-  double convert_to_eigen_time = (double) (convert_to_eigen_end-convert_to_eigen_start) / CLOCKS_PER_SEC;
+  float convert_to_eigen_time = (float) (convert_to_eigen_end-convert_to_eigen_start) / CLOCKS_PER_SEC;
   
   std::cout << "convert_from_eigen: " << convert_from_eigen_time << std::endl;
   std::cout << "get_params: " << get_params_time << std::endl;
@@ -434,7 +434,7 @@ std::tuple<MatrixXd, double, double> glp(const int r, const int d, const int c, 
   std::cout << "dequantize: " << dequantize_time << std::endl;
   std::cout << "convert_to_eigen: " << convert_to_eigen_time << std::endl;
 
-  double offline_time = convert_from_eigen_time + get_params_time + quantize_offline_time + convert_to_eigen_time;
+  float offline_time = convert_from_eigen_time + get_params_time + quantize_offline_time + convert_to_eigen_time;
 
   return std::make_tuple(result, gemm_time, offline_time);
 }

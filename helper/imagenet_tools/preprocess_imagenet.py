@@ -68,7 +68,7 @@ def main():
         index += 1
 
     results = np.append(labels, result)
-    np.savetxt(WRITE_FILE, result, fmt='%.10f', delimiter=',')
+    np.savetxt(WRITE_FILE, result, delimiter=',')
             
 if __name__ == "__main__":
     try:

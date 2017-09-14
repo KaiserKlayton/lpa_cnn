@@ -71,7 +71,7 @@ def main():
             if not os.path.exists(os.path.join('weights', model)):
                 os.makedirs(os.path.join('weights', model))
             
-            np.savetxt(os.path.join('weights', model, key+"_weights.csv"), weight_blob, fmt='%.10f', delimiter=',')
+            np.savetxt(os.path.join('weights', model, key+"_weights.csv"), weight_blob, delimiter=',')
             
             if "bias_term" in a[key].keys():
                 if a[key]['bias_term'] == "false":
@@ -81,7 +81,7 @@ def main():
             else:
                 bias_blob = net.params[key][1].data[...]
                 
-            np.savetxt(os.path.join('weights', model, key+"_biases.csv"), bias_blob, fmt='%.10f', delimiter=',')
+            np.savetxt(os.path.join('weights', model, key+"_biases.csv"), bias_blob, delimiter=',')
 
 if __name__ == "__main__":
   main()
