@@ -11,7 +11,7 @@ R w/ gtools
 
 ## **Setup**
 
-Add caffe Python module directory to `$PYTHONPATH`.
+Install Caffe as `caffe/` (in root directory), following instructions at `https://chunml.github.io/ChunML.github.io/project/Installing-Caffe-CPU-Only/`.
 
 Have the following files in place for each desired model:
 
