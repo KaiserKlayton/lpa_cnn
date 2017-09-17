@@ -6,6 +6,6 @@
 
 using Eigen::MatrixXd;
 
-std::tuple<MatrixXd, float, float> glp(const int r, const int d, const int c, const MatrixXd &a, const MatrixXd &b);
+std::tuple<MatrixXd, float, float> glp(const int r, const int d, const int c, const MatrixXd &a, const MatrixXd &b, const float w_min, const float w_max, const float input_min, const float input_max, const float result_min, const float result_max);
 
 #endif

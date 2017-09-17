@@ -44,12 +44,18 @@ int main(int argc, char *argv[])
 	const int p1_1 = 3;
 	const int p2_1 = 3;
 	
-	const int output_height_1 = static_cast<int>(ceil(static_cast<float>(im_height_1 + 2 * p1_1 - sqrt(k_size_1)) / stride_1)) + 1;
-	const int output_width_1 = static_cast<int>(ceil(static_cast<float>(im_width_1 + 2 * p2_1 - sqrt(k_size_1)) / stride_1)) + 1;
+	const int output_height_1 = (im_height_1 + 2 * p1_1 - sqrt(k_size_1)) / stride_1 + 1;
+	const int output_width_1 = (im_width_1 + 2 * p2_1 - sqrt(k_size_1)) / stride_1 + 1;
 	const int output_size_1 = output_height_1 * output_width_1;
 	
 	MatrixXd conv1_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/conv1_weights.csv");
 	Map<MatrixXd> conv1_w(conv1_weights.data(), k_num_1, k_size_1 * k_depth_1);
+	const float conv1_min = conv1_w.minCoeff();
+	const float conv1_max = conv1_w.maxCoeff();
+	
+	MatrixXd conv1_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float conv1_result_min = conv1_result_params(0, 0);
+	const float conv1_result_max = conv1_result_params(0, 1);
 	
 	MatrixXd conv1_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/conv1_biases.csv");
 	VectorXd conv1_b(Map<VectorXd>(conv1_biases.data(), conv1_biases.cols()*conv1_biases.rows()));
@@ -61,8 +67,8 @@ int main(int argc, char *argv[])
 	const int pp1_1 = 0;
 	const int pp2_1 = 0;
 	
-	const int im_height_2 = static_cast<int>(ceil(static_cast<float>(output_height_1 - f_1 + 2 * pp1_1) / s_1)) + 1;
-	const int im_width_2 = static_cast<int>(ceil(static_cast<float>(output_width_1 - f_1 + 2 * pp2_1) / s_1)) + 1;
+	const int im_height_2 = static_cast<int>(ceil(static_cast<float>(output_height_1 + 2 * pp1_1 - f_1 ) / s_1)) + 1;
+	const int im_width_2 = static_cast<int>(ceil(static_cast<float>(output_width_1 + 2 * pp2_1 - f_1) / s_1)) + 1;
 	const int im_depth_2 = k_num_1;
 	const int im_size_2 = im_height_2 * im_width_2;
 	
@@ -74,12 +80,18 @@ int main(int argc, char *argv[])
 	const int p1_2 = 0;
 	const int p2_2 = 0;
 	
-	const int output_height_2 = static_cast<int>(ceil(static_cast<float>(im_height_2 + 2 * p1_2 - sqrt(k_size_2)) / stride_2)) + 1;
-	const int output_width_2 = static_cast<int>(ceil(static_cast<float>(im_width_2 + 2 * p2_2 - sqrt(k_size_2)) / stride_2)) + 1;
+	const int output_height_2 = (im_height_2 + 2 * p1_2 - sqrt(k_size_2)) / stride_2 + 1;
+	const int output_width_2 = (im_width_2 + 2 * p2_2 - sqrt(k_size_2)) / stride_2 + 1;
 	const int output_size_2 = output_height_2 * output_width_2;
 	
 	MatrixXd res2a_branch1_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res2a_branch1_weights.csv");
 	MatrixXd res2a_branch1_w = res2a_branch1_weights;
+	const float res2a_branch1_min = res2a_branch1_w.minCoeff();
+	const float res2a_branch1_max = res2a_branch1_w.maxCoeff();
+	
+	MatrixXd res2a_branch1_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res2a_branch1_result_min = res2a_branch1_result_params(1, 0);
+	const float res2a_branch1_result_max = res2a_branch1_result_params(1, 1);
 	
 	MatrixXd res2a_branch1_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res2a_branch1_biases.csv");
 	VectorXd res2a_branch1_b(Map<VectorXd>(res2a_branch1_biases.data(), res2a_branch1_biases.cols()*res2a_branch1_biases.rows()));
@@ -97,12 +109,18 @@ int main(int argc, char *argv[])
 	const int p1_3 = 0;
 	const int p2_3 = 0;
 	
-	const int output_height_3 = static_cast<int>(ceil(static_cast<float>(im_height_3 + 2 * p1_3 - sqrt(k_size_3)) / stride_3)) + 1;
-	const int output_width_3 = static_cast<int>(ceil(static_cast<float>(im_width_3 + 2 * p2_3 - sqrt(k_size_3)) / stride_3)) + 1;
+	const int output_height_3 = (im_height_3 + 2 * p1_3 - sqrt(k_size_3)) / stride_3 + 1;
+	const int output_width_3 = (im_width_3 + 2 * p2_3 - sqrt(k_size_3)) / stride_3 + 1;
 	const int output_size_3 = output_height_3 * output_width_3;
 	
 	MatrixXd res2a_branch2a_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res2a_branch2a_weights.csv");
 	MatrixXd res2a_branch2a_w = res2a_branch2a_weights;
+	const float res2a_branch2a_min = res2a_branch2a_w.minCoeff();
+	const float res2a_branch2a_max = res2a_branch2a_w.maxCoeff();
+	
+	MatrixXd res2a_branch2a_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res2a_branch2a_result_min = res2a_branch2a_result_params(2, 0);
+	const float res2a_branch2a_result_max = res2a_branch2a_result_params(2, 1);
 	
 	MatrixXd res2a_branch2a_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res2a_branch2a_biases.csv");
 	VectorXd res2a_branch2a_b(Map<VectorXd>(res2a_branch2a_biases.data(), res2a_branch2a_biases.cols()*res2a_branch2a_biases.rows()));
@@ -120,12 +138,18 @@ int main(int argc, char *argv[])
 	const int p1_4 = 1;
 	const int p2_4 = 1;
 	
-	const int output_height_4 = static_cast<int>(ceil(static_cast<float>(im_height_4 + 2 * p1_4 - sqrt(k_size_4)) / stride_4)) + 1;
-	const int output_width_4 = static_cast<int>(ceil(static_cast<float>(im_width_4 + 2 * p2_4 - sqrt(k_size_4)) / stride_4)) + 1;
+	const int output_height_4 = (im_height_4 + 2 * p1_4 - sqrt(k_size_4)) / stride_4 + 1;
+	const int output_width_4 = (im_width_4 + 2 * p2_4 - sqrt(k_size_4)) / stride_4 + 1;
 	const int output_size_4 = output_height_4 * output_width_4;
 	
 	MatrixXd res2a_branch2b_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res2a_branch2b_weights.csv");
 	MatrixXd res2a_branch2b_w = res2a_branch2b_weights;
+	const float res2a_branch2b_min = res2a_branch2b_w.minCoeff();
+	const float res2a_branch2b_max = res2a_branch2b_w.maxCoeff();
+	
+	MatrixXd res2a_branch2b_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res2a_branch2b_result_min = res2a_branch2b_result_params(3, 0);
+	const float res2a_branch2b_result_max = res2a_branch2b_result_params(3, 1);
 	
 	MatrixXd res2a_branch2b_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res2a_branch2b_biases.csv");
 	VectorXd res2a_branch2b_b(Map<VectorXd>(res2a_branch2b_biases.data(), res2a_branch2b_biases.cols()*res2a_branch2b_biases.rows()));
@@ -143,12 +167,18 @@ int main(int argc, char *argv[])
 	const int p1_5 = 0;
 	const int p2_5 = 0;
 	
-	const int output_height_5 = static_cast<int>(ceil(static_cast<float>(im_height_5 + 2 * p1_5 - sqrt(k_size_5)) / stride_5)) + 1;
-	const int output_width_5 = static_cast<int>(ceil(static_cast<float>(im_width_5 + 2 * p2_5 - sqrt(k_size_5)) / stride_5)) + 1;
+	const int output_height_5 = (im_height_5 + 2 * p1_5 - sqrt(k_size_5)) / stride_5 + 1;
+	const int output_width_5 = (im_width_5 + 2 * p2_5 - sqrt(k_size_5)) / stride_5 + 1;
 	const int output_size_5 = output_height_5 * output_width_5;
 	
 	MatrixXd res2a_branch2c_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res2a_branch2c_weights.csv");
 	MatrixXd res2a_branch2c_w = res2a_branch2c_weights;
+	const float res2a_branch2c_min = res2a_branch2c_w.minCoeff();
+	const float res2a_branch2c_max = res2a_branch2c_w.maxCoeff();
+	
+	MatrixXd res2a_branch2c_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res2a_branch2c_result_min = res2a_branch2c_result_params(4, 0);
+	const float res2a_branch2c_result_max = res2a_branch2c_result_params(4, 1);
 	
 	MatrixXd res2a_branch2c_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res2a_branch2c_biases.csv");
 	VectorXd res2a_branch2c_b(Map<VectorXd>(res2a_branch2c_biases.data(), res2a_branch2c_biases.cols()*res2a_branch2c_biases.rows()));
@@ -166,12 +196,18 @@ int main(int argc, char *argv[])
 	const int p1_6 = 0;
 	const int p2_6 = 0;
 	
-	const int output_height_6 = static_cast<int>(ceil(static_cast<float>(im_height_6 + 2 * p1_6 - sqrt(k_size_6)) / stride_6)) + 1;
-	const int output_width_6 = static_cast<int>(ceil(static_cast<float>(im_width_6 + 2 * p2_6 - sqrt(k_size_6)) / stride_6)) + 1;
+	const int output_height_6 = (im_height_6 + 2 * p1_6 - sqrt(k_size_6)) / stride_6 + 1;
+	const int output_width_6 = (im_width_6 + 2 * p2_6 - sqrt(k_size_6)) / stride_6 + 1;
 	const int output_size_6 = output_height_6 * output_width_6;
 	
 	MatrixXd res2b_branch2a_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res2b_branch2a_weights.csv");
 	MatrixXd res2b_branch2a_w = res2b_branch2a_weights;
+	const float res2b_branch2a_min = res2b_branch2a_w.minCoeff();
+	const float res2b_branch2a_max = res2b_branch2a_w.maxCoeff();
+	
+	MatrixXd res2b_branch2a_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res2b_branch2a_result_min = res2b_branch2a_result_params(5, 0);
+	const float res2b_branch2a_result_max = res2b_branch2a_result_params(5, 1);
 	
 	MatrixXd res2b_branch2a_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res2b_branch2a_biases.csv");
 	VectorXd res2b_branch2a_b(Map<VectorXd>(res2b_branch2a_biases.data(), res2b_branch2a_biases.cols()*res2b_branch2a_biases.rows()));
@@ -189,12 +225,18 @@ int main(int argc, char *argv[])
 	const int p1_7 = 1;
 	const int p2_7 = 1;
 	
-	const int output_height_7 = static_cast<int>(ceil(static_cast<float>(im_height_7 + 2 * p1_7 - sqrt(k_size_7)) / stride_7)) + 1;
-	const int output_width_7 = static_cast<int>(ceil(static_cast<float>(im_width_7 + 2 * p2_7 - sqrt(k_size_7)) / stride_7)) + 1;
+	const int output_height_7 = (im_height_7 + 2 * p1_7 - sqrt(k_size_7)) / stride_7 + 1;
+	const int output_width_7 = (im_width_7 + 2 * p2_7 - sqrt(k_size_7)) / stride_7 + 1;
 	const int output_size_7 = output_height_7 * output_width_7;
 	
 	MatrixXd res2b_branch2b_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res2b_branch2b_weights.csv");
 	MatrixXd res2b_branch2b_w = res2b_branch2b_weights;
+	const float res2b_branch2b_min = res2b_branch2b_w.minCoeff();
+	const float res2b_branch2b_max = res2b_branch2b_w.maxCoeff();
+	
+	MatrixXd res2b_branch2b_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res2b_branch2b_result_min = res2b_branch2b_result_params(6, 0);
+	const float res2b_branch2b_result_max = res2b_branch2b_result_params(6, 1);
 	
 	MatrixXd res2b_branch2b_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res2b_branch2b_biases.csv");
 	VectorXd res2b_branch2b_b(Map<VectorXd>(res2b_branch2b_biases.data(), res2b_branch2b_biases.cols()*res2b_branch2b_biases.rows()));
@@ -212,12 +254,18 @@ int main(int argc, char *argv[])
 	const int p1_8 = 0;
 	const int p2_8 = 0;
 	
-	const int output_height_8 = static_cast<int>(ceil(static_cast<float>(im_height_8 + 2 * p1_8 - sqrt(k_size_8)) / stride_8)) + 1;
-	const int output_width_8 = static_cast<int>(ceil(static_cast<float>(im_width_8 + 2 * p2_8 - sqrt(k_size_8)) / stride_8)) + 1;
+	const int output_height_8 = (im_height_8 + 2 * p1_8 - sqrt(k_size_8)) / stride_8 + 1;
+	const int output_width_8 = (im_width_8 + 2 * p2_8 - sqrt(k_size_8)) / stride_8 + 1;
 	const int output_size_8 = output_height_8 * output_width_8;
 	
 	MatrixXd res2b_branch2c_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res2b_branch2c_weights.csv");
 	MatrixXd res2b_branch2c_w = res2b_branch2c_weights;
+	const float res2b_branch2c_min = res2b_branch2c_w.minCoeff();
+	const float res2b_branch2c_max = res2b_branch2c_w.maxCoeff();
+	
+	MatrixXd res2b_branch2c_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res2b_branch2c_result_min = res2b_branch2c_result_params(7, 0);
+	const float res2b_branch2c_result_max = res2b_branch2c_result_params(7, 1);
 	
 	MatrixXd res2b_branch2c_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res2b_branch2c_biases.csv");
 	VectorXd res2b_branch2c_b(Map<VectorXd>(res2b_branch2c_biases.data(), res2b_branch2c_biases.cols()*res2b_branch2c_biases.rows()));
@@ -235,12 +283,18 @@ int main(int argc, char *argv[])
 	const int p1_9 = 0;
 	const int p2_9 = 0;
 	
-	const int output_height_9 = static_cast<int>(ceil(static_cast<float>(im_height_9 + 2 * p1_9 - sqrt(k_size_9)) / stride_9)) + 1;
-	const int output_width_9 = static_cast<int>(ceil(static_cast<float>(im_width_9 + 2 * p2_9 - sqrt(k_size_9)) / stride_9)) + 1;
+	const int output_height_9 = (im_height_9 + 2 * p1_9 - sqrt(k_size_9)) / stride_9 + 1;
+	const int output_width_9 = (im_width_9 + 2 * p2_9 - sqrt(k_size_9)) / stride_9 + 1;
 	const int output_size_9 = output_height_9 * output_width_9;
 	
 	MatrixXd res2c_branch2a_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res2c_branch2a_weights.csv");
 	MatrixXd res2c_branch2a_w = res2c_branch2a_weights;
+	const float res2c_branch2a_min = res2c_branch2a_w.minCoeff();
+	const float res2c_branch2a_max = res2c_branch2a_w.maxCoeff();
+	
+	MatrixXd res2c_branch2a_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res2c_branch2a_result_min = res2c_branch2a_result_params(8, 0);
+	const float res2c_branch2a_result_max = res2c_branch2a_result_params(8, 1);
 	
 	MatrixXd res2c_branch2a_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res2c_branch2a_biases.csv");
 	VectorXd res2c_branch2a_b(Map<VectorXd>(res2c_branch2a_biases.data(), res2c_branch2a_biases.cols()*res2c_branch2a_biases.rows()));
@@ -258,12 +312,18 @@ int main(int argc, char *argv[])
 	const int p1_10 = 1;
 	const int p2_10 = 1;
 	
-	const int output_height_10 = static_cast<int>(ceil(static_cast<float>(im_height_10 + 2 * p1_10 - sqrt(k_size_10)) / stride_10)) + 1;
-	const int output_width_10 = static_cast<int>(ceil(static_cast<float>(im_width_10 + 2 * p2_10 - sqrt(k_size_10)) / stride_10)) + 1;
+	const int output_height_10 = (im_height_10 + 2 * p1_10 - sqrt(k_size_10)) / stride_10 + 1;
+	const int output_width_10 = (im_width_10 + 2 * p2_10 - sqrt(k_size_10)) / stride_10 + 1;
 	const int output_size_10 = output_height_10 * output_width_10;
 	
 	MatrixXd res2c_branch2b_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res2c_branch2b_weights.csv");
 	MatrixXd res2c_branch2b_w = res2c_branch2b_weights;
+	const float res2c_branch2b_min = res2c_branch2b_w.minCoeff();
+	const float res2c_branch2b_max = res2c_branch2b_w.maxCoeff();
+	
+	MatrixXd res2c_branch2b_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res2c_branch2b_result_min = res2c_branch2b_result_params(9, 0);
+	const float res2c_branch2b_result_max = res2c_branch2b_result_params(9, 1);
 	
 	MatrixXd res2c_branch2b_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res2c_branch2b_biases.csv");
 	VectorXd res2c_branch2b_b(Map<VectorXd>(res2c_branch2b_biases.data(), res2c_branch2b_biases.cols()*res2c_branch2b_biases.rows()));
@@ -281,12 +341,18 @@ int main(int argc, char *argv[])
 	const int p1_11 = 0;
 	const int p2_11 = 0;
 	
-	const int output_height_11 = static_cast<int>(ceil(static_cast<float>(im_height_11 + 2 * p1_11 - sqrt(k_size_11)) / stride_11)) + 1;
-	const int output_width_11 = static_cast<int>(ceil(static_cast<float>(im_width_11 + 2 * p2_11 - sqrt(k_size_11)) / stride_11)) + 1;
+	const int output_height_11 = (im_height_11 + 2 * p1_11 - sqrt(k_size_11)) / stride_11 + 1;
+	const int output_width_11 = (im_width_11 + 2 * p2_11 - sqrt(k_size_11)) / stride_11 + 1;
 	const int output_size_11 = output_height_11 * output_width_11;
 	
 	MatrixXd res2c_branch2c_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res2c_branch2c_weights.csv");
 	MatrixXd res2c_branch2c_w = res2c_branch2c_weights;
+	const float res2c_branch2c_min = res2c_branch2c_w.minCoeff();
+	const float res2c_branch2c_max = res2c_branch2c_w.maxCoeff();
+	
+	MatrixXd res2c_branch2c_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res2c_branch2c_result_min = res2c_branch2c_result_params(10, 0);
+	const float res2c_branch2c_result_max = res2c_branch2c_result_params(10, 1);
 	
 	MatrixXd res2c_branch2c_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res2c_branch2c_biases.csv");
 	VectorXd res2c_branch2c_b(Map<VectorXd>(res2c_branch2c_biases.data(), res2c_branch2c_biases.cols()*res2c_branch2c_biases.rows()));
@@ -304,12 +370,18 @@ int main(int argc, char *argv[])
 	const int p1_12 = 0;
 	const int p2_12 = 0;
 	
-	const int output_height_12 = static_cast<int>(ceil(static_cast<float>(im_height_12 + 2 * p1_12 - sqrt(k_size_12)) / stride_12)) + 1;
-	const int output_width_12 = static_cast<int>(ceil(static_cast<float>(im_width_12 + 2 * p2_12 - sqrt(k_size_12)) / stride_12)) + 1;
+	const int output_height_12 = (im_height_12 + 2 * p1_12 - sqrt(k_size_12)) / stride_12 + 1;
+	const int output_width_12 = (im_width_12 + 2 * p2_12 - sqrt(k_size_12)) / stride_12 + 1;
 	const int output_size_12 = output_height_12 * output_width_12;
 	
 	MatrixXd res3a_branch1_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res3a_branch1_weights.csv");
 	MatrixXd res3a_branch1_w = res3a_branch1_weights;
+	const float res3a_branch1_min = res3a_branch1_w.minCoeff();
+	const float res3a_branch1_max = res3a_branch1_w.maxCoeff();
+	
+	MatrixXd res3a_branch1_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res3a_branch1_result_min = res3a_branch1_result_params(11, 0);
+	const float res3a_branch1_result_max = res3a_branch1_result_params(11, 1);
 	
 	MatrixXd res3a_branch1_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res3a_branch1_biases.csv");
 	VectorXd res3a_branch1_b(Map<VectorXd>(res3a_branch1_biases.data(), res3a_branch1_biases.cols()*res3a_branch1_biases.rows()));
@@ -327,12 +399,18 @@ int main(int argc, char *argv[])
 	const int p1_13 = 0;
 	const int p2_13 = 0;
 	
-	const int output_height_13 = static_cast<int>(ceil(static_cast<float>(im_height_13 + 2 * p1_13 - sqrt(k_size_13)) / stride_13)) + 1;
-	const int output_width_13 = static_cast<int>(ceil(static_cast<float>(im_width_13 + 2 * p2_13 - sqrt(k_size_13)) / stride_13)) + 1;
+	const int output_height_13 = (im_height_13 + 2 * p1_13 - sqrt(k_size_13)) / stride_13 + 1;
+	const int output_width_13 = (im_width_13 + 2 * p2_13 - sqrt(k_size_13)) / stride_13 + 1;
 	const int output_size_13 = output_height_13 * output_width_13;
 	
 	MatrixXd res3a_branch2a_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res3a_branch2a_weights.csv");
 	MatrixXd res3a_branch2a_w = res3a_branch2a_weights;
+	const float res3a_branch2a_min = res3a_branch2a_w.minCoeff();
+	const float res3a_branch2a_max = res3a_branch2a_w.maxCoeff();
+	
+	MatrixXd res3a_branch2a_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res3a_branch2a_result_min = res3a_branch2a_result_params(12, 0);
+	const float res3a_branch2a_result_max = res3a_branch2a_result_params(12, 1);
 	
 	MatrixXd res3a_branch2a_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res3a_branch2a_biases.csv");
 	VectorXd res3a_branch2a_b(Map<VectorXd>(res3a_branch2a_biases.data(), res3a_branch2a_biases.cols()*res3a_branch2a_biases.rows()));
@@ -350,12 +428,18 @@ int main(int argc, char *argv[])
 	const int p1_14 = 1;
 	const int p2_14 = 1;
 	
-	const int output_height_14 = static_cast<int>(ceil(static_cast<float>(im_height_14 + 2 * p1_14 - sqrt(k_size_14)) / stride_14)) + 1;
-	const int output_width_14 = static_cast<int>(ceil(static_cast<float>(im_width_14 + 2 * p2_14 - sqrt(k_size_14)) / stride_14)) + 1;
+	const int output_height_14 = (im_height_14 + 2 * p1_14 - sqrt(k_size_14)) / stride_14 + 1;
+	const int output_width_14 = (im_width_14 + 2 * p2_14 - sqrt(k_size_14)) / stride_14 + 1;
 	const int output_size_14 = output_height_14 * output_width_14;
 	
 	MatrixXd res3a_branch2b_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res3a_branch2b_weights.csv");
 	MatrixXd res3a_branch2b_w = res3a_branch2b_weights;
+	const float res3a_branch2b_min = res3a_branch2b_w.minCoeff();
+	const float res3a_branch2b_max = res3a_branch2b_w.maxCoeff();
+	
+	MatrixXd res3a_branch2b_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res3a_branch2b_result_min = res3a_branch2b_result_params(13, 0);
+	const float res3a_branch2b_result_max = res3a_branch2b_result_params(13, 1);
 	
 	MatrixXd res3a_branch2b_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res3a_branch2b_biases.csv");
 	VectorXd res3a_branch2b_b(Map<VectorXd>(res3a_branch2b_biases.data(), res3a_branch2b_biases.cols()*res3a_branch2b_biases.rows()));
@@ -373,12 +457,18 @@ int main(int argc, char *argv[])
 	const int p1_15 = 0;
 	const int p2_15 = 0;
 	
-	const int output_height_15 = static_cast<int>(ceil(static_cast<float>(im_height_15 + 2 * p1_15 - sqrt(k_size_15)) / stride_15)) + 1;
-	const int output_width_15 = static_cast<int>(ceil(static_cast<float>(im_width_15 + 2 * p2_15 - sqrt(k_size_15)) / stride_15)) + 1;
+	const int output_height_15 = (im_height_15 + 2 * p1_15 - sqrt(k_size_15)) / stride_15 + 1;
+	const int output_width_15 = (im_width_15 + 2 * p2_15 - sqrt(k_size_15)) / stride_15 + 1;
 	const int output_size_15 = output_height_15 * output_width_15;
 	
 	MatrixXd res3a_branch2c_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res3a_branch2c_weights.csv");
 	MatrixXd res3a_branch2c_w = res3a_branch2c_weights;
+	const float res3a_branch2c_min = res3a_branch2c_w.minCoeff();
+	const float res3a_branch2c_max = res3a_branch2c_w.maxCoeff();
+	
+	MatrixXd res3a_branch2c_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res3a_branch2c_result_min = res3a_branch2c_result_params(14, 0);
+	const float res3a_branch2c_result_max = res3a_branch2c_result_params(14, 1);
 	
 	MatrixXd res3a_branch2c_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res3a_branch2c_biases.csv");
 	VectorXd res3a_branch2c_b(Map<VectorXd>(res3a_branch2c_biases.data(), res3a_branch2c_biases.cols()*res3a_branch2c_biases.rows()));
@@ -396,12 +486,18 @@ int main(int argc, char *argv[])
 	const int p1_16 = 0;
 	const int p2_16 = 0;
 	
-	const int output_height_16 = static_cast<int>(ceil(static_cast<float>(im_height_16 + 2 * p1_16 - sqrt(k_size_16)) / stride_16)) + 1;
-	const int output_width_16 = static_cast<int>(ceil(static_cast<float>(im_width_16 + 2 * p2_16 - sqrt(k_size_16)) / stride_16)) + 1;
+	const int output_height_16 = (im_height_16 + 2 * p1_16 - sqrt(k_size_16)) / stride_16 + 1;
+	const int output_width_16 = (im_width_16 + 2 * p2_16 - sqrt(k_size_16)) / stride_16 + 1;
 	const int output_size_16 = output_height_16 * output_width_16;
 	
 	MatrixXd res3b_branch2a_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res3b_branch2a_weights.csv");
 	MatrixXd res3b_branch2a_w = res3b_branch2a_weights;
+	const float res3b_branch2a_min = res3b_branch2a_w.minCoeff();
+	const float res3b_branch2a_max = res3b_branch2a_w.maxCoeff();
+	
+	MatrixXd res3b_branch2a_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res3b_branch2a_result_min = res3b_branch2a_result_params(15, 0);
+	const float res3b_branch2a_result_max = res3b_branch2a_result_params(15, 1);
 	
 	MatrixXd res3b_branch2a_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res3b_branch2a_biases.csv");
 	VectorXd res3b_branch2a_b(Map<VectorXd>(res3b_branch2a_biases.data(), res3b_branch2a_biases.cols()*res3b_branch2a_biases.rows()));
@@ -419,12 +515,18 @@ int main(int argc, char *argv[])
 	const int p1_17 = 1;
 	const int p2_17 = 1;
 	
-	const int output_height_17 = static_cast<int>(ceil(static_cast<float>(im_height_17 + 2 * p1_17 - sqrt(k_size_17)) / stride_17)) + 1;
-	const int output_width_17 = static_cast<int>(ceil(static_cast<float>(im_width_17 + 2 * p2_17 - sqrt(k_size_17)) / stride_17)) + 1;
+	const int output_height_17 = (im_height_17 + 2 * p1_17 - sqrt(k_size_17)) / stride_17 + 1;
+	const int output_width_17 = (im_width_17 + 2 * p2_17 - sqrt(k_size_17)) / stride_17 + 1;
 	const int output_size_17 = output_height_17 * output_width_17;
 	
 	MatrixXd res3b_branch2b_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res3b_branch2b_weights.csv");
 	MatrixXd res3b_branch2b_w = res3b_branch2b_weights;
+	const float res3b_branch2b_min = res3b_branch2b_w.minCoeff();
+	const float res3b_branch2b_max = res3b_branch2b_w.maxCoeff();
+	
+	MatrixXd res3b_branch2b_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res3b_branch2b_result_min = res3b_branch2b_result_params(16, 0);
+	const float res3b_branch2b_result_max = res3b_branch2b_result_params(16, 1);
 	
 	MatrixXd res3b_branch2b_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res3b_branch2b_biases.csv");
 	VectorXd res3b_branch2b_b(Map<VectorXd>(res3b_branch2b_biases.data(), res3b_branch2b_biases.cols()*res3b_branch2b_biases.rows()));
@@ -442,12 +544,18 @@ int main(int argc, char *argv[])
 	const int p1_18 = 0;
 	const int p2_18 = 0;
 	
-	const int output_height_18 = static_cast<int>(ceil(static_cast<float>(im_height_18 + 2 * p1_18 - sqrt(k_size_18)) / stride_18)) + 1;
-	const int output_width_18 = static_cast<int>(ceil(static_cast<float>(im_width_18 + 2 * p2_18 - sqrt(k_size_18)) / stride_18)) + 1;
+	const int output_height_18 = (im_height_18 + 2 * p1_18 - sqrt(k_size_18)) / stride_18 + 1;
+	const int output_width_18 = (im_width_18 + 2 * p2_18 - sqrt(k_size_18)) / stride_18 + 1;
 	const int output_size_18 = output_height_18 * output_width_18;
 	
 	MatrixXd res3b_branch2c_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res3b_branch2c_weights.csv");
 	MatrixXd res3b_branch2c_w = res3b_branch2c_weights;
+	const float res3b_branch2c_min = res3b_branch2c_w.minCoeff();
+	const float res3b_branch2c_max = res3b_branch2c_w.maxCoeff();
+	
+	MatrixXd res3b_branch2c_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res3b_branch2c_result_min = res3b_branch2c_result_params(17, 0);
+	const float res3b_branch2c_result_max = res3b_branch2c_result_params(17, 1);
 	
 	MatrixXd res3b_branch2c_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res3b_branch2c_biases.csv");
 	VectorXd res3b_branch2c_b(Map<VectorXd>(res3b_branch2c_biases.data(), res3b_branch2c_biases.cols()*res3b_branch2c_biases.rows()));
@@ -465,12 +573,18 @@ int main(int argc, char *argv[])
 	const int p1_19 = 0;
 	const int p2_19 = 0;
 	
-	const int output_height_19 = static_cast<int>(ceil(static_cast<float>(im_height_19 + 2 * p1_19 - sqrt(k_size_19)) / stride_19)) + 1;
-	const int output_width_19 = static_cast<int>(ceil(static_cast<float>(im_width_19 + 2 * p2_19 - sqrt(k_size_19)) / stride_19)) + 1;
+	const int output_height_19 = (im_height_19 + 2 * p1_19 - sqrt(k_size_19)) / stride_19 + 1;
+	const int output_width_19 = (im_width_19 + 2 * p2_19 - sqrt(k_size_19)) / stride_19 + 1;
 	const int output_size_19 = output_height_19 * output_width_19;
 	
 	MatrixXd res3c_branch2a_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res3c_branch2a_weights.csv");
 	MatrixXd res3c_branch2a_w = res3c_branch2a_weights;
+	const float res3c_branch2a_min = res3c_branch2a_w.minCoeff();
+	const float res3c_branch2a_max = res3c_branch2a_w.maxCoeff();
+	
+	MatrixXd res3c_branch2a_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res3c_branch2a_result_min = res3c_branch2a_result_params(18, 0);
+	const float res3c_branch2a_result_max = res3c_branch2a_result_params(18, 1);
 	
 	MatrixXd res3c_branch2a_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res3c_branch2a_biases.csv");
 	VectorXd res3c_branch2a_b(Map<VectorXd>(res3c_branch2a_biases.data(), res3c_branch2a_biases.cols()*res3c_branch2a_biases.rows()));
@@ -488,12 +602,18 @@ int main(int argc, char *argv[])
 	const int p1_20 = 1;
 	const int p2_20 = 1;
 	
-	const int output_height_20 = static_cast<int>(ceil(static_cast<float>(im_height_20 + 2 * p1_20 - sqrt(k_size_20)) / stride_20)) + 1;
-	const int output_width_20 = static_cast<int>(ceil(static_cast<float>(im_width_20 + 2 * p2_20 - sqrt(k_size_20)) / stride_20)) + 1;
+	const int output_height_20 = (im_height_20 + 2 * p1_20 - sqrt(k_size_20)) / stride_20 + 1;
+	const int output_width_20 = (im_width_20 + 2 * p2_20 - sqrt(k_size_20)) / stride_20 + 1;
 	const int output_size_20 = output_height_20 * output_width_20;
 	
 	MatrixXd res3c_branch2b_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res3c_branch2b_weights.csv");
 	MatrixXd res3c_branch2b_w = res3c_branch2b_weights;
+	const float res3c_branch2b_min = res3c_branch2b_w.minCoeff();
+	const float res3c_branch2b_max = res3c_branch2b_w.maxCoeff();
+	
+	MatrixXd res3c_branch2b_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res3c_branch2b_result_min = res3c_branch2b_result_params(19, 0);
+	const float res3c_branch2b_result_max = res3c_branch2b_result_params(19, 1);
 	
 	MatrixXd res3c_branch2b_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res3c_branch2b_biases.csv");
 	VectorXd res3c_branch2b_b(Map<VectorXd>(res3c_branch2b_biases.data(), res3c_branch2b_biases.cols()*res3c_branch2b_biases.rows()));
@@ -511,12 +631,18 @@ int main(int argc, char *argv[])
 	const int p1_21 = 0;
 	const int p2_21 = 0;
 	
-	const int output_height_21 = static_cast<int>(ceil(static_cast<float>(im_height_21 + 2 * p1_21 - sqrt(k_size_21)) / stride_21)) + 1;
-	const int output_width_21 = static_cast<int>(ceil(static_cast<float>(im_width_21 + 2 * p2_21 - sqrt(k_size_21)) / stride_21)) + 1;
+	const int output_height_21 = (im_height_21 + 2 * p1_21 - sqrt(k_size_21)) / stride_21 + 1;
+	const int output_width_21 = (im_width_21 + 2 * p2_21 - sqrt(k_size_21)) / stride_21 + 1;
 	const int output_size_21 = output_height_21 * output_width_21;
 	
 	MatrixXd res3c_branch2c_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res3c_branch2c_weights.csv");
 	MatrixXd res3c_branch2c_w = res3c_branch2c_weights;
+	const float res3c_branch2c_min = res3c_branch2c_w.minCoeff();
+	const float res3c_branch2c_max = res3c_branch2c_w.maxCoeff();
+	
+	MatrixXd res3c_branch2c_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res3c_branch2c_result_min = res3c_branch2c_result_params(20, 0);
+	const float res3c_branch2c_result_max = res3c_branch2c_result_params(20, 1);
 	
 	MatrixXd res3c_branch2c_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res3c_branch2c_biases.csv");
 	VectorXd res3c_branch2c_b(Map<VectorXd>(res3c_branch2c_biases.data(), res3c_branch2c_biases.cols()*res3c_branch2c_biases.rows()));
@@ -534,12 +660,18 @@ int main(int argc, char *argv[])
 	const int p1_22 = 0;
 	const int p2_22 = 0;
 	
-	const int output_height_22 = static_cast<int>(ceil(static_cast<float>(im_height_22 + 2 * p1_22 - sqrt(k_size_22)) / stride_22)) + 1;
-	const int output_width_22 = static_cast<int>(ceil(static_cast<float>(im_width_22 + 2 * p2_22 - sqrt(k_size_22)) / stride_22)) + 1;
+	const int output_height_22 = (im_height_22 + 2 * p1_22 - sqrt(k_size_22)) / stride_22 + 1;
+	const int output_width_22 = (im_width_22 + 2 * p2_22 - sqrt(k_size_22)) / stride_22 + 1;
 	const int output_size_22 = output_height_22 * output_width_22;
 	
 	MatrixXd res3d_branch2a_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res3d_branch2a_weights.csv");
 	MatrixXd res3d_branch2a_w = res3d_branch2a_weights;
+	const float res3d_branch2a_min = res3d_branch2a_w.minCoeff();
+	const float res3d_branch2a_max = res3d_branch2a_w.maxCoeff();
+	
+	MatrixXd res3d_branch2a_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res3d_branch2a_result_min = res3d_branch2a_result_params(21, 0);
+	const float res3d_branch2a_result_max = res3d_branch2a_result_params(21, 1);
 	
 	MatrixXd res3d_branch2a_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res3d_branch2a_biases.csv");
 	VectorXd res3d_branch2a_b(Map<VectorXd>(res3d_branch2a_biases.data(), res3d_branch2a_biases.cols()*res3d_branch2a_biases.rows()));
@@ -557,12 +689,18 @@ int main(int argc, char *argv[])
 	const int p1_23 = 1;
 	const int p2_23 = 1;
 	
-	const int output_height_23 = static_cast<int>(ceil(static_cast<float>(im_height_23 + 2 * p1_23 - sqrt(k_size_23)) / stride_23)) + 1;
-	const int output_width_23 = static_cast<int>(ceil(static_cast<float>(im_width_23 + 2 * p2_23 - sqrt(k_size_23)) / stride_23)) + 1;
+	const int output_height_23 = (im_height_23 + 2 * p1_23 - sqrt(k_size_23)) / stride_23 + 1;
+	const int output_width_23 = (im_width_23 + 2 * p2_23 - sqrt(k_size_23)) / stride_23 + 1;
 	const int output_size_23 = output_height_23 * output_width_23;
 	
 	MatrixXd res3d_branch2b_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res3d_branch2b_weights.csv");
 	MatrixXd res3d_branch2b_w = res3d_branch2b_weights;
+	const float res3d_branch2b_min = res3d_branch2b_w.minCoeff();
+	const float res3d_branch2b_max = res3d_branch2b_w.maxCoeff();
+	
+	MatrixXd res3d_branch2b_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res3d_branch2b_result_min = res3d_branch2b_result_params(22, 0);
+	const float res3d_branch2b_result_max = res3d_branch2b_result_params(22, 1);
 	
 	MatrixXd res3d_branch2b_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res3d_branch2b_biases.csv");
 	VectorXd res3d_branch2b_b(Map<VectorXd>(res3d_branch2b_biases.data(), res3d_branch2b_biases.cols()*res3d_branch2b_biases.rows()));
@@ -580,12 +718,18 @@ int main(int argc, char *argv[])
 	const int p1_24 = 0;
 	const int p2_24 = 0;
 	
-	const int output_height_24 = static_cast<int>(ceil(static_cast<float>(im_height_24 + 2 * p1_24 - sqrt(k_size_24)) / stride_24)) + 1;
-	const int output_width_24 = static_cast<int>(ceil(static_cast<float>(im_width_24 + 2 * p2_24 - sqrt(k_size_24)) / stride_24)) + 1;
+	const int output_height_24 = (im_height_24 + 2 * p1_24 - sqrt(k_size_24)) / stride_24 + 1;
+	const int output_width_24 = (im_width_24 + 2 * p2_24 - sqrt(k_size_24)) / stride_24 + 1;
 	const int output_size_24 = output_height_24 * output_width_24;
 	
 	MatrixXd res3d_branch2c_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res3d_branch2c_weights.csv");
 	MatrixXd res3d_branch2c_w = res3d_branch2c_weights;
+	const float res3d_branch2c_min = res3d_branch2c_w.minCoeff();
+	const float res3d_branch2c_max = res3d_branch2c_w.maxCoeff();
+	
+	MatrixXd res3d_branch2c_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res3d_branch2c_result_min = res3d_branch2c_result_params(23, 0);
+	const float res3d_branch2c_result_max = res3d_branch2c_result_params(23, 1);
 	
 	MatrixXd res3d_branch2c_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res3d_branch2c_biases.csv");
 	VectorXd res3d_branch2c_b(Map<VectorXd>(res3d_branch2c_biases.data(), res3d_branch2c_biases.cols()*res3d_branch2c_biases.rows()));
@@ -603,12 +747,18 @@ int main(int argc, char *argv[])
 	const int p1_25 = 0;
 	const int p2_25 = 0;
 	
-	const int output_height_25 = static_cast<int>(ceil(static_cast<float>(im_height_25 + 2 * p1_25 - sqrt(k_size_25)) / stride_25)) + 1;
-	const int output_width_25 = static_cast<int>(ceil(static_cast<float>(im_width_25 + 2 * p2_25 - sqrt(k_size_25)) / stride_25)) + 1;
+	const int output_height_25 = (im_height_25 + 2 * p1_25 - sqrt(k_size_25)) / stride_25 + 1;
+	const int output_width_25 = (im_width_25 + 2 * p2_25 - sqrt(k_size_25)) / stride_25 + 1;
 	const int output_size_25 = output_height_25 * output_width_25;
 	
 	MatrixXd res4a_branch1_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res4a_branch1_weights.csv");
 	MatrixXd res4a_branch1_w = res4a_branch1_weights;
+	const float res4a_branch1_min = res4a_branch1_w.minCoeff();
+	const float res4a_branch1_max = res4a_branch1_w.maxCoeff();
+	
+	MatrixXd res4a_branch1_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res4a_branch1_result_min = res4a_branch1_result_params(24, 0);
+	const float res4a_branch1_result_max = res4a_branch1_result_params(24, 1);
 	
 	MatrixXd res4a_branch1_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res4a_branch1_biases.csv");
 	VectorXd res4a_branch1_b(Map<VectorXd>(res4a_branch1_biases.data(), res4a_branch1_biases.cols()*res4a_branch1_biases.rows()));
@@ -626,12 +776,18 @@ int main(int argc, char *argv[])
 	const int p1_26 = 0;
 	const int p2_26 = 0;
 	
-	const int output_height_26 = static_cast<int>(ceil(static_cast<float>(im_height_26 + 2 * p1_26 - sqrt(k_size_26)) / stride_26)) + 1;
-	const int output_width_26 = static_cast<int>(ceil(static_cast<float>(im_width_26 + 2 * p2_26 - sqrt(k_size_26)) / stride_26)) + 1;
+	const int output_height_26 = (im_height_26 + 2 * p1_26 - sqrt(k_size_26)) / stride_26 + 1;
+	const int output_width_26 = (im_width_26 + 2 * p2_26 - sqrt(k_size_26)) / stride_26 + 1;
 	const int output_size_26 = output_height_26 * output_width_26;
 	
 	MatrixXd res4a_branch2a_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res4a_branch2a_weights.csv");
 	MatrixXd res4a_branch2a_w = res4a_branch2a_weights;
+	const float res4a_branch2a_min = res4a_branch2a_w.minCoeff();
+	const float res4a_branch2a_max = res4a_branch2a_w.maxCoeff();
+	
+	MatrixXd res4a_branch2a_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res4a_branch2a_result_min = res4a_branch2a_result_params(25, 0);
+	const float res4a_branch2a_result_max = res4a_branch2a_result_params(25, 1);
 	
 	MatrixXd res4a_branch2a_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res4a_branch2a_biases.csv");
 	VectorXd res4a_branch2a_b(Map<VectorXd>(res4a_branch2a_biases.data(), res4a_branch2a_biases.cols()*res4a_branch2a_biases.rows()));
@@ -649,12 +805,18 @@ int main(int argc, char *argv[])
 	const int p1_27 = 1;
 	const int p2_27 = 1;
 	
-	const int output_height_27 = static_cast<int>(ceil(static_cast<float>(im_height_27 + 2 * p1_27 - sqrt(k_size_27)) / stride_27)) + 1;
-	const int output_width_27 = static_cast<int>(ceil(static_cast<float>(im_width_27 + 2 * p2_27 - sqrt(k_size_27)) / stride_27)) + 1;
+	const int output_height_27 = (im_height_27 + 2 * p1_27 - sqrt(k_size_27)) / stride_27 + 1;
+	const int output_width_27 = (im_width_27 + 2 * p2_27 - sqrt(k_size_27)) / stride_27 + 1;
 	const int output_size_27 = output_height_27 * output_width_27;
 	
 	MatrixXd res4a_branch2b_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res4a_branch2b_weights.csv");
 	MatrixXd res4a_branch2b_w = res4a_branch2b_weights;
+	const float res4a_branch2b_min = res4a_branch2b_w.minCoeff();
+	const float res4a_branch2b_max = res4a_branch2b_w.maxCoeff();
+	
+	MatrixXd res4a_branch2b_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res4a_branch2b_result_min = res4a_branch2b_result_params(26, 0);
+	const float res4a_branch2b_result_max = res4a_branch2b_result_params(26, 1);
 	
 	MatrixXd res4a_branch2b_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res4a_branch2b_biases.csv");
 	VectorXd res4a_branch2b_b(Map<VectorXd>(res4a_branch2b_biases.data(), res4a_branch2b_biases.cols()*res4a_branch2b_biases.rows()));
@@ -672,12 +834,18 @@ int main(int argc, char *argv[])
 	const int p1_28 = 0;
 	const int p2_28 = 0;
 	
-	const int output_height_28 = static_cast<int>(ceil(static_cast<float>(im_height_28 + 2 * p1_28 - sqrt(k_size_28)) / stride_28)) + 1;
-	const int output_width_28 = static_cast<int>(ceil(static_cast<float>(im_width_28 + 2 * p2_28 - sqrt(k_size_28)) / stride_28)) + 1;
+	const int output_height_28 = (im_height_28 + 2 * p1_28 - sqrt(k_size_28)) / stride_28 + 1;
+	const int output_width_28 = (im_width_28 + 2 * p2_28 - sqrt(k_size_28)) / stride_28 + 1;
 	const int output_size_28 = output_height_28 * output_width_28;
 	
 	MatrixXd res4a_branch2c_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res4a_branch2c_weights.csv");
 	MatrixXd res4a_branch2c_w = res4a_branch2c_weights;
+	const float res4a_branch2c_min = res4a_branch2c_w.minCoeff();
+	const float res4a_branch2c_max = res4a_branch2c_w.maxCoeff();
+	
+	MatrixXd res4a_branch2c_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res4a_branch2c_result_min = res4a_branch2c_result_params(27, 0);
+	const float res4a_branch2c_result_max = res4a_branch2c_result_params(27, 1);
 	
 	MatrixXd res4a_branch2c_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res4a_branch2c_biases.csv");
 	VectorXd res4a_branch2c_b(Map<VectorXd>(res4a_branch2c_biases.data(), res4a_branch2c_biases.cols()*res4a_branch2c_biases.rows()));
@@ -695,12 +863,18 @@ int main(int argc, char *argv[])
 	const int p1_29 = 0;
 	const int p2_29 = 0;
 	
-	const int output_height_29 = static_cast<int>(ceil(static_cast<float>(im_height_29 + 2 * p1_29 - sqrt(k_size_29)) / stride_29)) + 1;
-	const int output_width_29 = static_cast<int>(ceil(static_cast<float>(im_width_29 + 2 * p2_29 - sqrt(k_size_29)) / stride_29)) + 1;
+	const int output_height_29 = (im_height_29 + 2 * p1_29 - sqrt(k_size_29)) / stride_29 + 1;
+	const int output_width_29 = (im_width_29 + 2 * p2_29 - sqrt(k_size_29)) / stride_29 + 1;
 	const int output_size_29 = output_height_29 * output_width_29;
 	
 	MatrixXd res4b_branch2a_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res4b_branch2a_weights.csv");
 	MatrixXd res4b_branch2a_w = res4b_branch2a_weights;
+	const float res4b_branch2a_min = res4b_branch2a_w.minCoeff();
+	const float res4b_branch2a_max = res4b_branch2a_w.maxCoeff();
+	
+	MatrixXd res4b_branch2a_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res4b_branch2a_result_min = res4b_branch2a_result_params(28, 0);
+	const float res4b_branch2a_result_max = res4b_branch2a_result_params(28, 1);
 	
 	MatrixXd res4b_branch2a_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res4b_branch2a_biases.csv");
 	VectorXd res4b_branch2a_b(Map<VectorXd>(res4b_branch2a_biases.data(), res4b_branch2a_biases.cols()*res4b_branch2a_biases.rows()));
@@ -718,12 +892,18 @@ int main(int argc, char *argv[])
 	const int p1_30 = 1;
 	const int p2_30 = 1;
 	
-	const int output_height_30 = static_cast<int>(ceil(static_cast<float>(im_height_30 + 2 * p1_30 - sqrt(k_size_30)) / stride_30)) + 1;
-	const int output_width_30 = static_cast<int>(ceil(static_cast<float>(im_width_30 + 2 * p2_30 - sqrt(k_size_30)) / stride_30)) + 1;
+	const int output_height_30 = (im_height_30 + 2 * p1_30 - sqrt(k_size_30)) / stride_30 + 1;
+	const int output_width_30 = (im_width_30 + 2 * p2_30 - sqrt(k_size_30)) / stride_30 + 1;
 	const int output_size_30 = output_height_30 * output_width_30;
 	
 	MatrixXd res4b_branch2b_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res4b_branch2b_weights.csv");
 	MatrixXd res4b_branch2b_w = res4b_branch2b_weights;
+	const float res4b_branch2b_min = res4b_branch2b_w.minCoeff();
+	const float res4b_branch2b_max = res4b_branch2b_w.maxCoeff();
+	
+	MatrixXd res4b_branch2b_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res4b_branch2b_result_min = res4b_branch2b_result_params(29, 0);
+	const float res4b_branch2b_result_max = res4b_branch2b_result_params(29, 1);
 	
 	MatrixXd res4b_branch2b_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res4b_branch2b_biases.csv");
 	VectorXd res4b_branch2b_b(Map<VectorXd>(res4b_branch2b_biases.data(), res4b_branch2b_biases.cols()*res4b_branch2b_biases.rows()));
@@ -741,12 +921,18 @@ int main(int argc, char *argv[])
 	const int p1_31 = 0;
 	const int p2_31 = 0;
 	
-	const int output_height_31 = static_cast<int>(ceil(static_cast<float>(im_height_31 + 2 * p1_31 - sqrt(k_size_31)) / stride_31)) + 1;
-	const int output_width_31 = static_cast<int>(ceil(static_cast<float>(im_width_31 + 2 * p2_31 - sqrt(k_size_31)) / stride_31)) + 1;
+	const int output_height_31 = (im_height_31 + 2 * p1_31 - sqrt(k_size_31)) / stride_31 + 1;
+	const int output_width_31 = (im_width_31 + 2 * p2_31 - sqrt(k_size_31)) / stride_31 + 1;
 	const int output_size_31 = output_height_31 * output_width_31;
 	
 	MatrixXd res4b_branch2c_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res4b_branch2c_weights.csv");
 	MatrixXd res4b_branch2c_w = res4b_branch2c_weights;
+	const float res4b_branch2c_min = res4b_branch2c_w.minCoeff();
+	const float res4b_branch2c_max = res4b_branch2c_w.maxCoeff();
+	
+	MatrixXd res4b_branch2c_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res4b_branch2c_result_min = res4b_branch2c_result_params(30, 0);
+	const float res4b_branch2c_result_max = res4b_branch2c_result_params(30, 1);
 	
 	MatrixXd res4b_branch2c_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res4b_branch2c_biases.csv");
 	VectorXd res4b_branch2c_b(Map<VectorXd>(res4b_branch2c_biases.data(), res4b_branch2c_biases.cols()*res4b_branch2c_biases.rows()));
@@ -764,12 +950,18 @@ int main(int argc, char *argv[])
 	const int p1_32 = 0;
 	const int p2_32 = 0;
 	
-	const int output_height_32 = static_cast<int>(ceil(static_cast<float>(im_height_32 + 2 * p1_32 - sqrt(k_size_32)) / stride_32)) + 1;
-	const int output_width_32 = static_cast<int>(ceil(static_cast<float>(im_width_32 + 2 * p2_32 - sqrt(k_size_32)) / stride_32)) + 1;
+	const int output_height_32 = (im_height_32 + 2 * p1_32 - sqrt(k_size_32)) / stride_32 + 1;
+	const int output_width_32 = (im_width_32 + 2 * p2_32 - sqrt(k_size_32)) / stride_32 + 1;
 	const int output_size_32 = output_height_32 * output_width_32;
 	
 	MatrixXd res4c_branch2a_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res4c_branch2a_weights.csv");
 	MatrixXd res4c_branch2a_w = res4c_branch2a_weights;
+	const float res4c_branch2a_min = res4c_branch2a_w.minCoeff();
+	const float res4c_branch2a_max = res4c_branch2a_w.maxCoeff();
+	
+	MatrixXd res4c_branch2a_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res4c_branch2a_result_min = res4c_branch2a_result_params(31, 0);
+	const float res4c_branch2a_result_max = res4c_branch2a_result_params(31, 1);
 	
 	MatrixXd res4c_branch2a_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res4c_branch2a_biases.csv");
 	VectorXd res4c_branch2a_b(Map<VectorXd>(res4c_branch2a_biases.data(), res4c_branch2a_biases.cols()*res4c_branch2a_biases.rows()));
@@ -787,12 +979,18 @@ int main(int argc, char *argv[])
 	const int p1_33 = 1;
 	const int p2_33 = 1;
 	
-	const int output_height_33 = static_cast<int>(ceil(static_cast<float>(im_height_33 + 2 * p1_33 - sqrt(k_size_33)) / stride_33)) + 1;
-	const int output_width_33 = static_cast<int>(ceil(static_cast<float>(im_width_33 + 2 * p2_33 - sqrt(k_size_33)) / stride_33)) + 1;
+	const int output_height_33 = (im_height_33 + 2 * p1_33 - sqrt(k_size_33)) / stride_33 + 1;
+	const int output_width_33 = (im_width_33 + 2 * p2_33 - sqrt(k_size_33)) / stride_33 + 1;
 	const int output_size_33 = output_height_33 * output_width_33;
 	
 	MatrixXd res4c_branch2b_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res4c_branch2b_weights.csv");
 	MatrixXd res4c_branch2b_w = res4c_branch2b_weights;
+	const float res4c_branch2b_min = res4c_branch2b_w.minCoeff();
+	const float res4c_branch2b_max = res4c_branch2b_w.maxCoeff();
+	
+	MatrixXd res4c_branch2b_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res4c_branch2b_result_min = res4c_branch2b_result_params(32, 0);
+	const float res4c_branch2b_result_max = res4c_branch2b_result_params(32, 1);
 	
 	MatrixXd res4c_branch2b_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res4c_branch2b_biases.csv");
 	VectorXd res4c_branch2b_b(Map<VectorXd>(res4c_branch2b_biases.data(), res4c_branch2b_biases.cols()*res4c_branch2b_biases.rows()));
@@ -810,12 +1008,18 @@ int main(int argc, char *argv[])
 	const int p1_34 = 0;
 	const int p2_34 = 0;
 	
-	const int output_height_34 = static_cast<int>(ceil(static_cast<float>(im_height_34 + 2 * p1_34 - sqrt(k_size_34)) / stride_34)) + 1;
-	const int output_width_34 = static_cast<int>(ceil(static_cast<float>(im_width_34 + 2 * p2_34 - sqrt(k_size_34)) / stride_34)) + 1;
+	const int output_height_34 = (im_height_34 + 2 * p1_34 - sqrt(k_size_34)) / stride_34 + 1;
+	const int output_width_34 = (im_width_34 + 2 * p2_34 - sqrt(k_size_34)) / stride_34 + 1;
 	const int output_size_34 = output_height_34 * output_width_34;
 	
 	MatrixXd res4c_branch2c_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res4c_branch2c_weights.csv");
 	MatrixXd res4c_branch2c_w = res4c_branch2c_weights;
+	const float res4c_branch2c_min = res4c_branch2c_w.minCoeff();
+	const float res4c_branch2c_max = res4c_branch2c_w.maxCoeff();
+	
+	MatrixXd res4c_branch2c_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res4c_branch2c_result_min = res4c_branch2c_result_params(33, 0);
+	const float res4c_branch2c_result_max = res4c_branch2c_result_params(33, 1);
 	
 	MatrixXd res4c_branch2c_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res4c_branch2c_biases.csv");
 	VectorXd res4c_branch2c_b(Map<VectorXd>(res4c_branch2c_biases.data(), res4c_branch2c_biases.cols()*res4c_branch2c_biases.rows()));
@@ -833,12 +1037,18 @@ int main(int argc, char *argv[])
 	const int p1_35 = 0;
 	const int p2_35 = 0;
 	
-	const int output_height_35 = static_cast<int>(ceil(static_cast<float>(im_height_35 + 2 * p1_35 - sqrt(k_size_35)) / stride_35)) + 1;
-	const int output_width_35 = static_cast<int>(ceil(static_cast<float>(im_width_35 + 2 * p2_35 - sqrt(k_size_35)) / stride_35)) + 1;
+	const int output_height_35 = (im_height_35 + 2 * p1_35 - sqrt(k_size_35)) / stride_35 + 1;
+	const int output_width_35 = (im_width_35 + 2 * p2_35 - sqrt(k_size_35)) / stride_35 + 1;
 	const int output_size_35 = output_height_35 * output_width_35;
 	
 	MatrixXd res4d_branch2a_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res4d_branch2a_weights.csv");
 	MatrixXd res4d_branch2a_w = res4d_branch2a_weights;
+	const float res4d_branch2a_min = res4d_branch2a_w.minCoeff();
+	const float res4d_branch2a_max = res4d_branch2a_w.maxCoeff();
+	
+	MatrixXd res4d_branch2a_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res4d_branch2a_result_min = res4d_branch2a_result_params(34, 0);
+	const float res4d_branch2a_result_max = res4d_branch2a_result_params(34, 1);
 	
 	MatrixXd res4d_branch2a_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res4d_branch2a_biases.csv");
 	VectorXd res4d_branch2a_b(Map<VectorXd>(res4d_branch2a_biases.data(), res4d_branch2a_biases.cols()*res4d_branch2a_biases.rows()));
@@ -856,12 +1066,18 @@ int main(int argc, char *argv[])
 	const int p1_36 = 1;
 	const int p2_36 = 1;
 	
-	const int output_height_36 = static_cast<int>(ceil(static_cast<float>(im_height_36 + 2 * p1_36 - sqrt(k_size_36)) / stride_36)) + 1;
-	const int output_width_36 = static_cast<int>(ceil(static_cast<float>(im_width_36 + 2 * p2_36 - sqrt(k_size_36)) / stride_36)) + 1;
+	const int output_height_36 = (im_height_36 + 2 * p1_36 - sqrt(k_size_36)) / stride_36 + 1;
+	const int output_width_36 = (im_width_36 + 2 * p2_36 - sqrt(k_size_36)) / stride_36 + 1;
 	const int output_size_36 = output_height_36 * output_width_36;
 	
 	MatrixXd res4d_branch2b_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res4d_branch2b_weights.csv");
 	MatrixXd res4d_branch2b_w = res4d_branch2b_weights;
+	const float res4d_branch2b_min = res4d_branch2b_w.minCoeff();
+	const float res4d_branch2b_max = res4d_branch2b_w.maxCoeff();
+	
+	MatrixXd res4d_branch2b_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res4d_branch2b_result_min = res4d_branch2b_result_params(35, 0);
+	const float res4d_branch2b_result_max = res4d_branch2b_result_params(35, 1);
 	
 	MatrixXd res4d_branch2b_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res4d_branch2b_biases.csv");
 	VectorXd res4d_branch2b_b(Map<VectorXd>(res4d_branch2b_biases.data(), res4d_branch2b_biases.cols()*res4d_branch2b_biases.rows()));
@@ -879,12 +1095,18 @@ int main(int argc, char *argv[])
 	const int p1_37 = 0;
 	const int p2_37 = 0;
 	
-	const int output_height_37 = static_cast<int>(ceil(static_cast<float>(im_height_37 + 2 * p1_37 - sqrt(k_size_37)) / stride_37)) + 1;
-	const int output_width_37 = static_cast<int>(ceil(static_cast<float>(im_width_37 + 2 * p2_37 - sqrt(k_size_37)) / stride_37)) + 1;
+	const int output_height_37 = (im_height_37 + 2 * p1_37 - sqrt(k_size_37)) / stride_37 + 1;
+	const int output_width_37 = (im_width_37 + 2 * p2_37 - sqrt(k_size_37)) / stride_37 + 1;
 	const int output_size_37 = output_height_37 * output_width_37;
 	
 	MatrixXd res4d_branch2c_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res4d_branch2c_weights.csv");
 	MatrixXd res4d_branch2c_w = res4d_branch2c_weights;
+	const float res4d_branch2c_min = res4d_branch2c_w.minCoeff();
+	const float res4d_branch2c_max = res4d_branch2c_w.maxCoeff();
+	
+	MatrixXd res4d_branch2c_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res4d_branch2c_result_min = res4d_branch2c_result_params(36, 0);
+	const float res4d_branch2c_result_max = res4d_branch2c_result_params(36, 1);
 	
 	MatrixXd res4d_branch2c_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res4d_branch2c_biases.csv");
 	VectorXd res4d_branch2c_b(Map<VectorXd>(res4d_branch2c_biases.data(), res4d_branch2c_biases.cols()*res4d_branch2c_biases.rows()));
@@ -902,12 +1124,18 @@ int main(int argc, char *argv[])
 	const int p1_38 = 0;
 	const int p2_38 = 0;
 	
-	const int output_height_38 = static_cast<int>(ceil(static_cast<float>(im_height_38 + 2 * p1_38 - sqrt(k_size_38)) / stride_38)) + 1;
-	const int output_width_38 = static_cast<int>(ceil(static_cast<float>(im_width_38 + 2 * p2_38 - sqrt(k_size_38)) / stride_38)) + 1;
+	const int output_height_38 = (im_height_38 + 2 * p1_38 - sqrt(k_size_38)) / stride_38 + 1;
+	const int output_width_38 = (im_width_38 + 2 * p2_38 - sqrt(k_size_38)) / stride_38 + 1;
 	const int output_size_38 = output_height_38 * output_width_38;
 	
 	MatrixXd res4e_branch2a_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res4e_branch2a_weights.csv");
 	MatrixXd res4e_branch2a_w = res4e_branch2a_weights;
+	const float res4e_branch2a_min = res4e_branch2a_w.minCoeff();
+	const float res4e_branch2a_max = res4e_branch2a_w.maxCoeff();
+	
+	MatrixXd res4e_branch2a_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res4e_branch2a_result_min = res4e_branch2a_result_params(37, 0);
+	const float res4e_branch2a_result_max = res4e_branch2a_result_params(37, 1);
 	
 	MatrixXd res4e_branch2a_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res4e_branch2a_biases.csv");
 	VectorXd res4e_branch2a_b(Map<VectorXd>(res4e_branch2a_biases.data(), res4e_branch2a_biases.cols()*res4e_branch2a_biases.rows()));
@@ -925,12 +1153,18 @@ int main(int argc, char *argv[])
 	const int p1_39 = 1;
 	const int p2_39 = 1;
 	
-	const int output_height_39 = static_cast<int>(ceil(static_cast<float>(im_height_39 + 2 * p1_39 - sqrt(k_size_39)) / stride_39)) + 1;
-	const int output_width_39 = static_cast<int>(ceil(static_cast<float>(im_width_39 + 2 * p2_39 - sqrt(k_size_39)) / stride_39)) + 1;
+	const int output_height_39 = (im_height_39 + 2 * p1_39 - sqrt(k_size_39)) / stride_39 + 1;
+	const int output_width_39 = (im_width_39 + 2 * p2_39 - sqrt(k_size_39)) / stride_39 + 1;
 	const int output_size_39 = output_height_39 * output_width_39;
 	
 	MatrixXd res4e_branch2b_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res4e_branch2b_weights.csv");
 	MatrixXd res4e_branch2b_w = res4e_branch2b_weights;
+	const float res4e_branch2b_min = res4e_branch2b_w.minCoeff();
+	const float res4e_branch2b_max = res4e_branch2b_w.maxCoeff();
+	
+	MatrixXd res4e_branch2b_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res4e_branch2b_result_min = res4e_branch2b_result_params(38, 0);
+	const float res4e_branch2b_result_max = res4e_branch2b_result_params(38, 1);
 	
 	MatrixXd res4e_branch2b_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res4e_branch2b_biases.csv");
 	VectorXd res4e_branch2b_b(Map<VectorXd>(res4e_branch2b_biases.data(), res4e_branch2b_biases.cols()*res4e_branch2b_biases.rows()));
@@ -948,12 +1182,18 @@ int main(int argc, char *argv[])
 	const int p1_40 = 0;
 	const int p2_40 = 0;
 	
-	const int output_height_40 = static_cast<int>(ceil(static_cast<float>(im_height_40 + 2 * p1_40 - sqrt(k_size_40)) / stride_40)) + 1;
-	const int output_width_40 = static_cast<int>(ceil(static_cast<float>(im_width_40 + 2 * p2_40 - sqrt(k_size_40)) / stride_40)) + 1;
+	const int output_height_40 = (im_height_40 + 2 * p1_40 - sqrt(k_size_40)) / stride_40 + 1;
+	const int output_width_40 = (im_width_40 + 2 * p2_40 - sqrt(k_size_40)) / stride_40 + 1;
 	const int output_size_40 = output_height_40 * output_width_40;
 	
 	MatrixXd res4e_branch2c_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res4e_branch2c_weights.csv");
 	MatrixXd res4e_branch2c_w = res4e_branch2c_weights;
+	const float res4e_branch2c_min = res4e_branch2c_w.minCoeff();
+	const float res4e_branch2c_max = res4e_branch2c_w.maxCoeff();
+	
+	MatrixXd res4e_branch2c_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res4e_branch2c_result_min = res4e_branch2c_result_params(39, 0);
+	const float res4e_branch2c_result_max = res4e_branch2c_result_params(39, 1);
 	
 	MatrixXd res4e_branch2c_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res4e_branch2c_biases.csv");
 	VectorXd res4e_branch2c_b(Map<VectorXd>(res4e_branch2c_biases.data(), res4e_branch2c_biases.cols()*res4e_branch2c_biases.rows()));
@@ -971,12 +1211,18 @@ int main(int argc, char *argv[])
 	const int p1_41 = 0;
 	const int p2_41 = 0;
 	
-	const int output_height_41 = static_cast<int>(ceil(static_cast<float>(im_height_41 + 2 * p1_41 - sqrt(k_size_41)) / stride_41)) + 1;
-	const int output_width_41 = static_cast<int>(ceil(static_cast<float>(im_width_41 + 2 * p2_41 - sqrt(k_size_41)) / stride_41)) + 1;
+	const int output_height_41 = (im_height_41 + 2 * p1_41 - sqrt(k_size_41)) / stride_41 + 1;
+	const int output_width_41 = (im_width_41 + 2 * p2_41 - sqrt(k_size_41)) / stride_41 + 1;
 	const int output_size_41 = output_height_41 * output_width_41;
 	
 	MatrixXd res4f_branch2a_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res4f_branch2a_weights.csv");
 	MatrixXd res4f_branch2a_w = res4f_branch2a_weights;
+	const float res4f_branch2a_min = res4f_branch2a_w.minCoeff();
+	const float res4f_branch2a_max = res4f_branch2a_w.maxCoeff();
+	
+	MatrixXd res4f_branch2a_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res4f_branch2a_result_min = res4f_branch2a_result_params(40, 0);
+	const float res4f_branch2a_result_max = res4f_branch2a_result_params(40, 1);
 	
 	MatrixXd res4f_branch2a_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res4f_branch2a_biases.csv");
 	VectorXd res4f_branch2a_b(Map<VectorXd>(res4f_branch2a_biases.data(), res4f_branch2a_biases.cols()*res4f_branch2a_biases.rows()));
@@ -994,12 +1240,18 @@ int main(int argc, char *argv[])
 	const int p1_42 = 1;
 	const int p2_42 = 1;
 	
-	const int output_height_42 = static_cast<int>(ceil(static_cast<float>(im_height_42 + 2 * p1_42 - sqrt(k_size_42)) / stride_42)) + 1;
-	const int output_width_42 = static_cast<int>(ceil(static_cast<float>(im_width_42 + 2 * p2_42 - sqrt(k_size_42)) / stride_42)) + 1;
+	const int output_height_42 = (im_height_42 + 2 * p1_42 - sqrt(k_size_42)) / stride_42 + 1;
+	const int output_width_42 = (im_width_42 + 2 * p2_42 - sqrt(k_size_42)) / stride_42 + 1;
 	const int output_size_42 = output_height_42 * output_width_42;
 	
 	MatrixXd res4f_branch2b_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res4f_branch2b_weights.csv");
 	MatrixXd res4f_branch2b_w = res4f_branch2b_weights;
+	const float res4f_branch2b_min = res4f_branch2b_w.minCoeff();
+	const float res4f_branch2b_max = res4f_branch2b_w.maxCoeff();
+	
+	MatrixXd res4f_branch2b_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res4f_branch2b_result_min = res4f_branch2b_result_params(41, 0);
+	const float res4f_branch2b_result_max = res4f_branch2b_result_params(41, 1);
 	
 	MatrixXd res4f_branch2b_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res4f_branch2b_biases.csv");
 	VectorXd res4f_branch2b_b(Map<VectorXd>(res4f_branch2b_biases.data(), res4f_branch2b_biases.cols()*res4f_branch2b_biases.rows()));
@@ -1017,12 +1269,18 @@ int main(int argc, char *argv[])
 	const int p1_43 = 0;
 	const int p2_43 = 0;
 	
-	const int output_height_43 = static_cast<int>(ceil(static_cast<float>(im_height_43 + 2 * p1_43 - sqrt(k_size_43)) / stride_43)) + 1;
-	const int output_width_43 = static_cast<int>(ceil(static_cast<float>(im_width_43 + 2 * p2_43 - sqrt(k_size_43)) / stride_43)) + 1;
+	const int output_height_43 = (im_height_43 + 2 * p1_43 - sqrt(k_size_43)) / stride_43 + 1;
+	const int output_width_43 = (im_width_43 + 2 * p2_43 - sqrt(k_size_43)) / stride_43 + 1;
 	const int output_size_43 = output_height_43 * output_width_43;
 	
 	MatrixXd res4f_branch2c_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res4f_branch2c_weights.csv");
 	MatrixXd res4f_branch2c_w = res4f_branch2c_weights;
+	const float res4f_branch2c_min = res4f_branch2c_w.minCoeff();
+	const float res4f_branch2c_max = res4f_branch2c_w.maxCoeff();
+	
+	MatrixXd res4f_branch2c_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res4f_branch2c_result_min = res4f_branch2c_result_params(42, 0);
+	const float res4f_branch2c_result_max = res4f_branch2c_result_params(42, 1);
 	
 	MatrixXd res4f_branch2c_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res4f_branch2c_biases.csv");
 	VectorXd res4f_branch2c_b(Map<VectorXd>(res4f_branch2c_biases.data(), res4f_branch2c_biases.cols()*res4f_branch2c_biases.rows()));
@@ -1040,12 +1298,18 @@ int main(int argc, char *argv[])
 	const int p1_44 = 0;
 	const int p2_44 = 0;
 	
-	const int output_height_44 = static_cast<int>(ceil(static_cast<float>(im_height_44 + 2 * p1_44 - sqrt(k_size_44)) / stride_44)) + 1;
-	const int output_width_44 = static_cast<int>(ceil(static_cast<float>(im_width_44 + 2 * p2_44 - sqrt(k_size_44)) / stride_44)) + 1;
+	const int output_height_44 = (im_height_44 + 2 * p1_44 - sqrt(k_size_44)) / stride_44 + 1;
+	const int output_width_44 = (im_width_44 + 2 * p2_44 - sqrt(k_size_44)) / stride_44 + 1;
 	const int output_size_44 = output_height_44 * output_width_44;
 	
 	MatrixXd res5a_branch1_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res5a_branch1_weights.csv");
 	MatrixXd res5a_branch1_w = res5a_branch1_weights;
+	const float res5a_branch1_min = res5a_branch1_w.minCoeff();
+	const float res5a_branch1_max = res5a_branch1_w.maxCoeff();
+	
+	MatrixXd res5a_branch1_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res5a_branch1_result_min = res5a_branch1_result_params(43, 0);
+	const float res5a_branch1_result_max = res5a_branch1_result_params(43, 1);
 	
 	MatrixXd res5a_branch1_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res5a_branch1_biases.csv");
 	VectorXd res5a_branch1_b(Map<VectorXd>(res5a_branch1_biases.data(), res5a_branch1_biases.cols()*res5a_branch1_biases.rows()));
@@ -1063,12 +1327,18 @@ int main(int argc, char *argv[])
 	const int p1_45 = 0;
 	const int p2_45 = 0;
 	
-	const int output_height_45 = static_cast<int>(ceil(static_cast<float>(im_height_45 + 2 * p1_45 - sqrt(k_size_45)) / stride_45)) + 1;
-	const int output_width_45 = static_cast<int>(ceil(static_cast<float>(im_width_45 + 2 * p2_45 - sqrt(k_size_45)) / stride_45)) + 1;
+	const int output_height_45 = (im_height_45 + 2 * p1_45 - sqrt(k_size_45)) / stride_45 + 1;
+	const int output_width_45 = (im_width_45 + 2 * p2_45 - sqrt(k_size_45)) / stride_45 + 1;
 	const int output_size_45 = output_height_45 * output_width_45;
 	
 	MatrixXd res5a_branch2a_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res5a_branch2a_weights.csv");
 	MatrixXd res5a_branch2a_w = res5a_branch2a_weights;
+	const float res5a_branch2a_min = res5a_branch2a_w.minCoeff();
+	const float res5a_branch2a_max = res5a_branch2a_w.maxCoeff();
+	
+	MatrixXd res5a_branch2a_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res5a_branch2a_result_min = res5a_branch2a_result_params(44, 0);
+	const float res5a_branch2a_result_max = res5a_branch2a_result_params(44, 1);
 	
 	MatrixXd res5a_branch2a_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res5a_branch2a_biases.csv");
 	VectorXd res5a_branch2a_b(Map<VectorXd>(res5a_branch2a_biases.data(), res5a_branch2a_biases.cols()*res5a_branch2a_biases.rows()));
@@ -1086,12 +1356,18 @@ int main(int argc, char *argv[])
 	const int p1_46 = 1;
 	const int p2_46 = 1;
 	
-	const int output_height_46 = static_cast<int>(ceil(static_cast<float>(im_height_46 + 2 * p1_46 - sqrt(k_size_46)) / stride_46)) + 1;
-	const int output_width_46 = static_cast<int>(ceil(static_cast<float>(im_width_46 + 2 * p2_46 - sqrt(k_size_46)) / stride_46)) + 1;
+	const int output_height_46 = (im_height_46 + 2 * p1_46 - sqrt(k_size_46)) / stride_46 + 1;
+	const int output_width_46 = (im_width_46 + 2 * p2_46 - sqrt(k_size_46)) / stride_46 + 1;
 	const int output_size_46 = output_height_46 * output_width_46;
 	
 	MatrixXd res5a_branch2b_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res5a_branch2b_weights.csv");
 	MatrixXd res5a_branch2b_w = res5a_branch2b_weights;
+	const float res5a_branch2b_min = res5a_branch2b_w.minCoeff();
+	const float res5a_branch2b_max = res5a_branch2b_w.maxCoeff();
+	
+	MatrixXd res5a_branch2b_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res5a_branch2b_result_min = res5a_branch2b_result_params(45, 0);
+	const float res5a_branch2b_result_max = res5a_branch2b_result_params(45, 1);
 	
 	MatrixXd res5a_branch2b_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res5a_branch2b_biases.csv");
 	VectorXd res5a_branch2b_b(Map<VectorXd>(res5a_branch2b_biases.data(), res5a_branch2b_biases.cols()*res5a_branch2b_biases.rows()));
@@ -1109,12 +1385,18 @@ int main(int argc, char *argv[])
 	const int p1_47 = 0;
 	const int p2_47 = 0;
 	
-	const int output_height_47 = static_cast<int>(ceil(static_cast<float>(im_height_47 + 2 * p1_47 - sqrt(k_size_47)) / stride_47)) + 1;
-	const int output_width_47 = static_cast<int>(ceil(static_cast<float>(im_width_47 + 2 * p2_47 - sqrt(k_size_47)) / stride_47)) + 1;
+	const int output_height_47 = (im_height_47 + 2 * p1_47 - sqrt(k_size_47)) / stride_47 + 1;
+	const int output_width_47 = (im_width_47 + 2 * p2_47 - sqrt(k_size_47)) / stride_47 + 1;
 	const int output_size_47 = output_height_47 * output_width_47;
 	
 	MatrixXd res5a_branch2c_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res5a_branch2c_weights.csv");
 	MatrixXd res5a_branch2c_w = res5a_branch2c_weights;
+	const float res5a_branch2c_min = res5a_branch2c_w.minCoeff();
+	const float res5a_branch2c_max = res5a_branch2c_w.maxCoeff();
+	
+	MatrixXd res5a_branch2c_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res5a_branch2c_result_min = res5a_branch2c_result_params(46, 0);
+	const float res5a_branch2c_result_max = res5a_branch2c_result_params(46, 1);
 	
 	MatrixXd res5a_branch2c_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res5a_branch2c_biases.csv");
 	VectorXd res5a_branch2c_b(Map<VectorXd>(res5a_branch2c_biases.data(), res5a_branch2c_biases.cols()*res5a_branch2c_biases.rows()));
@@ -1132,12 +1414,18 @@ int main(int argc, char *argv[])
 	const int p1_48 = 0;
 	const int p2_48 = 0;
 	
-	const int output_height_48 = static_cast<int>(ceil(static_cast<float>(im_height_48 + 2 * p1_48 - sqrt(k_size_48)) / stride_48)) + 1;
-	const int output_width_48 = static_cast<int>(ceil(static_cast<float>(im_width_48 + 2 * p2_48 - sqrt(k_size_48)) / stride_48)) + 1;
+	const int output_height_48 = (im_height_48 + 2 * p1_48 - sqrt(k_size_48)) / stride_48 + 1;
+	const int output_width_48 = (im_width_48 + 2 * p2_48 - sqrt(k_size_48)) / stride_48 + 1;
 	const int output_size_48 = output_height_48 * output_width_48;
 	
 	MatrixXd res5b_branch2a_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res5b_branch2a_weights.csv");
 	MatrixXd res5b_branch2a_w = res5b_branch2a_weights;
+	const float res5b_branch2a_min = res5b_branch2a_w.minCoeff();
+	const float res5b_branch2a_max = res5b_branch2a_w.maxCoeff();
+	
+	MatrixXd res5b_branch2a_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res5b_branch2a_result_min = res5b_branch2a_result_params(47, 0);
+	const float res5b_branch2a_result_max = res5b_branch2a_result_params(47, 1);
 	
 	MatrixXd res5b_branch2a_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res5b_branch2a_biases.csv");
 	VectorXd res5b_branch2a_b(Map<VectorXd>(res5b_branch2a_biases.data(), res5b_branch2a_biases.cols()*res5b_branch2a_biases.rows()));
@@ -1155,12 +1443,18 @@ int main(int argc, char *argv[])
 	const int p1_49 = 1;
 	const int p2_49 = 1;
 	
-	const int output_height_49 = static_cast<int>(ceil(static_cast<float>(im_height_49 + 2 * p1_49 - sqrt(k_size_49)) / stride_49)) + 1;
-	const int output_width_49 = static_cast<int>(ceil(static_cast<float>(im_width_49 + 2 * p2_49 - sqrt(k_size_49)) / stride_49)) + 1;
+	const int output_height_49 = (im_height_49 + 2 * p1_49 - sqrt(k_size_49)) / stride_49 + 1;
+	const int output_width_49 = (im_width_49 + 2 * p2_49 - sqrt(k_size_49)) / stride_49 + 1;
 	const int output_size_49 = output_height_49 * output_width_49;
 	
 	MatrixXd res5b_branch2b_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res5b_branch2b_weights.csv");
 	MatrixXd res5b_branch2b_w = res5b_branch2b_weights;
+	const float res5b_branch2b_min = res5b_branch2b_w.minCoeff();
+	const float res5b_branch2b_max = res5b_branch2b_w.maxCoeff();
+	
+	MatrixXd res5b_branch2b_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res5b_branch2b_result_min = res5b_branch2b_result_params(48, 0);
+	const float res5b_branch2b_result_max = res5b_branch2b_result_params(48, 1);
 	
 	MatrixXd res5b_branch2b_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res5b_branch2b_biases.csv");
 	VectorXd res5b_branch2b_b(Map<VectorXd>(res5b_branch2b_biases.data(), res5b_branch2b_biases.cols()*res5b_branch2b_biases.rows()));
@@ -1178,12 +1472,18 @@ int main(int argc, char *argv[])
 	const int p1_50 = 0;
 	const int p2_50 = 0;
 	
-	const int output_height_50 = static_cast<int>(ceil(static_cast<float>(im_height_50 + 2 * p1_50 - sqrt(k_size_50)) / stride_50)) + 1;
-	const int output_width_50 = static_cast<int>(ceil(static_cast<float>(im_width_50 + 2 * p2_50 - sqrt(k_size_50)) / stride_50)) + 1;
+	const int output_height_50 = (im_height_50 + 2 * p1_50 - sqrt(k_size_50)) / stride_50 + 1;
+	const int output_width_50 = (im_width_50 + 2 * p2_50 - sqrt(k_size_50)) / stride_50 + 1;
 	const int output_size_50 = output_height_50 * output_width_50;
 	
 	MatrixXd res5b_branch2c_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res5b_branch2c_weights.csv");
 	MatrixXd res5b_branch2c_w = res5b_branch2c_weights;
+	const float res5b_branch2c_min = res5b_branch2c_w.minCoeff();
+	const float res5b_branch2c_max = res5b_branch2c_w.maxCoeff();
+	
+	MatrixXd res5b_branch2c_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res5b_branch2c_result_min = res5b_branch2c_result_params(49, 0);
+	const float res5b_branch2c_result_max = res5b_branch2c_result_params(49, 1);
 	
 	MatrixXd res5b_branch2c_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res5b_branch2c_biases.csv");
 	VectorXd res5b_branch2c_b(Map<VectorXd>(res5b_branch2c_biases.data(), res5b_branch2c_biases.cols()*res5b_branch2c_biases.rows()));
@@ -1201,12 +1501,18 @@ int main(int argc, char *argv[])
 	const int p1_51 = 0;
 	const int p2_51 = 0;
 	
-	const int output_height_51 = static_cast<int>(ceil(static_cast<float>(im_height_51 + 2 * p1_51 - sqrt(k_size_51)) / stride_51)) + 1;
-	const int output_width_51 = static_cast<int>(ceil(static_cast<float>(im_width_51 + 2 * p2_51 - sqrt(k_size_51)) / stride_51)) + 1;
+	const int output_height_51 = (im_height_51 + 2 * p1_51 - sqrt(k_size_51)) / stride_51 + 1;
+	const int output_width_51 = (im_width_51 + 2 * p2_51 - sqrt(k_size_51)) / stride_51 + 1;
 	const int output_size_51 = output_height_51 * output_width_51;
 	
 	MatrixXd res5c_branch2a_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res5c_branch2a_weights.csv");
 	MatrixXd res5c_branch2a_w = res5c_branch2a_weights;
+	const float res5c_branch2a_min = res5c_branch2a_w.minCoeff();
+	const float res5c_branch2a_max = res5c_branch2a_w.maxCoeff();
+	
+	MatrixXd res5c_branch2a_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res5c_branch2a_result_min = res5c_branch2a_result_params(50, 0);
+	const float res5c_branch2a_result_max = res5c_branch2a_result_params(50, 1);
 	
 	MatrixXd res5c_branch2a_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res5c_branch2a_biases.csv");
 	VectorXd res5c_branch2a_b(Map<VectorXd>(res5c_branch2a_biases.data(), res5c_branch2a_biases.cols()*res5c_branch2a_biases.rows()));
@@ -1224,12 +1530,18 @@ int main(int argc, char *argv[])
 	const int p1_52 = 1;
 	const int p2_52 = 1;
 	
-	const int output_height_52 = static_cast<int>(ceil(static_cast<float>(im_height_52 + 2 * p1_52 - sqrt(k_size_52)) / stride_52)) + 1;
-	const int output_width_52 = static_cast<int>(ceil(static_cast<float>(im_width_52 + 2 * p2_52 - sqrt(k_size_52)) / stride_52)) + 1;
+	const int output_height_52 = (im_height_52 + 2 * p1_52 - sqrt(k_size_52)) / stride_52 + 1;
+	const int output_width_52 = (im_width_52 + 2 * p2_52 - sqrt(k_size_52)) / stride_52 + 1;
 	const int output_size_52 = output_height_52 * output_width_52;
 	
 	MatrixXd res5c_branch2b_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res5c_branch2b_weights.csv");
 	MatrixXd res5c_branch2b_w = res5c_branch2b_weights;
+	const float res5c_branch2b_min = res5c_branch2b_w.minCoeff();
+	const float res5c_branch2b_max = res5c_branch2b_w.maxCoeff();
+	
+	MatrixXd res5c_branch2b_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res5c_branch2b_result_min = res5c_branch2b_result_params(51, 0);
+	const float res5c_branch2b_result_max = res5c_branch2b_result_params(51, 1);
 	
 	MatrixXd res5c_branch2b_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res5c_branch2b_biases.csv");
 	VectorXd res5c_branch2b_b(Map<VectorXd>(res5c_branch2b_biases.data(), res5c_branch2b_biases.cols()*res5c_branch2b_biases.rows()));
@@ -1247,12 +1559,18 @@ int main(int argc, char *argv[])
 	const int p1_53 = 0;
 	const int p2_53 = 0;
 	
-	const int output_height_53 = static_cast<int>(ceil(static_cast<float>(im_height_53 + 2 * p1_53 - sqrt(k_size_53)) / stride_53)) + 1;
-	const int output_width_53 = static_cast<int>(ceil(static_cast<float>(im_width_53 + 2 * p2_53 - sqrt(k_size_53)) / stride_53)) + 1;
+	const int output_height_53 = (im_height_53 + 2 * p1_53 - sqrt(k_size_53)) / stride_53 + 1;
+	const int output_width_53 = (im_width_53 + 2 * p2_53 - sqrt(k_size_53)) / stride_53 + 1;
 	const int output_size_53 = output_height_53 * output_width_53;
 	
 	MatrixXd res5c_branch2c_weights = load_csv_arma<MatrixXd>("../weights/ResNet50/res5c_branch2c_weights.csv");
 	MatrixXd res5c_branch2c_w = res5c_branch2c_weights;
+	const float res5c_branch2c_min = res5c_branch2c_w.minCoeff();
+	const float res5c_branch2c_max = res5c_branch2c_w.maxCoeff();
+	
+	MatrixXd res5c_branch2c_result_params = load_csv_arma<MatrixXd>("../features/ResNet50/caffe/result_params.csv");
+	const float res5c_branch2c_result_min = res5c_branch2c_result_params(52, 0);
+	const float res5c_branch2c_result_max = res5c_branch2c_result_params(52, 1);
 	
 	MatrixXd res5c_branch2c_biases = load_csv_arma<MatrixXd>("../weights/ResNet50/res5c_branch2c_biases.csv");
 	VectorXd res5c_branch2c_b(Map<VectorXd>(res5c_branch2c_biases.data(), res5c_branch2c_biases.cols()*res5c_branch2c_biases.rows()));
@@ -1285,12 +1603,15 @@ int main(int argc, char *argv[])
 
         MatrixXd image = Map<Matrix<double, im_depth_1, im_size_1, RowMajor>>(img.data());
 
+        const float input_min = image.minCoeff();
+        const float input_max = image.maxCoeff();
+
         clock_t run_time_start = clock();
 
 		MatrixXd conv1;
 		float gemm_time_1;
 		float offline_time_1;
-		std::tie(conv1, gemm_time_1, offline_time_1) = convolve(image, im_size_1, im_height_1, im_width_1, im_depth_1, k_size_1, stride_1, conv1_b, p1_1, p2_1, conv1_w, output_size_1, mode);
+		std::tie(conv1, gemm_time_1, offline_time_1) = convolve(image, im_size_1, im_height_1, im_width_1, im_depth_1, k_size_1, stride_1, conv1_b, p1_1, p2_1, conv1_w, output_size_1, mode, conv1_min, conv1_max, input_min, input_max, conv1_result_min, conv1_result_max);
 		
 		MatrixXd conv1_relu = relu(conv1);
 		
@@ -1299,26 +1620,26 @@ int main(int argc, char *argv[])
 		MatrixXd res2a_branch1;
 		float gemm_time_2;
 		float offline_time_2;
-		std::tie(res2a_branch1, gemm_time_2, offline_time_2) = convolve(pool1, im_size_2, im_height_2, im_width_2, im_depth_2, k_size_2, stride_2, res2a_branch1_b, p1_2, p2_2, res2a_branch1_w, output_size_2, mode);
+		std::tie(res2a_branch1, gemm_time_2, offline_time_2) = convolve(pool1, im_size_2, im_height_2, im_width_2, im_depth_2, k_size_2, stride_2, res2a_branch1_b, p1_2, p2_2, res2a_branch1_w, output_size_2, mode, res2a_branch1_min, res2a_branch1_max, input_min, input_max, res2a_branch1_result_min, res2a_branch1_result_max);
 		
 		MatrixXd res2a_branch2a;
 		float gemm_time_3;
 		float offline_time_3;
-		std::tie(res2a_branch2a, gemm_time_3, offline_time_3) = convolve(pool1, im_size_3, im_height_3, im_width_3, im_depth_3, k_size_3, stride_3, res2a_branch2a_b, p1_3, p2_3, res2a_branch2a_w, output_size_3, mode);
+		std::tie(res2a_branch2a, gemm_time_3, offline_time_3) = convolve(pool1, im_size_3, im_height_3, im_width_3, im_depth_3, k_size_3, stride_3, res2a_branch2a_b, p1_3, p2_3, res2a_branch2a_w, output_size_3, mode, res2a_branch2a_min, res2a_branch2a_max, input_min, input_max, res2a_branch2a_result_min, res2a_branch2a_result_max);
 		
 		MatrixXd res2a_branch2a_relu = relu(res2a_branch2a);
 		
 		MatrixXd res2a_branch2b;
 		float gemm_time_4;
 		float offline_time_4;
-		std::tie(res2a_branch2b, gemm_time_4, offline_time_4) = convolve(res2a_branch2a_relu, im_size_4, im_height_4, im_width_4, im_depth_4, k_size_4, stride_4, res2a_branch2b_b, p1_4, p2_4, res2a_branch2b_w, output_size_4, mode);
+		std::tie(res2a_branch2b, gemm_time_4, offline_time_4) = convolve(res2a_branch2a_relu, im_size_4, im_height_4, im_width_4, im_depth_4, k_size_4, stride_4, res2a_branch2b_b, p1_4, p2_4, res2a_branch2b_w, output_size_4, mode, res2a_branch2b_min, res2a_branch2b_max, input_min, input_max, res2a_branch2b_result_min, res2a_branch2b_result_max);
 		
 		MatrixXd res2a_branch2b_relu = relu(res2a_branch2b);
 		
 		MatrixXd res2a_branch2c;
 		float gemm_time_5;
 		float offline_time_5;
-		std::tie(res2a_branch2c, gemm_time_5, offline_time_5) = convolve(res2a_branch2b_relu, im_size_5, im_height_5, im_width_5, im_depth_5, k_size_5, stride_5, res2a_branch2c_b, p1_5, p2_5, res2a_branch2c_w, output_size_5, mode);
+		std::tie(res2a_branch2c, gemm_time_5, offline_time_5) = convolve(res2a_branch2b_relu, im_size_5, im_height_5, im_width_5, im_depth_5, k_size_5, stride_5, res2a_branch2c_b, p1_5, p2_5, res2a_branch2c_w, output_size_5, mode, res2a_branch2c_min, res2a_branch2c_max, input_min, input_max, res2a_branch2c_result_min, res2a_branch2c_result_max);
 		
 		MatrixXd res2a = eltwise(res2a_branch2c, res2a_branch1);
 		
@@ -1327,21 +1648,21 @@ int main(int argc, char *argv[])
 		MatrixXd res2b_branch2a;
 		float gemm_time_6;
 		float offline_time_6;
-		std::tie(res2b_branch2a, gemm_time_6, offline_time_6) = convolve(res2a_relu, im_size_6, im_height_6, im_width_6, im_depth_6, k_size_6, stride_6, res2b_branch2a_b, p1_6, p2_6, res2b_branch2a_w, output_size_6, mode);
+		std::tie(res2b_branch2a, gemm_time_6, offline_time_6) = convolve(res2a_relu, im_size_6, im_height_6, im_width_6, im_depth_6, k_size_6, stride_6, res2b_branch2a_b, p1_6, p2_6, res2b_branch2a_w, output_size_6, mode, res2b_branch2a_min, res2b_branch2a_max, input_min, input_max, res2b_branch2a_result_min, res2b_branch2a_result_max);
 		
 		MatrixXd res2b_branch2a_relu = relu(res2b_branch2a);
 		
 		MatrixXd res2b_branch2b;
 		float gemm_time_7;
 		float offline_time_7;
-		std::tie(res2b_branch2b, gemm_time_7, offline_time_7) = convolve(res2b_branch2a_relu, im_size_7, im_height_7, im_width_7, im_depth_7, k_size_7, stride_7, res2b_branch2b_b, p1_7, p2_7, res2b_branch2b_w, output_size_7, mode);
+		std::tie(res2b_branch2b, gemm_time_7, offline_time_7) = convolve(res2b_branch2a_relu, im_size_7, im_height_7, im_width_7, im_depth_7, k_size_7, stride_7, res2b_branch2b_b, p1_7, p2_7, res2b_branch2b_w, output_size_7, mode, res2b_branch2b_min, res2b_branch2b_max, input_min, input_max, res2b_branch2b_result_min, res2b_branch2b_result_max);
 		
 		MatrixXd res2b_branch2b_relu = relu(res2b_branch2b);
 		
 		MatrixXd res2b_branch2c;
 		float gemm_time_8;
 		float offline_time_8;
-		std::tie(res2b_branch2c, gemm_time_8, offline_time_8) = convolve(res2b_branch2b_relu, im_size_8, im_height_8, im_width_8, im_depth_8, k_size_8, stride_8, res2b_branch2c_b, p1_8, p2_8, res2b_branch2c_w, output_size_8, mode);
+		std::tie(res2b_branch2c, gemm_time_8, offline_time_8) = convolve(res2b_branch2b_relu, im_size_8, im_height_8, im_width_8, im_depth_8, k_size_8, stride_8, res2b_branch2c_b, p1_8, p2_8, res2b_branch2c_w, output_size_8, mode, res2b_branch2c_min, res2b_branch2c_max, input_min, input_max, res2b_branch2c_result_min, res2b_branch2c_result_max);
 		
 		MatrixXd res2b = eltwise(res2b_branch2c, res2a_relu);
 		
@@ -1350,21 +1671,21 @@ int main(int argc, char *argv[])
 		MatrixXd res2c_branch2a;
 		float gemm_time_9;
 		float offline_time_9;
-		std::tie(res2c_branch2a, gemm_time_9, offline_time_9) = convolve(res2b_relu, im_size_9, im_height_9, im_width_9, im_depth_9, k_size_9, stride_9, res2c_branch2a_b, p1_9, p2_9, res2c_branch2a_w, output_size_9, mode);
+		std::tie(res2c_branch2a, gemm_time_9, offline_time_9) = convolve(res2b_relu, im_size_9, im_height_9, im_width_9, im_depth_9, k_size_9, stride_9, res2c_branch2a_b, p1_9, p2_9, res2c_branch2a_w, output_size_9, mode, res2c_branch2a_min, res2c_branch2a_max, input_min, input_max, res2c_branch2a_result_min, res2c_branch2a_result_max);
 		
 		MatrixXd res2c_branch2a_relu = relu(res2c_branch2a);
 		
 		MatrixXd res2c_branch2b;
 		float gemm_time_10;
 		float offline_time_10;
-		std::tie(res2c_branch2b, gemm_time_10, offline_time_10) = convolve(res2c_branch2a_relu, im_size_10, im_height_10, im_width_10, im_depth_10, k_size_10, stride_10, res2c_branch2b_b, p1_10, p2_10, res2c_branch2b_w, output_size_10, mode);
+		std::tie(res2c_branch2b, gemm_time_10, offline_time_10) = convolve(res2c_branch2a_relu, im_size_10, im_height_10, im_width_10, im_depth_10, k_size_10, stride_10, res2c_branch2b_b, p1_10, p2_10, res2c_branch2b_w, output_size_10, mode, res2c_branch2b_min, res2c_branch2b_max, input_min, input_max, res2c_branch2b_result_min, res2c_branch2b_result_max);
 		
 		MatrixXd res2c_branch2b_relu = relu(res2c_branch2b);
 		
 		MatrixXd res2c_branch2c;
 		float gemm_time_11;
 		float offline_time_11;
-		std::tie(res2c_branch2c, gemm_time_11, offline_time_11) = convolve(res2c_branch2b_relu, im_size_11, im_height_11, im_width_11, im_depth_11, k_size_11, stride_11, res2c_branch2c_b, p1_11, p2_11, res2c_branch2c_w, output_size_11, mode);
+		std::tie(res2c_branch2c, gemm_time_11, offline_time_11) = convolve(res2c_branch2b_relu, im_size_11, im_height_11, im_width_11, im_depth_11, k_size_11, stride_11, res2c_branch2c_b, p1_11, p2_11, res2c_branch2c_w, output_size_11, mode, res2c_branch2c_min, res2c_branch2c_max, input_min, input_max, res2c_branch2c_result_min, res2c_branch2c_result_max);
 		
 		MatrixXd res2c = eltwise(res2c_branch2c, res2b_relu);
 		
@@ -1373,26 +1694,26 @@ int main(int argc, char *argv[])
 		MatrixXd res3a_branch1;
 		float gemm_time_12;
 		float offline_time_12;
-		std::tie(res3a_branch1, gemm_time_12, offline_time_12) = convolve(res2c_relu, im_size_12, im_height_12, im_width_12, im_depth_12, k_size_12, stride_12, res3a_branch1_b, p1_12, p2_12, res3a_branch1_w, output_size_12, mode);
+		std::tie(res3a_branch1, gemm_time_12, offline_time_12) = convolve(res2c_relu, im_size_12, im_height_12, im_width_12, im_depth_12, k_size_12, stride_12, res3a_branch1_b, p1_12, p2_12, res3a_branch1_w, output_size_12, mode, res3a_branch1_min, res3a_branch1_max, input_min, input_max, res3a_branch1_result_min, res3a_branch1_result_max);
 		
 		MatrixXd res3a_branch2a;
 		float gemm_time_13;
 		float offline_time_13;
-		std::tie(res3a_branch2a, gemm_time_13, offline_time_13) = convolve(res2c_relu, im_size_13, im_height_13, im_width_13, im_depth_13, k_size_13, stride_13, res3a_branch2a_b, p1_13, p2_13, res3a_branch2a_w, output_size_13, mode);
+		std::tie(res3a_branch2a, gemm_time_13, offline_time_13) = convolve(res2c_relu, im_size_13, im_height_13, im_width_13, im_depth_13, k_size_13, stride_13, res3a_branch2a_b, p1_13, p2_13, res3a_branch2a_w, output_size_13, mode, res3a_branch2a_min, res3a_branch2a_max, input_min, input_max, res3a_branch2a_result_min, res3a_branch2a_result_max);
 		
 		MatrixXd res3a_branch2a_relu = relu(res3a_branch2a);
 		
 		MatrixXd res3a_branch2b;
 		float gemm_time_14;
 		float offline_time_14;
-		std::tie(res3a_branch2b, gemm_time_14, offline_time_14) = convolve(res3a_branch2a_relu, im_size_14, im_height_14, im_width_14, im_depth_14, k_size_14, stride_14, res3a_branch2b_b, p1_14, p2_14, res3a_branch2b_w, output_size_14, mode);
+		std::tie(res3a_branch2b, gemm_time_14, offline_time_14) = convolve(res3a_branch2a_relu, im_size_14, im_height_14, im_width_14, im_depth_14, k_size_14, stride_14, res3a_branch2b_b, p1_14, p2_14, res3a_branch2b_w, output_size_14, mode, res3a_branch2b_min, res3a_branch2b_max, input_min, input_max, res3a_branch2b_result_min, res3a_branch2b_result_max);
 		
 		MatrixXd res3a_branch2b_relu = relu(res3a_branch2b);
 		
 		MatrixXd res3a_branch2c;
 		float gemm_time_15;
 		float offline_time_15;
-		std::tie(res3a_branch2c, gemm_time_15, offline_time_15) = convolve(res3a_branch2b_relu, im_size_15, im_height_15, im_width_15, im_depth_15, k_size_15, stride_15, res3a_branch2c_b, p1_15, p2_15, res3a_branch2c_w, output_size_15, mode);
+		std::tie(res3a_branch2c, gemm_time_15, offline_time_15) = convolve(res3a_branch2b_relu, im_size_15, im_height_15, im_width_15, im_depth_15, k_size_15, stride_15, res3a_branch2c_b, p1_15, p2_15, res3a_branch2c_w, output_size_15, mode, res3a_branch2c_min, res3a_branch2c_max, input_min, input_max, res3a_branch2c_result_min, res3a_branch2c_result_max);
 		
 		MatrixXd res3a = eltwise(res3a_branch2c, res3a_branch1);
 		
@@ -1401,21 +1722,21 @@ int main(int argc, char *argv[])
 		MatrixXd res3b_branch2a;
 		float gemm_time_16;
 		float offline_time_16;
-		std::tie(res3b_branch2a, gemm_time_16, offline_time_16) = convolve(res3a_relu, im_size_16, im_height_16, im_width_16, im_depth_16, k_size_16, stride_16, res3b_branch2a_b, p1_16, p2_16, res3b_branch2a_w, output_size_16, mode);
+		std::tie(res3b_branch2a, gemm_time_16, offline_time_16) = convolve(res3a_relu, im_size_16, im_height_16, im_width_16, im_depth_16, k_size_16, stride_16, res3b_branch2a_b, p1_16, p2_16, res3b_branch2a_w, output_size_16, mode, res3b_branch2a_min, res3b_branch2a_max, input_min, input_max, res3b_branch2a_result_min, res3b_branch2a_result_max);
 		
 		MatrixXd res3b_branch2a_relu = relu(res3b_branch2a);
 		
 		MatrixXd res3b_branch2b;
 		float gemm_time_17;
 		float offline_time_17;
-		std::tie(res3b_branch2b, gemm_time_17, offline_time_17) = convolve(res3b_branch2a_relu, im_size_17, im_height_17, im_width_17, im_depth_17, k_size_17, stride_17, res3b_branch2b_b, p1_17, p2_17, res3b_branch2b_w, output_size_17, mode);
+		std::tie(res3b_branch2b, gemm_time_17, offline_time_17) = convolve(res3b_branch2a_relu, im_size_17, im_height_17, im_width_17, im_depth_17, k_size_17, stride_17, res3b_branch2b_b, p1_17, p2_17, res3b_branch2b_w, output_size_17, mode, res3b_branch2b_min, res3b_branch2b_max, input_min, input_max, res3b_branch2b_result_min, res3b_branch2b_result_max);
 		
 		MatrixXd res3b_branch2b_relu = relu(res3b_branch2b);
 		
 		MatrixXd res3b_branch2c;
 		float gemm_time_18;
 		float offline_time_18;
-		std::tie(res3b_branch2c, gemm_time_18, offline_time_18) = convolve(res3b_branch2b_relu, im_size_18, im_height_18, im_width_18, im_depth_18, k_size_18, stride_18, res3b_branch2c_b, p1_18, p2_18, res3b_branch2c_w, output_size_18, mode);
+		std::tie(res3b_branch2c, gemm_time_18, offline_time_18) = convolve(res3b_branch2b_relu, im_size_18, im_height_18, im_width_18, im_depth_18, k_size_18, stride_18, res3b_branch2c_b, p1_18, p2_18, res3b_branch2c_w, output_size_18, mode, res3b_branch2c_min, res3b_branch2c_max, input_min, input_max, res3b_branch2c_result_min, res3b_branch2c_result_max);
 		
 		MatrixXd res3b = eltwise(res3b_branch2c, res3a_relu);
 		
@@ -1424,21 +1745,21 @@ int main(int argc, char *argv[])
 		MatrixXd res3c_branch2a;
 		float gemm_time_19;
 		float offline_time_19;
-		std::tie(res3c_branch2a, gemm_time_19, offline_time_19) = convolve(res3b_relu, im_size_19, im_height_19, im_width_19, im_depth_19, k_size_19, stride_19, res3c_branch2a_b, p1_19, p2_19, res3c_branch2a_w, output_size_19, mode);
+		std::tie(res3c_branch2a, gemm_time_19, offline_time_19) = convolve(res3b_relu, im_size_19, im_height_19, im_width_19, im_depth_19, k_size_19, stride_19, res3c_branch2a_b, p1_19, p2_19, res3c_branch2a_w, output_size_19, mode, res3c_branch2a_min, res3c_branch2a_max, input_min, input_max, res3c_branch2a_result_min, res3c_branch2a_result_max);
 		
 		MatrixXd res3c_branch2a_relu = relu(res3c_branch2a);
 		
 		MatrixXd res3c_branch2b;
 		float gemm_time_20;
 		float offline_time_20;
-		std::tie(res3c_branch2b, gemm_time_20, offline_time_20) = convolve(res3c_branch2a_relu, im_size_20, im_height_20, im_width_20, im_depth_20, k_size_20, stride_20, res3c_branch2b_b, p1_20, p2_20, res3c_branch2b_w, output_size_20, mode);
+		std::tie(res3c_branch2b, gemm_time_20, offline_time_20) = convolve(res3c_branch2a_relu, im_size_20, im_height_20, im_width_20, im_depth_20, k_size_20, stride_20, res3c_branch2b_b, p1_20, p2_20, res3c_branch2b_w, output_size_20, mode, res3c_branch2b_min, res3c_branch2b_max, input_min, input_max, res3c_branch2b_result_min, res3c_branch2b_result_max);
 		
 		MatrixXd res3c_branch2b_relu = relu(res3c_branch2b);
 		
 		MatrixXd res3c_branch2c;
 		float gemm_time_21;
 		float offline_time_21;
-		std::tie(res3c_branch2c, gemm_time_21, offline_time_21) = convolve(res3c_branch2b_relu, im_size_21, im_height_21, im_width_21, im_depth_21, k_size_21, stride_21, res3c_branch2c_b, p1_21, p2_21, res3c_branch2c_w, output_size_21, mode);
+		std::tie(res3c_branch2c, gemm_time_21, offline_time_21) = convolve(res3c_branch2b_relu, im_size_21, im_height_21, im_width_21, im_depth_21, k_size_21, stride_21, res3c_branch2c_b, p1_21, p2_21, res3c_branch2c_w, output_size_21, mode, res3c_branch2c_min, res3c_branch2c_max, input_min, input_max, res3c_branch2c_result_min, res3c_branch2c_result_max);
 		
 		MatrixXd res3c = eltwise(res3c_branch2c, res3b_relu);
 		
@@ -1447,21 +1768,21 @@ int main(int argc, char *argv[])
 		MatrixXd res3d_branch2a;
 		float gemm_time_22;
 		float offline_time_22;
-		std::tie(res3d_branch2a, gemm_time_22, offline_time_22) = convolve(res3c_relu, im_size_22, im_height_22, im_width_22, im_depth_22, k_size_22, stride_22, res3d_branch2a_b, p1_22, p2_22, res3d_branch2a_w, output_size_22, mode);
+		std::tie(res3d_branch2a, gemm_time_22, offline_time_22) = convolve(res3c_relu, im_size_22, im_height_22, im_width_22, im_depth_22, k_size_22, stride_22, res3d_branch2a_b, p1_22, p2_22, res3d_branch2a_w, output_size_22, mode, res3d_branch2a_min, res3d_branch2a_max, input_min, input_max, res3d_branch2a_result_min, res3d_branch2a_result_max);
 		
 		MatrixXd res3d_branch2a_relu = relu(res3d_branch2a);
 		
 		MatrixXd res3d_branch2b;
 		float gemm_time_23;
 		float offline_time_23;
-		std::tie(res3d_branch2b, gemm_time_23, offline_time_23) = convolve(res3d_branch2a_relu, im_size_23, im_height_23, im_width_23, im_depth_23, k_size_23, stride_23, res3d_branch2b_b, p1_23, p2_23, res3d_branch2b_w, output_size_23, mode);
+		std::tie(res3d_branch2b, gemm_time_23, offline_time_23) = convolve(res3d_branch2a_relu, im_size_23, im_height_23, im_width_23, im_depth_23, k_size_23, stride_23, res3d_branch2b_b, p1_23, p2_23, res3d_branch2b_w, output_size_23, mode, res3d_branch2b_min, res3d_branch2b_max, input_min, input_max, res3d_branch2b_result_min, res3d_branch2b_result_max);
 		
 		MatrixXd res3d_branch2b_relu = relu(res3d_branch2b);
 		
 		MatrixXd res3d_branch2c;
 		float gemm_time_24;
 		float offline_time_24;
-		std::tie(res3d_branch2c, gemm_time_24, offline_time_24) = convolve(res3d_branch2b_relu, im_size_24, im_height_24, im_width_24, im_depth_24, k_size_24, stride_24, res3d_branch2c_b, p1_24, p2_24, res3d_branch2c_w, output_size_24, mode);
+		std::tie(res3d_branch2c, gemm_time_24, offline_time_24) = convolve(res3d_branch2b_relu, im_size_24, im_height_24, im_width_24, im_depth_24, k_size_24, stride_24, res3d_branch2c_b, p1_24, p2_24, res3d_branch2c_w, output_size_24, mode, res3d_branch2c_min, res3d_branch2c_max, input_min, input_max, res3d_branch2c_result_min, res3d_branch2c_result_max);
 		
 		MatrixXd res3d = eltwise(res3d_branch2c, res3c_relu);
 		
@@ -1470,26 +1791,26 @@ int main(int argc, char *argv[])
 		MatrixXd res4a_branch1;
 		float gemm_time_25;
 		float offline_time_25;
-		std::tie(res4a_branch1, gemm_time_25, offline_time_25) = convolve(res3d_relu, im_size_25, im_height_25, im_width_25, im_depth_25, k_size_25, stride_25, res4a_branch1_b, p1_25, p2_25, res4a_branch1_w, output_size_25, mode);
+		std::tie(res4a_branch1, gemm_time_25, offline_time_25) = convolve(res3d_relu, im_size_25, im_height_25, im_width_25, im_depth_25, k_size_25, stride_25, res4a_branch1_b, p1_25, p2_25, res4a_branch1_w, output_size_25, mode, res4a_branch1_min, res4a_branch1_max, input_min, input_max, res4a_branch1_result_min, res4a_branch1_result_max);
 		
 		MatrixXd res4a_branch2a;
 		float gemm_time_26;
 		float offline_time_26;
-		std::tie(res4a_branch2a, gemm_time_26, offline_time_26) = convolve(res3d_relu, im_size_26, im_height_26, im_width_26, im_depth_26, k_size_26, stride_26, res4a_branch2a_b, p1_26, p2_26, res4a_branch2a_w, output_size_26, mode);
+		std::tie(res4a_branch2a, gemm_time_26, offline_time_26) = convolve(res3d_relu, im_size_26, im_height_26, im_width_26, im_depth_26, k_size_26, stride_26, res4a_branch2a_b, p1_26, p2_26, res4a_branch2a_w, output_size_26, mode, res4a_branch2a_min, res4a_branch2a_max, input_min, input_max, res4a_branch2a_result_min, res4a_branch2a_result_max);
 		
 		MatrixXd res4a_branch2a_relu = relu(res4a_branch2a);
 		
 		MatrixXd res4a_branch2b;
 		float gemm_time_27;
 		float offline_time_27;
-		std::tie(res4a_branch2b, gemm_time_27, offline_time_27) = convolve(res4a_branch2a_relu, im_size_27, im_height_27, im_width_27, im_depth_27, k_size_27, stride_27, res4a_branch2b_b, p1_27, p2_27, res4a_branch2b_w, output_size_27, mode);
+		std::tie(res4a_branch2b, gemm_time_27, offline_time_27) = convolve(res4a_branch2a_relu, im_size_27, im_height_27, im_width_27, im_depth_27, k_size_27, stride_27, res4a_branch2b_b, p1_27, p2_27, res4a_branch2b_w, output_size_27, mode, res4a_branch2b_min, res4a_branch2b_max, input_min, input_max, res4a_branch2b_result_min, res4a_branch2b_result_max);
 		
 		MatrixXd res4a_branch2b_relu = relu(res4a_branch2b);
 		
 		MatrixXd res4a_branch2c;
 		float gemm_time_28;
 		float offline_time_28;
-		std::tie(res4a_branch2c, gemm_time_28, offline_time_28) = convolve(res4a_branch2b_relu, im_size_28, im_height_28, im_width_28, im_depth_28, k_size_28, stride_28, res4a_branch2c_b, p1_28, p2_28, res4a_branch2c_w, output_size_28, mode);
+		std::tie(res4a_branch2c, gemm_time_28, offline_time_28) = convolve(res4a_branch2b_relu, im_size_28, im_height_28, im_width_28, im_depth_28, k_size_28, stride_28, res4a_branch2c_b, p1_28, p2_28, res4a_branch2c_w, output_size_28, mode, res4a_branch2c_min, res4a_branch2c_max, input_min, input_max, res4a_branch2c_result_min, res4a_branch2c_result_max);
 		
 		MatrixXd res4a = eltwise(res4a_branch2c, res4a_branch1);
 		
@@ -1498,21 +1819,21 @@ int main(int argc, char *argv[])
 		MatrixXd res4b_branch2a;
 		float gemm_time_29;
 		float offline_time_29;
-		std::tie(res4b_branch2a, gemm_time_29, offline_time_29) = convolve(res4a_relu, im_size_29, im_height_29, im_width_29, im_depth_29, k_size_29, stride_29, res4b_branch2a_b, p1_29, p2_29, res4b_branch2a_w, output_size_29, mode);
+		std::tie(res4b_branch2a, gemm_time_29, offline_time_29) = convolve(res4a_relu, im_size_29, im_height_29, im_width_29, im_depth_29, k_size_29, stride_29, res4b_branch2a_b, p1_29, p2_29, res4b_branch2a_w, output_size_29, mode, res4b_branch2a_min, res4b_branch2a_max, input_min, input_max, res4b_branch2a_result_min, res4b_branch2a_result_max);
 		
 		MatrixXd res4b_branch2a_relu = relu(res4b_branch2a);
 		
 		MatrixXd res4b_branch2b;
 		float gemm_time_30;
 		float offline_time_30;
-		std::tie(res4b_branch2b, gemm_time_30, offline_time_30) = convolve(res4b_branch2a_relu, im_size_30, im_height_30, im_width_30, im_depth_30, k_size_30, stride_30, res4b_branch2b_b, p1_30, p2_30, res4b_branch2b_w, output_size_30, mode);
+		std::tie(res4b_branch2b, gemm_time_30, offline_time_30) = convolve(res4b_branch2a_relu, im_size_30, im_height_30, im_width_30, im_depth_30, k_size_30, stride_30, res4b_branch2b_b, p1_30, p2_30, res4b_branch2b_w, output_size_30, mode, res4b_branch2b_min, res4b_branch2b_max, input_min, input_max, res4b_branch2b_result_min, res4b_branch2b_result_max);
 		
 		MatrixXd res4b_branch2b_relu = relu(res4b_branch2b);
 		
 		MatrixXd res4b_branch2c;
 		float gemm_time_31;
 		float offline_time_31;
-		std::tie(res4b_branch2c, gemm_time_31, offline_time_31) = convolve(res4b_branch2b_relu, im_size_31, im_height_31, im_width_31, im_depth_31, k_size_31, stride_31, res4b_branch2c_b, p1_31, p2_31, res4b_branch2c_w, output_size_31, mode);
+		std::tie(res4b_branch2c, gemm_time_31, offline_time_31) = convolve(res4b_branch2b_relu, im_size_31, im_height_31, im_width_31, im_depth_31, k_size_31, stride_31, res4b_branch2c_b, p1_31, p2_31, res4b_branch2c_w, output_size_31, mode, res4b_branch2c_min, res4b_branch2c_max, input_min, input_max, res4b_branch2c_result_min, res4b_branch2c_result_max);
 		
 		MatrixXd res4b = eltwise(res4b_branch2c, res4a_relu);
 		
@@ -1521,21 +1842,21 @@ int main(int argc, char *argv[])
 		MatrixXd res4c_branch2a;
 		float gemm_time_32;
 		float offline_time_32;
-		std::tie(res4c_branch2a, gemm_time_32, offline_time_32) = convolve(res4b_relu, im_size_32, im_height_32, im_width_32, im_depth_32, k_size_32, stride_32, res4c_branch2a_b, p1_32, p2_32, res4c_branch2a_w, output_size_32, mode);
+		std::tie(res4c_branch2a, gemm_time_32, offline_time_32) = convolve(res4b_relu, im_size_32, im_height_32, im_width_32, im_depth_32, k_size_32, stride_32, res4c_branch2a_b, p1_32, p2_32, res4c_branch2a_w, output_size_32, mode, res4c_branch2a_min, res4c_branch2a_max, input_min, input_max, res4c_branch2a_result_min, res4c_branch2a_result_max);
 		
 		MatrixXd res4c_branch2a_relu = relu(res4c_branch2a);
 		
 		MatrixXd res4c_branch2b;
 		float gemm_time_33;
 		float offline_time_33;
-		std::tie(res4c_branch2b, gemm_time_33, offline_time_33) = convolve(res4c_branch2a_relu, im_size_33, im_height_33, im_width_33, im_depth_33, k_size_33, stride_33, res4c_branch2b_b, p1_33, p2_33, res4c_branch2b_w, output_size_33, mode);
+		std::tie(res4c_branch2b, gemm_time_33, offline_time_33) = convolve(res4c_branch2a_relu, im_size_33, im_height_33, im_width_33, im_depth_33, k_size_33, stride_33, res4c_branch2b_b, p1_33, p2_33, res4c_branch2b_w, output_size_33, mode, res4c_branch2b_min, res4c_branch2b_max, input_min, input_max, res4c_branch2b_result_min, res4c_branch2b_result_max);
 		
 		MatrixXd res4c_branch2b_relu = relu(res4c_branch2b);
 		
 		MatrixXd res4c_branch2c;
 		float gemm_time_34;
 		float offline_time_34;
-		std::tie(res4c_branch2c, gemm_time_34, offline_time_34) = convolve(res4c_branch2b_relu, im_size_34, im_height_34, im_width_34, im_depth_34, k_size_34, stride_34, res4c_branch2c_b, p1_34, p2_34, res4c_branch2c_w, output_size_34, mode);
+		std::tie(res4c_branch2c, gemm_time_34, offline_time_34) = convolve(res4c_branch2b_relu, im_size_34, im_height_34, im_width_34, im_depth_34, k_size_34, stride_34, res4c_branch2c_b, p1_34, p2_34, res4c_branch2c_w, output_size_34, mode, res4c_branch2c_min, res4c_branch2c_max, input_min, input_max, res4c_branch2c_result_min, res4c_branch2c_result_max);
 		
 		MatrixXd res4c = eltwise(res4c_branch2c, res4b_relu);
 		
@@ -1544,21 +1865,21 @@ int main(int argc, char *argv[])
 		MatrixXd res4d_branch2a;
 		float gemm_time_35;
 		float offline_time_35;
-		std::tie(res4d_branch2a, gemm_time_35, offline_time_35) = convolve(res4c_relu, im_size_35, im_height_35, im_width_35, im_depth_35, k_size_35, stride_35, res4d_branch2a_b, p1_35, p2_35, res4d_branch2a_w, output_size_35, mode);
+		std::tie(res4d_branch2a, gemm_time_35, offline_time_35) = convolve(res4c_relu, im_size_35, im_height_35, im_width_35, im_depth_35, k_size_35, stride_35, res4d_branch2a_b, p1_35, p2_35, res4d_branch2a_w, output_size_35, mode, res4d_branch2a_min, res4d_branch2a_max, input_min, input_max, res4d_branch2a_result_min, res4d_branch2a_result_max);
 		
 		MatrixXd res4d_branch2a_relu = relu(res4d_branch2a);
 		
 		MatrixXd res4d_branch2b;
 		float gemm_time_36;
 		float offline_time_36;
-		std::tie(res4d_branch2b, gemm_time_36, offline_time_36) = convolve(res4d_branch2a_relu, im_size_36, im_height_36, im_width_36, im_depth_36, k_size_36, stride_36, res4d_branch2b_b, p1_36, p2_36, res4d_branch2b_w, output_size_36, mode);
+		std::tie(res4d_branch2b, gemm_time_36, offline_time_36) = convolve(res4d_branch2a_relu, im_size_36, im_height_36, im_width_36, im_depth_36, k_size_36, stride_36, res4d_branch2b_b, p1_36, p2_36, res4d_branch2b_w, output_size_36, mode, res4d_branch2b_min, res4d_branch2b_max, input_min, input_max, res4d_branch2b_result_min, res4d_branch2b_result_max);
 		
 		MatrixXd res4d_branch2b_relu = relu(res4d_branch2b);
 		
 		MatrixXd res4d_branch2c;
 		float gemm_time_37;
 		float offline_time_37;
-		std::tie(res4d_branch2c, gemm_time_37, offline_time_37) = convolve(res4d_branch2b_relu, im_size_37, im_height_37, im_width_37, im_depth_37, k_size_37, stride_37, res4d_branch2c_b, p1_37, p2_37, res4d_branch2c_w, output_size_37, mode);
+		std::tie(res4d_branch2c, gemm_time_37, offline_time_37) = convolve(res4d_branch2b_relu, im_size_37, im_height_37, im_width_37, im_depth_37, k_size_37, stride_37, res4d_branch2c_b, p1_37, p2_37, res4d_branch2c_w, output_size_37, mode, res4d_branch2c_min, res4d_branch2c_max, input_min, input_max, res4d_branch2c_result_min, res4d_branch2c_result_max);
 		
 		MatrixXd res4d = eltwise(res4d_branch2c, res4c_relu);
 		
@@ -1567,21 +1888,21 @@ int main(int argc, char *argv[])
 		MatrixXd res4e_branch2a;
 		float gemm_time_38;
 		float offline_time_38;
-		std::tie(res4e_branch2a, gemm_time_38, offline_time_38) = convolve(res4d_relu, im_size_38, im_height_38, im_width_38, im_depth_38, k_size_38, stride_38, res4e_branch2a_b, p1_38, p2_38, res4e_branch2a_w, output_size_38, mode);
+		std::tie(res4e_branch2a, gemm_time_38, offline_time_38) = convolve(res4d_relu, im_size_38, im_height_38, im_width_38, im_depth_38, k_size_38, stride_38, res4e_branch2a_b, p1_38, p2_38, res4e_branch2a_w, output_size_38, mode, res4e_branch2a_min, res4e_branch2a_max, input_min, input_max, res4e_branch2a_result_min, res4e_branch2a_result_max);
 		
 		MatrixXd res4e_branch2a_relu = relu(res4e_branch2a);
 		
 		MatrixXd res4e_branch2b;
 		float gemm_time_39;
 		float offline_time_39;
-		std::tie(res4e_branch2b, gemm_time_39, offline_time_39) = convolve(res4e_branch2a_relu, im_size_39, im_height_39, im_width_39, im_depth_39, k_size_39, stride_39, res4e_branch2b_b, p1_39, p2_39, res4e_branch2b_w, output_size_39, mode);
+		std::tie(res4e_branch2b, gemm_time_39, offline_time_39) = convolve(res4e_branch2a_relu, im_size_39, im_height_39, im_width_39, im_depth_39, k_size_39, stride_39, res4e_branch2b_b, p1_39, p2_39, res4e_branch2b_w, output_size_39, mode, res4e_branch2b_min, res4e_branch2b_max, input_min, input_max, res4e_branch2b_result_min, res4e_branch2b_result_max);
 		
 		MatrixXd res4e_branch2b_relu = relu(res4e_branch2b);
 		
 		MatrixXd res4e_branch2c;
 		float gemm_time_40;
 		float offline_time_40;
-		std::tie(res4e_branch2c, gemm_time_40, offline_time_40) = convolve(res4e_branch2b_relu, im_size_40, im_height_40, im_width_40, im_depth_40, k_size_40, stride_40, res4e_branch2c_b, p1_40, p2_40, res4e_branch2c_w, output_size_40, mode);
+		std::tie(res4e_branch2c, gemm_time_40, offline_time_40) = convolve(res4e_branch2b_relu, im_size_40, im_height_40, im_width_40, im_depth_40, k_size_40, stride_40, res4e_branch2c_b, p1_40, p2_40, res4e_branch2c_w, output_size_40, mode, res4e_branch2c_min, res4e_branch2c_max, input_min, input_max, res4e_branch2c_result_min, res4e_branch2c_result_max);
 		
 		MatrixXd res4e = eltwise(res4e_branch2c, res4d_relu);
 		
@@ -1590,21 +1911,21 @@ int main(int argc, char *argv[])
 		MatrixXd res4f_branch2a;
 		float gemm_time_41;
 		float offline_time_41;
-		std::tie(res4f_branch2a, gemm_time_41, offline_time_41) = convolve(res4e_relu, im_size_41, im_height_41, im_width_41, im_depth_41, k_size_41, stride_41, res4f_branch2a_b, p1_41, p2_41, res4f_branch2a_w, output_size_41, mode);
+		std::tie(res4f_branch2a, gemm_time_41, offline_time_41) = convolve(res4e_relu, im_size_41, im_height_41, im_width_41, im_depth_41, k_size_41, stride_41, res4f_branch2a_b, p1_41, p2_41, res4f_branch2a_w, output_size_41, mode, res4f_branch2a_min, res4f_branch2a_max, input_min, input_max, res4f_branch2a_result_min, res4f_branch2a_result_max);
 		
 		MatrixXd res4f_branch2a_relu = relu(res4f_branch2a);
 		
 		MatrixXd res4f_branch2b;
 		float gemm_time_42;
 		float offline_time_42;
-		std::tie(res4f_branch2b, gemm_time_42, offline_time_42) = convolve(res4f_branch2a_relu, im_size_42, im_height_42, im_width_42, im_depth_42, k_size_42, stride_42, res4f_branch2b_b, p1_42, p2_42, res4f_branch2b_w, output_size_42, mode);
+		std::tie(res4f_branch2b, gemm_time_42, offline_time_42) = convolve(res4f_branch2a_relu, im_size_42, im_height_42, im_width_42, im_depth_42, k_size_42, stride_42, res4f_branch2b_b, p1_42, p2_42, res4f_branch2b_w, output_size_42, mode, res4f_branch2b_min, res4f_branch2b_max, input_min, input_max, res4f_branch2b_result_min, res4f_branch2b_result_max);
 		
 		MatrixXd res4f_branch2b_relu = relu(res4f_branch2b);
 		
 		MatrixXd res4f_branch2c;
 		float gemm_time_43;
 		float offline_time_43;
-		std::tie(res4f_branch2c, gemm_time_43, offline_time_43) = convolve(res4f_branch2b_relu, im_size_43, im_height_43, im_width_43, im_depth_43, k_size_43, stride_43, res4f_branch2c_b, p1_43, p2_43, res4f_branch2c_w, output_size_43, mode);
+		std::tie(res4f_branch2c, gemm_time_43, offline_time_43) = convolve(res4f_branch2b_relu, im_size_43, im_height_43, im_width_43, im_depth_43, k_size_43, stride_43, res4f_branch2c_b, p1_43, p2_43, res4f_branch2c_w, output_size_43, mode, res4f_branch2c_min, res4f_branch2c_max, input_min, input_max, res4f_branch2c_result_min, res4f_branch2c_result_max);
 		
 		MatrixXd res4f = eltwise(res4f_branch2c, res4e_relu);
 		
@@ -1613,26 +1934,26 @@ int main(int argc, char *argv[])
 		MatrixXd res5a_branch1;
 		float gemm_time_44;
 		float offline_time_44;
-		std::tie(res5a_branch1, gemm_time_44, offline_time_44) = convolve(res4f_relu, im_size_44, im_height_44, im_width_44, im_depth_44, k_size_44, stride_44, res5a_branch1_b, p1_44, p2_44, res5a_branch1_w, output_size_44, mode);
+		std::tie(res5a_branch1, gemm_time_44, offline_time_44) = convolve(res4f_relu, im_size_44, im_height_44, im_width_44, im_depth_44, k_size_44, stride_44, res5a_branch1_b, p1_44, p2_44, res5a_branch1_w, output_size_44, mode, res5a_branch1_min, res5a_branch1_max, input_min, input_max, res5a_branch1_result_min, res5a_branch1_result_max);
 		
 		MatrixXd res5a_branch2a;
 		float gemm_time_45;
 		float offline_time_45;
-		std::tie(res5a_branch2a, gemm_time_45, offline_time_45) = convolve(res4f_relu, im_size_45, im_height_45, im_width_45, im_depth_45, k_size_45, stride_45, res5a_branch2a_b, p1_45, p2_45, res5a_branch2a_w, output_size_45, mode);
+		std::tie(res5a_branch2a, gemm_time_45, offline_time_45) = convolve(res4f_relu, im_size_45, im_height_45, im_width_45, im_depth_45, k_size_45, stride_45, res5a_branch2a_b, p1_45, p2_45, res5a_branch2a_w, output_size_45, mode, res5a_branch2a_min, res5a_branch2a_max, input_min, input_max, res5a_branch2a_result_min, res5a_branch2a_result_max);
 		
 		MatrixXd res5a_branch2a_relu = relu(res5a_branch2a);
 		
 		MatrixXd res5a_branch2b;
 		float gemm_time_46;
 		float offline_time_46;
-		std::tie(res5a_branch2b, gemm_time_46, offline_time_46) = convolve(res5a_branch2a_relu, im_size_46, im_height_46, im_width_46, im_depth_46, k_size_46, stride_46, res5a_branch2b_b, p1_46, p2_46, res5a_branch2b_w, output_size_46, mode);
+		std::tie(res5a_branch2b, gemm_time_46, offline_time_46) = convolve(res5a_branch2a_relu, im_size_46, im_height_46, im_width_46, im_depth_46, k_size_46, stride_46, res5a_branch2b_b, p1_46, p2_46, res5a_branch2b_w, output_size_46, mode, res5a_branch2b_min, res5a_branch2b_max, input_min, input_max, res5a_branch2b_result_min, res5a_branch2b_result_max);
 		
 		MatrixXd res5a_branch2b_relu = relu(res5a_branch2b);
 		
 		MatrixXd res5a_branch2c;
 		float gemm_time_47;
 		float offline_time_47;
-		std::tie(res5a_branch2c, gemm_time_47, offline_time_47) = convolve(res5a_branch2b_relu, im_size_47, im_height_47, im_width_47, im_depth_47, k_size_47, stride_47, res5a_branch2c_b, p1_47, p2_47, res5a_branch2c_w, output_size_47, mode);
+		std::tie(res5a_branch2c, gemm_time_47, offline_time_47) = convolve(res5a_branch2b_relu, im_size_47, im_height_47, im_width_47, im_depth_47, k_size_47, stride_47, res5a_branch2c_b, p1_47, p2_47, res5a_branch2c_w, output_size_47, mode, res5a_branch2c_min, res5a_branch2c_max, input_min, input_max, res5a_branch2c_result_min, res5a_branch2c_result_max);
 		
 		MatrixXd res5a = eltwise(res5a_branch2c, res5a_branch1);
 		
@@ -1641,21 +1962,21 @@ int main(int argc, char *argv[])
 		MatrixXd res5b_branch2a;
 		float gemm_time_48;
 		float offline_time_48;
-		std::tie(res5b_branch2a, gemm_time_48, offline_time_48) = convolve(res5a_relu, im_size_48, im_height_48, im_width_48, im_depth_48, k_size_48, stride_48, res5b_branch2a_b, p1_48, p2_48, res5b_branch2a_w, output_size_48, mode);
+		std::tie(res5b_branch2a, gemm_time_48, offline_time_48) = convolve(res5a_relu, im_size_48, im_height_48, im_width_48, im_depth_48, k_size_48, stride_48, res5b_branch2a_b, p1_48, p2_48, res5b_branch2a_w, output_size_48, mode, res5b_branch2a_min, res5b_branch2a_max, input_min, input_max, res5b_branch2a_result_min, res5b_branch2a_result_max);
 		
 		MatrixXd res5b_branch2a_relu = relu(res5b_branch2a);
 		
 		MatrixXd res5b_branch2b;
 		float gemm_time_49;
 		float offline_time_49;
-		std::tie(res5b_branch2b, gemm_time_49, offline_time_49) = convolve(res5b_branch2a_relu, im_size_49, im_height_49, im_width_49, im_depth_49, k_size_49, stride_49, res5b_branch2b_b, p1_49, p2_49, res5b_branch2b_w, output_size_49, mode);
+		std::tie(res5b_branch2b, gemm_time_49, offline_time_49) = convolve(res5b_branch2a_relu, im_size_49, im_height_49, im_width_49, im_depth_49, k_size_49, stride_49, res5b_branch2b_b, p1_49, p2_49, res5b_branch2b_w, output_size_49, mode, res5b_branch2b_min, res5b_branch2b_max, input_min, input_max, res5b_branch2b_result_min, res5b_branch2b_result_max);
 		
 		MatrixXd res5b_branch2b_relu = relu(res5b_branch2b);
 		
 		MatrixXd res5b_branch2c;
 		float gemm_time_50;
 		float offline_time_50;
-		std::tie(res5b_branch2c, gemm_time_50, offline_time_50) = convolve(res5b_branch2b_relu, im_size_50, im_height_50, im_width_50, im_depth_50, k_size_50, stride_50, res5b_branch2c_b, p1_50, p2_50, res5b_branch2c_w, output_size_50, mode);
+		std::tie(res5b_branch2c, gemm_time_50, offline_time_50) = convolve(res5b_branch2b_relu, im_size_50, im_height_50, im_width_50, im_depth_50, k_size_50, stride_50, res5b_branch2c_b, p1_50, p2_50, res5b_branch2c_w, output_size_50, mode, res5b_branch2c_min, res5b_branch2c_max, input_min, input_max, res5b_branch2c_result_min, res5b_branch2c_result_max);
 		
 		MatrixXd res5b = eltwise(res5b_branch2c, res5a_relu);
 		
@@ -1664,21 +1985,21 @@ int main(int argc, char *argv[])
 		MatrixXd res5c_branch2a;
 		float gemm_time_51;
 		float offline_time_51;
-		std::tie(res5c_branch2a, gemm_time_51, offline_time_51) = convolve(res5b_relu, im_size_51, im_height_51, im_width_51, im_depth_51, k_size_51, stride_51, res5c_branch2a_b, p1_51, p2_51, res5c_branch2a_w, output_size_51, mode);
+		std::tie(res5c_branch2a, gemm_time_51, offline_time_51) = convolve(res5b_relu, im_size_51, im_height_51, im_width_51, im_depth_51, k_size_51, stride_51, res5c_branch2a_b, p1_51, p2_51, res5c_branch2a_w, output_size_51, mode, res5c_branch2a_min, res5c_branch2a_max, input_min, input_max, res5c_branch2a_result_min, res5c_branch2a_result_max);
 		
 		MatrixXd res5c_branch2a_relu = relu(res5c_branch2a);
 		
 		MatrixXd res5c_branch2b;
 		float gemm_time_52;
 		float offline_time_52;
-		std::tie(res5c_branch2b, gemm_time_52, offline_time_52) = convolve(res5c_branch2a_relu, im_size_52, im_height_52, im_width_52, im_depth_52, k_size_52, stride_52, res5c_branch2b_b, p1_52, p2_52, res5c_branch2b_w, output_size_52, mode);
+		std::tie(res5c_branch2b, gemm_time_52, offline_time_52) = convolve(res5c_branch2a_relu, im_size_52, im_height_52, im_width_52, im_depth_52, k_size_52, stride_52, res5c_branch2b_b, p1_52, p2_52, res5c_branch2b_w, output_size_52, mode, res5c_branch2b_min, res5c_branch2b_max, input_min, input_max, res5c_branch2b_result_min, res5c_branch2b_result_max);
 		
 		MatrixXd res5c_branch2b_relu = relu(res5c_branch2b);
 		
 		MatrixXd res5c_branch2c;
 		float gemm_time_53;
 		float offline_time_53;
-		std::tie(res5c_branch2c, gemm_time_53, offline_time_53) = convolve(res5c_branch2b_relu, im_size_53, im_height_53, im_width_53, im_depth_53, k_size_53, stride_53, res5c_branch2c_b, p1_53, p2_53, res5c_branch2c_w, output_size_53, mode);
+		std::tie(res5c_branch2c, gemm_time_53, offline_time_53) = convolve(res5c_branch2b_relu, im_size_53, im_height_53, im_width_53, im_depth_53, k_size_53, stride_53, res5c_branch2c_b, p1_53, p2_53, res5c_branch2c_w, output_size_53, mode, res5c_branch2c_min, res5c_branch2c_max, input_min, input_max, res5c_branch2c_result_min, res5c_branch2c_result_max);
 		
 		MatrixXd res5c = eltwise(res5c_branch2c, res5b_relu);
 		

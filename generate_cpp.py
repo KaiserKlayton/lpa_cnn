@@ -80,8 +80,8 @@ def main():
                         "const int p1_%d = %d;" % (counter, a[i]['pad']),
                         "const int p2_%d = %d;" % (counter, a[i]['pad']),
                         "",
-                        "const int output_height_%d = static_cast<int>(ceil(static_cast<float>(im_height_%d + 2 * p1_%d - sqrt(k_size_%d)) / stride_%d)) + 1;" % (counter, counter, counter, counter, counter),
-                        "const int output_width_%d = static_cast<int>(ceil(static_cast<float>(im_width_%d + 2 * p2_%d - sqrt(k_size_%d)) / stride_%d)) + 1;" % (counter, counter, counter, counter, counter),
+                        "const int output_height_%d = (im_height_%d + 2 * p1_%d - sqrt(k_size_%d)) / stride_%d + 1;" % (counter, counter, counter, counter, counter),
+                        "const int output_width_%d = (im_width_%d + 2 * p2_%d - sqrt(k_size_%d)) / stride_%d + 1;" % (counter, counter, counter, counter, counter),
                         "const int output_size_%d = output_height_%d * output_width_%d;" % (counter, counter, counter),
                         ""
                     ])
@@ -89,6 +89,12 @@ def main():
                     lines.extend([
                         'MatrixXd %s_weights = load_csv_arma<MatrixXd>("../weights/%s/%s_weights.csv");' % (i, m, i),
                         "MatrixXd %s_w = %s_weights;" % (i, i),
+                        "const float %s_min = %s_w.minCoeff();" % (i, i),
+                        "const float %s_max = %s_w.maxCoeff();" % (i, i),
+                        "",
+                        'MatrixXd %s_result_params = load_csv_arma<MatrixXd>("../features/%s/caffe/result_params.csv");' % (i, m),
+                        "const float %s_result_min = %s_result_params(%s, 0);" % (i, i, tick-1),
+                        "const float %s_result_max = %s_result_params(%s, 1);" % (i, i, tick-1),
                         "",
                         'MatrixXd %s_biases = load_csv_arma<MatrixXd>("../weights/%s/%s_biases.csv");' % (i, m, i),
                         "VectorXd %s_b(Map<VectorXd>(%s_biases.data(), %s_biases.cols()*%s_biases.rows()));" % (i, i, i, i),
@@ -99,7 +105,7 @@ def main():
                     if not "pad" in a[i].keys():
                         a[i]['pad'] = 0
                     if not "stride" in a[i].keys():
-                        a[i]['stride'] = 1            
+                        a[i]['stride'] = 1
                     if first == True:
                         lines.extend([
                             "const int im_height_1 = %d;" % a['shape']['h'],
@@ -118,8 +124,8 @@ def main():
                         ])
                     else:  
                         lines.extend([                     
-                            "const int im_height_%d = static_cast<int>(ceil(static_cast<float>(output_height_%d - f_%d + 2 * pp1_%d) / s_%d)) + 1;" % (counter, tick-1, pool_tick-1, pool_tick-1, pool_tick-1),
-                            "const int im_width_%d = static_cast<int>(ceil(static_cast<float>(output_width_%d - f_%d + 2 * pp2_%d) / s_%d)) + 1;" % (counter, tick-1, pool_tick-1, pool_tick-1, pool_tick-1),
+                            "const int im_height_%d = static_cast<int>(ceil(static_cast<float>(output_height_%d + 2 * pp1_%d - f_%d ) / s_%d)) + 1;" % (counter, tick-1, pool_tick-1, pool_tick-1, pool_tick-1),
+                            "const int im_width_%d = static_cast<int>(ceil(static_cast<float>(output_width_%d + 2 * pp2_%d - f_%d) / s_%d)) + 1;" % (counter, tick-1, pool_tick-1, pool_tick-1, pool_tick-1),
                             "const int im_depth_%d = k_num_%d;" % (counter, tick-1),
                             "const int im_size_%d = im_height_%d * im_width_%d;" % (counter, counter, counter),
                             ""
@@ -134,8 +140,8 @@ def main():
                         "const int p1_%d = %d;" % (counter, a[i]['pad']),
                         "const int p2_%d = %d;" % (counter, a[i]['pad']),
                         "",
-                        "const int output_height_%d = static_cast<int>(ceil(static_cast<float>(im_height_%d + 2 * p1_%d - sqrt(k_size_%d)) / stride_%d)) + 1;" % (counter, counter, counter, counter, counter),
-                        "const int output_width_%d = static_cast<int>(ceil(static_cast<float>(im_width_%d + 2 * p2_%d - sqrt(k_size_%d)) / stride_%d)) + 1;" % (counter, counter, counter, counter, counter),
+                        "const int output_height_%d = (im_height_%d + 2 * p1_%d - sqrt(k_size_%d)) / stride_%d + 1;" % (counter, counter, counter, counter, counter),
+                        "const int output_width_%d = (im_width_%d + 2 * p2_%d - sqrt(k_size_%d)) / stride_%d + 1;" % (counter, counter, counter, counter, counter),
                         "const int output_size_%d = output_height_%d * output_width_%d;" % (counter, counter, counter),
                         ""
                     ])
@@ -144,6 +150,12 @@ def main():
                         lines.extend([
                             'MatrixXd %s_weights = load_csv_arma<MatrixXd>("../weights/%s/%s_weights.csv");' % (i, m, i),
                             "Map<MatrixXd> %s_w(%s_weights.data(), k_num_%d, k_size_%d * k_depth_%d);" % (i, i, tick, tick, tick),
+                            "const float %s_min = %s_w.minCoeff();" % (i, i),
+                            "const float %s_max = %s_w.maxCoeff();" % (i, i),
+                            "",
+                            'MatrixXd %s_result_params = load_csv_arma<MatrixXd>("../features/%s/caffe/result_params.csv");' % (i, m),
+                            "const float %s_result_min = %s_result_params(%s, 0);" % (i, i, tick-1),
+                            "const float %s_result_max = %s_result_params(%s, 1);" % (i, i, tick-1),
                             "",
                             'MatrixXd %s_biases = load_csv_arma<MatrixXd>("../weights/%s/%s_biases.csv");' % (i, m, i),
                             "VectorXd %s_b(Map<VectorXd>(%s_biases.data(), %s_biases.cols()*%s_biases.rows()));" % (i, i, i, i),
@@ -153,6 +165,12 @@ def main():
                         lines.extend([
                             'MatrixXd %s_weights = load_csv_arma<MatrixXd>("../weights/%s/%s_weights.csv");' % (i, m, i),
                             "MatrixXd %s_w = %s_weights;" % (i, i),
+                            "const float %s_min = %s_w.minCoeff();" % (i, i),
+                            "const float %s_max = %s_w.maxCoeff();" % (i, i),
+                            "",
+                            'MatrixXd %s_result_params = load_csv_arma<MatrixXd>("../features/%s/caffe/result_params.csv");' % (i, m),
+                            "const float %s_result_min = %s_result_params(%s, 0);" % (i, i, tick-1),
+                            "const float %s_result_max = %s_result_params(%s, 1);" % (i, i, tick-1),
                             "",
                             'MatrixXd %s_biases = load_csv_arma<MatrixXd>("../weights/%s/%s_biases.csv");' % (i, m, i),
                             "VectorXd %s_b(Map<VectorXd>(%s_biases.data(), %s_biases.cols()*%s_biases.rows()));" % (i, i, i, i),
@@ -179,19 +197,12 @@ def main():
                     "std::string mode_%i = \"%s\";" % (pool_tick, a[i]['pool']),
                     ""
                 ])
-                
-                if a[i]['stride'] == 3:
-                    lines.extend([
-                        "const int pp1_%i = 1;" % pool_tick,
-                        "const int pp2_%i = 1;" % pool_tick,
-                        "" 
-                    ]) 
-                else:
-                    lines.extend([
-                        "const int pp1_%i = %d;" % (pool_tick, a[i]['pad']),
-                        "const int pp2_%i = %d;" % (pool_tick, a[i]['pad']),
-                        "" 
-                    ]) 
+
+                lines.extend([
+                    "const int pp1_%i = %d;" % (pool_tick, a[i]['pad']),
+                    "const int pp2_%i = %d;" % (pool_tick, a[i]['pad']),
+                    ""
+                ])
                     
                 pool_tick += 1
                 
@@ -229,7 +240,7 @@ def main():
             "",
             'ifstream infile;',
             "infile.open(\"%s\");" % input_file_path,
-            "",
+            ""
         ])
         
         for l in lines:
@@ -247,7 +258,7 @@ def main():
             to_write.append((pos, "\t\t"+l+"\n"))
             pos += 1   
                                       
-        pos = pos + 7
+        pos = pos + 10
         tick = 1
         pool_tick = 1
         relu_tick = 1
@@ -275,7 +286,7 @@ def main():
                         "MatrixXd %s;" % i,
                         "float gemm_time_%i;" % tick,
                         "float offline_time_%i;" % tick,
-                        "std::tie(%s, gemm_time_%i, offline_time_%i) = convolve(%s, im_size_%i, im_height_%i, im_width_%i, im_depth_%i, k_size_%i, stride_%i, %s_b, p1_%i, p2_%i, %s_w, output_size_%i, mode);" % (i, tick, tick, second_last_output, tick, tick, tick, tick, tick, tick, i, tick, tick, i, tick),
+                        "std::tie(%s, gemm_time_%i, offline_time_%i) = convolve(%s, im_size_%i, im_height_%i, im_width_%i, im_depth_%i, k_size_%i, stride_%i, %s_b, p1_%i, p2_%i, %s_w, output_size_%i, mode, %s_min, %s_max, input_min, input_max, %s_result_min, %s_result_max);" % (i, tick, tick, second_last_output, tick, tick, tick, tick, tick, tick, i, tick, tick, i, tick, i, i, i, i),
                         ""
                     ])
                     
@@ -284,7 +295,7 @@ def main():
                         "MatrixXd %s;" % i,
                         "float gemm_time_%i;" % tick,
                         "float offline_time_%i;" % tick,
-                        "std::tie(%s, gemm_time_%i, offline_time_%i) = convolve(%s, im_size_%i, im_height_%i, im_width_%i, im_depth_%i, k_size_%i, stride_%i, %s_b, p1_%i, p2_%i, %s_w, output_size_%i, mode);" % (i, tick, tick, last_output, tick, tick, tick, tick, tick, tick, i, tick, tick, i, tick),
+                        "std::tie(%s, gemm_time_%i, offline_time_%i) = convolve(%s, im_size_%i, im_height_%i, im_width_%i, im_depth_%i, k_size_%i, stride_%i, %s_b, p1_%i, p2_%i, %s_w, output_size_%i, mode, %s_min, %s_max, input_min, input_max, %s_result_min, %s_result_max);" % (i, tick, tick, last_output, tick, tick, tick, tick, tick, tick, i, tick, tick, i, tick, i, i, i, i),
                         ""
                     ])
                  

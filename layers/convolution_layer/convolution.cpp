@@ -69,7 +69,7 @@ MatrixXd im2col(const MatrixXd &input, const int k_size, const int stride) {
     return result;
 }
 
-std::tuple<MatrixXd, float, float> convolve(const MatrixXd &image, const int im_size, const int im_height, const int im_width, const int im_depth, const int k_size, const int stride, const VectorXd &b, const int p1, const int p2, const MatrixXd &w, const int output_size, std::string mode) {
+std::tuple<MatrixXd, float, float> convolve(const MatrixXd &image, const int im_size, const int im_height, const int im_width, const int im_depth, const int k_size, const int stride, const VectorXd &b, const int p1, const int p2, const MatrixXd &w, const int output_size, std::string mode, const float w_min, const float w_max , const float input_min, const float input_max, const float result_min, const float result_max) {
     // im2col for each slice, then concatinate slices.
     MatrixXd im(output_size, k_size*im_depth);
     for (int d=0; d < im_depth ; d++) {
@@ -78,11 +78,11 @@ std::tuple<MatrixXd, float, float> convolve(const MatrixXd &image, const int im_
         // Resize slice to be square.
         Map<MatrixXd> box(slice.data(), im_height, im_width);
         // Pad box with 0s.
-        MatrixXd padded_box = add_padding(box, im_height, im_width, p1, p2);       
+        MatrixXd padded_box = add_padding(box, im_height, im_width, p1, p2);
         // im2col on particular slice.
         MatrixXd col_slice = im2col(padded_box, k_size, stride);
         // Concatinate col_slice to output 'im'.
-        im.block(0,k_size*d, output_size, k_size) = col_slice; 
+        im.block(0,k_size*d, output_size, k_size) = col_slice;
     } 
 
     if (mode == "eigen") {
@@ -107,7 +107,7 @@ std::tuple<MatrixXd, float, float> convolve(const MatrixXd &image, const int im_
         MatrixXd c;
         float gemm_time;
         float offline_time;
-        std::tie(c, gemm_time, offline_time) = glp(im.rows(), im.cols(), w.transpose().cols(), im, w.transpose());
+        std::tie(c, gemm_time, offline_time) = glp(im.rows(), im.cols(), w.transpose().cols(), im, w.transpose(), w_min, w_max, input_min, input_max, result_min, result_max);
         
         // Add biases.
         c.rowwise() += b.transpose();

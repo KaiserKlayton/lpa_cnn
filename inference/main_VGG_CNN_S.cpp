@@ -44,12 +44,18 @@ int main(int argc, char *argv[])
 	const int p1_1 = 0;
 	const int p2_1 = 0;
 	
-	const int output_height_1 = static_cast<int>(ceil(static_cast<float>(im_height_1 + 2 * p1_1 - sqrt(k_size_1)) / stride_1)) + 1;
-	const int output_width_1 = static_cast<int>(ceil(static_cast<float>(im_width_1 + 2 * p2_1 - sqrt(k_size_1)) / stride_1)) + 1;
+	const int output_height_1 = (im_height_1 + 2 * p1_1 - sqrt(k_size_1)) / stride_1 + 1;
+	const int output_width_1 = (im_width_1 + 2 * p2_1 - sqrt(k_size_1)) / stride_1 + 1;
 	const int output_size_1 = output_height_1 * output_width_1;
 	
 	MatrixXd conv1_weights = load_csv_arma<MatrixXd>("../weights/VGG_CNN_S/conv1_weights.csv");
 	Map<MatrixXd> conv1_w(conv1_weights.data(), k_num_1, k_size_1 * k_depth_1);
+	const float conv1_min = conv1_w.minCoeff();
+	const float conv1_max = conv1_w.maxCoeff();
+	
+	MatrixXd conv1_result_params = load_csv_arma<MatrixXd>("../features/VGG_CNN_S/caffe/result_params.csv");
+	const float conv1_result_min = conv1_result_params(0, 0);
+	const float conv1_result_max = conv1_result_params(0, 1);
 	
 	MatrixXd conv1_biases = load_csv_arma<MatrixXd>("../weights/VGG_CNN_S/conv1_biases.csv");
 	VectorXd conv1_b(Map<VectorXd>(conv1_biases.data(), conv1_biases.cols()*conv1_biases.rows()));
@@ -58,11 +64,11 @@ int main(int argc, char *argv[])
 	const int s_1 = 3;
 	std::string mode_1 = "max";
 	
-	const int pp1_1 = 1;
-	const int pp2_1 = 1;
+	const int pp1_1 = 0;
+	const int pp2_1 = 0;
 	
-	const int im_height_2 = static_cast<int>(ceil(static_cast<float>(output_height_1 - f_1 + 2 * pp1_1) / s_1)) + 1;
-	const int im_width_2 = static_cast<int>(ceil(static_cast<float>(output_width_1 - f_1 + 2 * pp2_1) / s_1)) + 1;
+	const int im_height_2 = static_cast<int>(ceil(static_cast<float>(output_height_1 + 2 * pp1_1 - f_1 ) / s_1)) + 1;
+	const int im_width_2 = static_cast<int>(ceil(static_cast<float>(output_width_1 + 2 * pp2_1 - f_1) / s_1)) + 1;
 	const int im_depth_2 = k_num_1;
 	const int im_size_2 = im_height_2 * im_width_2;
 	
@@ -74,12 +80,18 @@ int main(int argc, char *argv[])
 	const int p1_2 = 0;
 	const int p2_2 = 0;
 	
-	const int output_height_2 = static_cast<int>(ceil(static_cast<float>(im_height_2 + 2 * p1_2 - sqrt(k_size_2)) / stride_2)) + 1;
-	const int output_width_2 = static_cast<int>(ceil(static_cast<float>(im_width_2 + 2 * p2_2 - sqrt(k_size_2)) / stride_2)) + 1;
+	const int output_height_2 = (im_height_2 + 2 * p1_2 - sqrt(k_size_2)) / stride_2 + 1;
+	const int output_width_2 = (im_width_2 + 2 * p2_2 - sqrt(k_size_2)) / stride_2 + 1;
 	const int output_size_2 = output_height_2 * output_width_2;
 	
 	MatrixXd conv2_weights = load_csv_arma<MatrixXd>("../weights/VGG_CNN_S/conv2_weights.csv");
 	MatrixXd conv2_w = conv2_weights;
+	const float conv2_min = conv2_w.minCoeff();
+	const float conv2_max = conv2_w.maxCoeff();
+	
+	MatrixXd conv2_result_params = load_csv_arma<MatrixXd>("../features/VGG_CNN_S/caffe/result_params.csv");
+	const float conv2_result_min = conv2_result_params(1, 0);
+	const float conv2_result_max = conv2_result_params(1, 1);
 	
 	MatrixXd conv2_biases = load_csv_arma<MatrixXd>("../weights/VGG_CNN_S/conv2_biases.csv");
 	VectorXd conv2_b(Map<VectorXd>(conv2_biases.data(), conv2_biases.cols()*conv2_biases.rows()));
@@ -91,8 +103,8 @@ int main(int argc, char *argv[])
 	const int pp1_2 = 0;
 	const int pp2_2 = 0;
 	
-	const int im_height_3 = static_cast<int>(ceil(static_cast<float>(output_height_2 - f_2 + 2 * pp1_2) / s_2)) + 1;
-	const int im_width_3 = static_cast<int>(ceil(static_cast<float>(output_width_2 - f_2 + 2 * pp2_2) / s_2)) + 1;
+	const int im_height_3 = static_cast<int>(ceil(static_cast<float>(output_height_2 + 2 * pp1_2 - f_2 ) / s_2)) + 1;
+	const int im_width_3 = static_cast<int>(ceil(static_cast<float>(output_width_2 + 2 * pp2_2 - f_2) / s_2)) + 1;
 	const int im_depth_3 = k_num_2;
 	const int im_size_3 = im_height_3 * im_width_3;
 	
@@ -104,12 +116,18 @@ int main(int argc, char *argv[])
 	const int p1_3 = 1;
 	const int p2_3 = 1;
 	
-	const int output_height_3 = static_cast<int>(ceil(static_cast<float>(im_height_3 + 2 * p1_3 - sqrt(k_size_3)) / stride_3)) + 1;
-	const int output_width_3 = static_cast<int>(ceil(static_cast<float>(im_width_3 + 2 * p2_3 - sqrt(k_size_3)) / stride_3)) + 1;
+	const int output_height_3 = (im_height_3 + 2 * p1_3 - sqrt(k_size_3)) / stride_3 + 1;
+	const int output_width_3 = (im_width_3 + 2 * p2_3 - sqrt(k_size_3)) / stride_3 + 1;
 	const int output_size_3 = output_height_3 * output_width_3;
 	
 	MatrixXd conv3_weights = load_csv_arma<MatrixXd>("../weights/VGG_CNN_S/conv3_weights.csv");
 	MatrixXd conv3_w = conv3_weights;
+	const float conv3_min = conv3_w.minCoeff();
+	const float conv3_max = conv3_w.maxCoeff();
+	
+	MatrixXd conv3_result_params = load_csv_arma<MatrixXd>("../features/VGG_CNN_S/caffe/result_params.csv");
+	const float conv3_result_min = conv3_result_params(2, 0);
+	const float conv3_result_max = conv3_result_params(2, 1);
 	
 	MatrixXd conv3_biases = load_csv_arma<MatrixXd>("../weights/VGG_CNN_S/conv3_biases.csv");
 	VectorXd conv3_b(Map<VectorXd>(conv3_biases.data(), conv3_biases.cols()*conv3_biases.rows()));
@@ -127,12 +145,18 @@ int main(int argc, char *argv[])
 	const int p1_4 = 1;
 	const int p2_4 = 1;
 	
-	const int output_height_4 = static_cast<int>(ceil(static_cast<float>(im_height_4 + 2 * p1_4 - sqrt(k_size_4)) / stride_4)) + 1;
-	const int output_width_4 = static_cast<int>(ceil(static_cast<float>(im_width_4 + 2 * p2_4 - sqrt(k_size_4)) / stride_4)) + 1;
+	const int output_height_4 = (im_height_4 + 2 * p1_4 - sqrt(k_size_4)) / stride_4 + 1;
+	const int output_width_4 = (im_width_4 + 2 * p2_4 - sqrt(k_size_4)) / stride_4 + 1;
 	const int output_size_4 = output_height_4 * output_width_4;
 	
 	MatrixXd conv4_weights = load_csv_arma<MatrixXd>("../weights/VGG_CNN_S/conv4_weights.csv");
 	MatrixXd conv4_w = conv4_weights;
+	const float conv4_min = conv4_w.minCoeff();
+	const float conv4_max = conv4_w.maxCoeff();
+	
+	MatrixXd conv4_result_params = load_csv_arma<MatrixXd>("../features/VGG_CNN_S/caffe/result_params.csv");
+	const float conv4_result_min = conv4_result_params(3, 0);
+	const float conv4_result_max = conv4_result_params(3, 1);
 	
 	MatrixXd conv4_biases = load_csv_arma<MatrixXd>("../weights/VGG_CNN_S/conv4_biases.csv");
 	VectorXd conv4_b(Map<VectorXd>(conv4_biases.data(), conv4_biases.cols()*conv4_biases.rows()));
@@ -150,12 +174,18 @@ int main(int argc, char *argv[])
 	const int p1_5 = 1;
 	const int p2_5 = 1;
 	
-	const int output_height_5 = static_cast<int>(ceil(static_cast<float>(im_height_5 + 2 * p1_5 - sqrt(k_size_5)) / stride_5)) + 1;
-	const int output_width_5 = static_cast<int>(ceil(static_cast<float>(im_width_5 + 2 * p2_5 - sqrt(k_size_5)) / stride_5)) + 1;
+	const int output_height_5 = (im_height_5 + 2 * p1_5 - sqrt(k_size_5)) / stride_5 + 1;
+	const int output_width_5 = (im_width_5 + 2 * p2_5 - sqrt(k_size_5)) / stride_5 + 1;
 	const int output_size_5 = output_height_5 * output_width_5;
 	
 	MatrixXd conv5_weights = load_csv_arma<MatrixXd>("../weights/VGG_CNN_S/conv5_weights.csv");
 	MatrixXd conv5_w = conv5_weights;
+	const float conv5_min = conv5_w.minCoeff();
+	const float conv5_max = conv5_w.maxCoeff();
+	
+	MatrixXd conv5_result_params = load_csv_arma<MatrixXd>("../features/VGG_CNN_S/caffe/result_params.csv");
+	const float conv5_result_min = conv5_result_params(4, 0);
+	const float conv5_result_max = conv5_result_params(4, 1);
 	
 	MatrixXd conv5_biases = load_csv_arma<MatrixXd>("../weights/VGG_CNN_S/conv5_biases.csv");
 	VectorXd conv5_b(Map<VectorXd>(conv5_biases.data(), conv5_biases.cols()*conv5_biases.rows()));
@@ -164,8 +194,8 @@ int main(int argc, char *argv[])
 	const int s_3 = 3;
 	std::string mode_3 = "max";
 	
-	const int pp1_3 = 1;
-	const int pp2_3 = 1;
+	const int pp1_3 = 0;
+	const int pp2_3 = 0;
 	
 	MatrixXd fc6_weights = load_csv_arma<MatrixXd>("../weights/VGG_CNN_S/fc6_weights.csv");
 	
@@ -198,12 +228,15 @@ int main(int argc, char *argv[])
 
         MatrixXd image = Map<Matrix<double, im_depth_1, im_size_1, RowMajor>>(img.data());
 
+        const float input_min = image.minCoeff();
+        const float input_max = image.maxCoeff();
+
         clock_t run_time_start = clock();
 
 		MatrixXd conv1;
 		float gemm_time_1;
 		float offline_time_1;
-		std::tie(conv1, gemm_time_1, offline_time_1) = convolve(image, im_size_1, im_height_1, im_width_1, im_depth_1, k_size_1, stride_1, conv1_b, p1_1, p2_1, conv1_w, output_size_1, mode);
+		std::tie(conv1, gemm_time_1, offline_time_1) = convolve(image, im_size_1, im_height_1, im_width_1, im_depth_1, k_size_1, stride_1, conv1_b, p1_1, p2_1, conv1_w, output_size_1, mode, conv1_min, conv1_max, input_min, input_max, conv1_result_min, conv1_result_max);
 		
 		MatrixXd relu1 = relu(conv1);
 		
@@ -212,7 +245,7 @@ int main(int argc, char *argv[])
 		MatrixXd conv2;
 		float gemm_time_2;
 		float offline_time_2;
-		std::tie(conv2, gemm_time_2, offline_time_2) = convolve(pool1, im_size_2, im_height_2, im_width_2, im_depth_2, k_size_2, stride_2, conv2_b, p1_2, p2_2, conv2_w, output_size_2, mode);
+		std::tie(conv2, gemm_time_2, offline_time_2) = convolve(pool1, im_size_2, im_height_2, im_width_2, im_depth_2, k_size_2, stride_2, conv2_b, p1_2, p2_2, conv2_w, output_size_2, mode, conv2_min, conv2_max, input_min, input_max, conv2_result_min, conv2_result_max);
 		
 		MatrixXd relu2 = relu(conv2);
 		
@@ -221,21 +254,21 @@ int main(int argc, char *argv[])
 		MatrixXd conv3;
 		float gemm_time_3;
 		float offline_time_3;
-		std::tie(conv3, gemm_time_3, offline_time_3) = convolve(pool2, im_size_3, im_height_3, im_width_3, im_depth_3, k_size_3, stride_3, conv3_b, p1_3, p2_3, conv3_w, output_size_3, mode);
+		std::tie(conv3, gemm_time_3, offline_time_3) = convolve(pool2, im_size_3, im_height_3, im_width_3, im_depth_3, k_size_3, stride_3, conv3_b, p1_3, p2_3, conv3_w, output_size_3, mode, conv3_min, conv3_max, input_min, input_max, conv3_result_min, conv3_result_max);
 		
 		MatrixXd relu3 = relu(conv3);
 		
 		MatrixXd conv4;
 		float gemm_time_4;
 		float offline_time_4;
-		std::tie(conv4, gemm_time_4, offline_time_4) = convolve(relu3, im_size_4, im_height_4, im_width_4, im_depth_4, k_size_4, stride_4, conv4_b, p1_4, p2_4, conv4_w, output_size_4, mode);
+		std::tie(conv4, gemm_time_4, offline_time_4) = convolve(relu3, im_size_4, im_height_4, im_width_4, im_depth_4, k_size_4, stride_4, conv4_b, p1_4, p2_4, conv4_w, output_size_4, mode, conv4_min, conv4_max, input_min, input_max, conv4_result_min, conv4_result_max);
 		
 		MatrixXd relu4 = relu(conv4);
 		
 		MatrixXd conv5;
 		float gemm_time_5;
 		float offline_time_5;
-		std::tie(conv5, gemm_time_5, offline_time_5) = convolve(relu4, im_size_5, im_height_5, im_width_5, im_depth_5, k_size_5, stride_5, conv5_b, p1_5, p2_5, conv5_w, output_size_5, mode);
+		std::tie(conv5, gemm_time_5, offline_time_5) = convolve(relu4, im_size_5, im_height_5, im_width_5, im_depth_5, k_size_5, stride_5, conv5_b, p1_5, p2_5, conv5_w, output_size_5, mode, conv5_min, conv5_max, input_min, input_max, conv5_result_min, conv5_result_max);
 		
 		MatrixXd relu5 = relu(conv5);
 		

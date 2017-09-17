@@ -233,7 +233,7 @@ void QuantizeMultiplierSmallerThanOne(float real_multiplier,
   *right_shift = s;
 }
 
-std::tuple<MatrixXd, float, float> glp(const int r, const int d, const int c, const MatrixXd &a, const MatrixXd &b) {
+std::tuple<MatrixXd, float, float> glp(const int r, const int d, const int c, const MatrixXd &a, const MatrixXd &b, const float w_min, const float w_max, const float input_min, const float input_max, const float result_min, const float result_max) {
   clock_t convert_from_eigen_start = clock();
 
   std::cout.precision(3);
@@ -256,10 +256,11 @@ std::tuple<MatrixXd, float, float> glp(const int r, const int d, const int c, co
 
   clock_t get_params_start = clock();  
 
-  MatrixWithStorage<float, kOrder> reference_float_result(rows, cols);
-  auto reference_float_result_map = reference_float_result.Map();
-  FloatMatrixMultiplication(float_lhs.ConstMap(), float_rhs.ConstMap(),
-                            &reference_float_result_map);
+  //MatrixWithStorage<float, kOrder> reference_float_result(rows, cols);
+  //auto reference_float_result_map = reference_float_result.Map();
+  //FloatMatrixMultiplication(float_lhs.ConstMap(), float_rhs.ConstMap(),
+  //                          &reference_float_result_map);
+                            
 //  std::cout << "Here is the float LHS matrix:\n" << float_lhs << std::endl;
 //  std::cout << "Here is the float RHS matrix:\n" << float_rhs << std::endl;
 //  std::cout << "Here is the float product (LHS * RHS) matrix obtained by "
@@ -297,12 +298,16 @@ std::tuple<MatrixXd, float, float> glp(const int r, const int d, const int c, co
 //      << "If they are too narrow, we just get clamping at the bounds.\n"
 //      << std::endl;
 
-  float lhs_min, lhs_max, rhs_min, rhs_max, result_min, result_max;
-  FindMinMax(float_lhs.Map(), &lhs_min, &lhs_max);
-  FindMinMax(float_rhs.Map(), &rhs_min, &rhs_max);
-  FindMinMax(reference_float_result.Map(), &result_min, &result_max);
-  const auto lhs_qparams = ChooseQuantizationParams(lhs_min, lhs_max);
-  const auto rhs_qparams = ChooseQuantizationParams(rhs_min, rhs_max);
+  //float lhs_min, lhs_max, rhs_min, rhs_max, result_min_TEST, result_max_TEST;
+  float lhs_min, lhs_max, rhs_min, rhs_max;
+  //FindMinMax(float_lhs.Map(), &lhs_min, &lhs_max);
+  //FindMinMax(float_rhs.Map(), &rhs_min, &rhs_max);
+  //FindMinMax(reference_float_result.Map(), &result_min_TEST, &result_max_TEST);
+  //const auto lhs_qparams = ChooseQuantizationParams(lhs_min, lhs_max);
+  //const auto rhs_qparams = ChooseQuantizationParams(rhs_min, rhs_max);
+  //const auto result_qparams = ChooseQuantizationParams(result_min_TEST, result_max_TEST);
+  const auto lhs_qparams = ChooseQuantizationParams(input_min, input_max);
+  const auto rhs_qparams = ChooseQuantizationParams(w_min, w_max);
   const auto result_qparams = ChooseQuantizationParams(result_min, result_max);
 
   clock_t get_params_end = clock();
@@ -435,6 +440,6 @@ std::tuple<MatrixXd, float, float> glp(const int r, const int d, const int c, co
   std::cout << "convert_to_eigen: " << convert_to_eigen_time << std::endl;
 
   float offline_time = convert_from_eigen_time + get_params_time + quantize_offline_time + convert_to_eigen_time;
-
+  
   return std::make_tuple(result, gemm_time, offline_time);
 }

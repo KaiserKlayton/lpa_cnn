@@ -40,6 +40,9 @@ int main(int argc, char *argv[])
 
         MatrixXd image = Map<Matrix<double, im_depth_1, im_size_1, RowMajor>>(img.data());
 
+        const float input_min = image.minCoeff();
+        const float input_max = image.maxCoeff();
+
         clock_t run_time_start = clock();
 
         clock_t run_time_end = clock();

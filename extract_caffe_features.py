@@ -73,7 +73,9 @@ def main():
         with open(input_file_path, "r") as csvfile:
             # Load (1) image into data blob.
             datareader = csv.reader(csvfile)
+            params = []
             for line in datareader:
+                image_params = []
                 image = np.asarray(line)
                 image = image[1:len(image)]
                 image =  image.reshape(1,a['shape']['d'], a['shape']['w'], a['shape']['h'])
@@ -96,10 +98,19 @@ def main():
                     else:
                         pass
 
+                    if a[key]['type'] == "convolution":
+                        result_min = blob.min()
+                        result_max = blob.max()
+                        image_params.append(np.array([result_min, result_max]))
+
                     if key == a.keys()[-1]:
                         np.savetxt(os.path.join('features', model, "caffe", key + "_%s" % tick + ".csv"), blob, delimiter=',')
 
                 tick += 1
-            
+                params.append(image_params)
+
+            params = [sum(x) / 1000 for x in zip(*params)]
+            np.savetxt(os.path.join('features', model, "caffe", "result_params" + ".csv"), params, delimiter=',')
+
 if __name__ == "__main__":
     main()

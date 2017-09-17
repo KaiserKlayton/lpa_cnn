@@ -44,8 +44,9 @@ MatrixXd pool(const MatrixXd &convolved, const int f, const int s, const int im_
 
         // Padding.
         MatrixXd padded_box;
-        if (f == 3) {
-            const int offset = im_width % f;
+
+        int offset = (im_width + 2 * pp1 - f) % s;
+        if (offset != 0) {
             padded_box = add_special_padding(box, im_height, im_width, offset, offset);
         }
         else {
