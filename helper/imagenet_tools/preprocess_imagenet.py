@@ -47,7 +47,7 @@ def main():
     index = 0
     result = np.empty((0, 150529))
     for i in sorted(glob.glob(READ_DIR + '*.JPEG')):
-        print result.shape
+        print i
         image = load_image(i)
 
         if len(image.shape) == 2:
@@ -68,7 +68,7 @@ def main():
         index += 1
 
     results = np.append(labels, result)
-    np.savetxt(WRITE_FILE, result, delimiter=',')
+    np.savetxt(WRITE_FILE, result, fmt='%i', delimiter=',')
             
 if __name__ == "__main__":
     try:

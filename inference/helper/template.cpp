@@ -33,15 +33,12 @@ int main(int argc, char *argv[])
 
     for(int i=0; i < im_num; ++i)
     {
-        cout << i << endl;
+        cout << "image: " << i << endl;
 
         MatrixXd img;
         img = line.block<1,im_size_1*im_depth_1>(0,1);
 
         MatrixXd image = Map<Matrix<double, im_depth_1, im_size_1, RowMajor>>(img.data());
-
-        const float input_min = image.minCoeff();
-        const float input_max = image.maxCoeff();
 
         clock_t run_time_start = clock();
 
@@ -51,8 +48,6 @@ int main(int argc, char *argv[])
     }
 
     infile.close();
-
-    cout << "-----------------------------" << endl;
 
     float avg_run_time = 0.0;
     avg_run_time = run_time_total / im_num;

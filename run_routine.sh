@@ -94,7 +94,7 @@ do
         # Run executable
         echo "running inference on" ${m%/} "w/" $a
         echo "..."
-        eval ./lpa_cnn.out $a
+        eval ./lpa_cnn.out $a | tee ../results/run_log_${m%/}_$a.txt
         echo "..."
         echo "DONE running inference on" ${m%/} "w/" $a "DONE"
         echo "-----------------------------------------------"

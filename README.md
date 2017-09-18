@@ -7,11 +7,13 @@ gcc 5.4 w/ Eigen 3 & Armadillo
 
 Python 2.7 w/ NumPy & PIL
 
-R w/ gtools
+R w/ gtools & stringr
+
+Caffe (see `Setup` below for installation)
 
 ## **Setup**
 
-Install Caffe as `caffe/` (in root directory), following instructions at `https://chunml.github.io/ChunML.github.io/project/Installing-Caffe-CPU-Only/`.
+Install Caffe as `caffe/` (in root directory), following the guide @ `https://chunml.github.io/ChunML.github.io/project/Installing-Caffe-CPU-Only/`.
 
 Have the following files in place for each desired model:
 

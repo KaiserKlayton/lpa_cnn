@@ -9,7 +9,7 @@ The auxiliary script `helper/imagenet_tools/preprocess_imagenet.py` is useful fo
 
 To use imagenet_tools:
 
-1. Place the first 1000 JPEGs of the imagenet_2012 dataset, resized to 224x224, in `helper/imagenet_tools/imagenet_1000/`.
+1. Place the first 1000 JPEGs of the imagenet_2012 dataset (validation), cropped to 224x224, in `helper/imagenet_tools/imagenet_1000/`.
 
 2. Select your option (mean image or pixel normalization), in the source code of `helper/imagenet_tools/preprocess_imagenet.py`.
 
