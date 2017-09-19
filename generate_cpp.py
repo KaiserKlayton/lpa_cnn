@@ -258,7 +258,7 @@ def main():
             to_write.append((pos, "\t\t"+l+"\n"))
             pos += 1   
                                       
-        pos = pos + 10
+        pos = pos + 7
         tick = 1
         pool_tick = 1
         relu_tick = 1
@@ -286,7 +286,7 @@ def main():
                         "MatrixXd %s;" % i,
                         "float gemm_time_%i;" % tick,
                         "float offline_time_%i;" % tick,
-                        "std::tie(%s, gemm_time_%i, offline_time_%i) = convolve(%s, im_size_%i, im_height_%i, im_width_%i, im_depth_%i, k_size_%i, stride_%i, %s_b, p1_%i, p2_%i, %s_w, output_size_%i, mode, %s_min, %s_max, input_min, input_max, %s_result_min, %s_result_max);" % (i, tick, tick, second_last_output, tick, tick, tick, tick, tick, tick, i, tick, tick, i, tick, i, i, i, i),
+                        "std::tie(%s, gemm_time_%i, offline_time_%i) = convolve(%s, im_size_%i, im_height_%i, im_width_%i, im_depth_%i, k_size_%i, stride_%i, %s_b, p1_%i, p2_%i, %s_w, output_size_%i, mode, %s_min, %s_max, %s_result_min, %s_result_max);" % (i, tick, tick, second_last_output, tick, tick, tick, tick, tick, tick, i, tick, tick, i, tick, i, i, i, i),
                         ""
                     ])
                     
@@ -295,7 +295,7 @@ def main():
                         "MatrixXd %s;" % i,
                         "float gemm_time_%i;" % tick,
                         "float offline_time_%i;" % tick,
-                        "std::tie(%s, gemm_time_%i, offline_time_%i) = convolve(%s, im_size_%i, im_height_%i, im_width_%i, im_depth_%i, k_size_%i, stride_%i, %s_b, p1_%i, p2_%i, %s_w, output_size_%i, mode, %s_min, %s_max, input_min, input_max, %s_result_min, %s_result_max);" % (i, tick, tick, last_output, tick, tick, tick, tick, tick, tick, i, tick, tick, i, tick, i, i, i, i),
+                        "std::tie(%s, gemm_time_%i, offline_time_%i) = convolve(%s, im_size_%i, im_height_%i, im_width_%i, im_depth_%i, k_size_%i, stride_%i, %s_b, p1_%i, p2_%i, %s_w, output_size_%i, mode, %s_min, %s_max, %s_result_min, %s_result_max);" % (i, tick, tick, last_output, tick, tick, tick, tick, tick, tick, i, tick, tick, i, tick, i, i, i, i),
                         ""
                     ])
                  
