@@ -3,7 +3,6 @@
 __author__ = "C. Clayton Violand"
 __copyright__ = "Copyright 2017"
 
-## Converts mean.binaryproto file to mean.npy
 ## Preps cifar-10 input data (1000) for system by subtracting specified mean.
 ##
 

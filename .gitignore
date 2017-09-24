@@ -34,3 +34,9 @@ helper/imagenet_tools/mean_image_reduced/*
 
 helper/imagenet_tools/mean_pixel_reduced/*
 !helper/imagenet_tools/mean_pixel_reduced/README.md
+
+helper/cifar-10_tools/cifar-10_1000/*
+!helper/cifar-10_tools/cifar-10_1000/README.md
+
+helper/cifar-10_tools/mean_image_reduced/*
+!helper/cifar-10_tools/mean_image_reduced/README.md

@@ -42,7 +42,7 @@ for (model in models) {  # for each model...
         input.file <- list.files(file.path("inputs", model, "production"),
                                  pattern = ".csv", full.names = TRUE)
 
-        label <- scan(pipe(paste("cut -f1 -d,", input.file)))
+        label <- scan(pipe(paste("cut -f1 -d,", input.file)))[1:nrow(predictions)]
 
         # combine.
         temp.2 <-  cbind(predictions, label)
@@ -65,7 +65,7 @@ for (model in models) {  # for each model...
 
     mds <- split(model.results, model.results$mode)
     accuracies <- lapply(mds, function(md) {
-        result <- round(table(md$score)[2] / 1000, 4) * 100
+        result <- round(table(md$score)[2] / nrow(md), 4) * 100
 
         return(result)
     })

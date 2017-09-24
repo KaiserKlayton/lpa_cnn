@@ -5,7 +5,7 @@ The auxiliary script `helper/cifar-10/preprocess_cifar-10.py` is useful for:
 
 To use cifar-10_tools:
 
-1. Place the cifar-10 dataset in `helper/cifar-10_1000/cifar-10_1000.csv`.
+1. Place the cifar-10 dataset (as csv, with labels as first column) in `helper/cifar-10_1000/cifar-10_1000.csv`.
 
 2. Run `$ python helper/cifar-10_tools/preprocess_cifar-10.py`.
 
