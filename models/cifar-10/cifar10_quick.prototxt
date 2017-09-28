@@ -1,4 +1,4 @@
-name: "CIFAR10_quick"
+name: "CIFAR10_quick_test"
 layer {
   name: "data"
   type: "Input"
@@ -21,12 +21,6 @@ layer {
     pad: 2
     kernel_size: 5
     stride: 1
-    weight_filler {
-      type: "xavier"
-    }
-    bias_filler {
-      type: "constant"
-    }
   }
 }
 layer {
@@ -36,7 +30,7 @@ layer {
   top: "pool1"
   pooling_param {
     pool: MAX
-    kernel_size: 2
+    kernel_size: 3
     stride: 2
   }
 }
@@ -62,12 +56,6 @@ layer {
     pad: 2
     kernel_size: 5
     stride: 1
-    weight_filler {
-      type: "xavier"
-    }
-    bias_filler {
-      type: "constant"
-    }
   }
 }
 layer {
@@ -103,12 +91,6 @@ layer {
     pad: 2
     kernel_size: 5
     stride: 1
-    weight_filler {
-      type: "xavier"
-    }
-    bias_filler {
-      type: "constant"
-    }
   }
 }
 layer {
@@ -141,12 +123,6 @@ layer {
   }
   inner_product_param {
     num_output: 64
-    weight_filler {
-      type: "xavier"
-    }
-    bias_filler {
-      type: "constant"
-    }
   }
 }
 layer {
@@ -162,11 +138,11 @@ layer {
   }
   inner_product_param {
     num_output: 10
-    weight_filler {
-      type: "xavier"
-    }
-    bias_filler {
-      type: "constant"
-    }
   }
+}
+layer {
+  name: "prob"
+  type: "Softmax"
+  bottom: "ip2"
+  top: "prob"
 }

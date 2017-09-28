@@ -6,6 +6,8 @@
 #include "../layers/fully_connected_layer/fully_connected.h"
 #include "../layers/relu_layer/relu.h"
 #include "../layers/eltwise_layer/eltwise.h"
+#include "../layers/scale_layer/scale.h"
+#include "../layers/batchnorm_layer/batchnorm.h"
 
 #include <string.h>
 
@@ -465,7 +467,7 @@ int main(int argc, char *argv[])
 	
     for(int i=0; i < im_num; ++i)
     {
-        cout << i << endl;
+        cout << "image: " << i << endl;
 
 		MatrixXd line = load_csv<MatrixXd>(infile);
 		
@@ -474,22 +476,19 @@ int main(int argc, char *argv[])
 
         MatrixXd image = Map<Matrix<double, im_depth_1, im_size_1, RowMajor>>(img.data());
 
-        const float input_min = image.minCoeff();
-        const float input_max = image.maxCoeff();
-
         clock_t run_time_start = clock();
 
 		MatrixXd conv1_1;
 		float gemm_time_1;
 		float offline_time_1;
-		std::tie(conv1_1, gemm_time_1, offline_time_1) = convolve(image, im_size_1, im_height_1, im_width_1, im_depth_1, k_size_1, stride_1, conv1_1_b, p1_1, p2_1, conv1_1_w, output_size_1, mode, conv1_1_min, conv1_1_max, input_min, input_max, conv1_1_result_min, conv1_1_result_max);
+		std::tie(conv1_1, gemm_time_1, offline_time_1) = convolve(image, im_size_1, im_height_1, im_width_1, im_depth_1, k_size_1, stride_1, conv1_1_b, p1_1, p2_1, conv1_1_w, output_size_1, mode, conv1_1_min, conv1_1_max, conv1_1_result_min, conv1_1_result_max);
 		
 		MatrixXd relu1_1 = relu(conv1_1);
 		
 		MatrixXd conv1_2;
 		float gemm_time_2;
 		float offline_time_2;
-		std::tie(conv1_2, gemm_time_2, offline_time_2) = convolve(relu1_1, im_size_2, im_height_2, im_width_2, im_depth_2, k_size_2, stride_2, conv1_2_b, p1_2, p2_2, conv1_2_w, output_size_2, mode, conv1_2_min, conv1_2_max, input_min, input_max, conv1_2_result_min, conv1_2_result_max);
+		std::tie(conv1_2, gemm_time_2, offline_time_2) = convolve(relu1_1, im_size_2, im_height_2, im_width_2, im_depth_2, k_size_2, stride_2, conv1_2_b, p1_2, p2_2, conv1_2_w, output_size_2, mode, conv1_2_min, conv1_2_max, conv1_2_result_min, conv1_2_result_max);
 		
 		MatrixXd relu1_2 = relu(conv1_2);
 		
@@ -498,14 +497,14 @@ int main(int argc, char *argv[])
 		MatrixXd conv2_1;
 		float gemm_time_3;
 		float offline_time_3;
-		std::tie(conv2_1, gemm_time_3, offline_time_3) = convolve(pool1, im_size_3, im_height_3, im_width_3, im_depth_3, k_size_3, stride_3, conv2_1_b, p1_3, p2_3, conv2_1_w, output_size_3, mode, conv2_1_min, conv2_1_max, input_min, input_max, conv2_1_result_min, conv2_1_result_max);
+		std::tie(conv2_1, gemm_time_3, offline_time_3) = convolve(pool1, im_size_3, im_height_3, im_width_3, im_depth_3, k_size_3, stride_3, conv2_1_b, p1_3, p2_3, conv2_1_w, output_size_3, mode, conv2_1_min, conv2_1_max, conv2_1_result_min, conv2_1_result_max);
 		
 		MatrixXd relu2_1 = relu(conv2_1);
 		
 		MatrixXd conv2_2;
 		float gemm_time_4;
 		float offline_time_4;
-		std::tie(conv2_2, gemm_time_4, offline_time_4) = convolve(relu2_1, im_size_4, im_height_4, im_width_4, im_depth_4, k_size_4, stride_4, conv2_2_b, p1_4, p2_4, conv2_2_w, output_size_4, mode, conv2_2_min, conv2_2_max, input_min, input_max, conv2_2_result_min, conv2_2_result_max);
+		std::tie(conv2_2, gemm_time_4, offline_time_4) = convolve(relu2_1, im_size_4, im_height_4, im_width_4, im_depth_4, k_size_4, stride_4, conv2_2_b, p1_4, p2_4, conv2_2_w, output_size_4, mode, conv2_2_min, conv2_2_max, conv2_2_result_min, conv2_2_result_max);
 		
 		MatrixXd relu2_2 = relu(conv2_2);
 		
@@ -514,21 +513,21 @@ int main(int argc, char *argv[])
 		MatrixXd conv3_1;
 		float gemm_time_5;
 		float offline_time_5;
-		std::tie(conv3_1, gemm_time_5, offline_time_5) = convolve(pool2, im_size_5, im_height_5, im_width_5, im_depth_5, k_size_5, stride_5, conv3_1_b, p1_5, p2_5, conv3_1_w, output_size_5, mode, conv3_1_min, conv3_1_max, input_min, input_max, conv3_1_result_min, conv3_1_result_max);
+		std::tie(conv3_1, gemm_time_5, offline_time_5) = convolve(pool2, im_size_5, im_height_5, im_width_5, im_depth_5, k_size_5, stride_5, conv3_1_b, p1_5, p2_5, conv3_1_w, output_size_5, mode, conv3_1_min, conv3_1_max, conv3_1_result_min, conv3_1_result_max);
 		
 		MatrixXd relu3_1 = relu(conv3_1);
 		
 		MatrixXd conv3_2;
 		float gemm_time_6;
 		float offline_time_6;
-		std::tie(conv3_2, gemm_time_6, offline_time_6) = convolve(relu3_1, im_size_6, im_height_6, im_width_6, im_depth_6, k_size_6, stride_6, conv3_2_b, p1_6, p2_6, conv3_2_w, output_size_6, mode, conv3_2_min, conv3_2_max, input_min, input_max, conv3_2_result_min, conv3_2_result_max);
+		std::tie(conv3_2, gemm_time_6, offline_time_6) = convolve(relu3_1, im_size_6, im_height_6, im_width_6, im_depth_6, k_size_6, stride_6, conv3_2_b, p1_6, p2_6, conv3_2_w, output_size_6, mode, conv3_2_min, conv3_2_max, conv3_2_result_min, conv3_2_result_max);
 		
 		MatrixXd relu3_2 = relu(conv3_2);
 		
 		MatrixXd conv3_3;
 		float gemm_time_7;
 		float offline_time_7;
-		std::tie(conv3_3, gemm_time_7, offline_time_7) = convolve(relu3_2, im_size_7, im_height_7, im_width_7, im_depth_7, k_size_7, stride_7, conv3_3_b, p1_7, p2_7, conv3_3_w, output_size_7, mode, conv3_3_min, conv3_3_max, input_min, input_max, conv3_3_result_min, conv3_3_result_max);
+		std::tie(conv3_3, gemm_time_7, offline_time_7) = convolve(relu3_2, im_size_7, im_height_7, im_width_7, im_depth_7, k_size_7, stride_7, conv3_3_b, p1_7, p2_7, conv3_3_w, output_size_7, mode, conv3_3_min, conv3_3_max, conv3_3_result_min, conv3_3_result_max);
 		
 		MatrixXd relu3_3 = relu(conv3_3);
 		
@@ -537,21 +536,21 @@ int main(int argc, char *argv[])
 		MatrixXd conv4_1;
 		float gemm_time_8;
 		float offline_time_8;
-		std::tie(conv4_1, gemm_time_8, offline_time_8) = convolve(pool3, im_size_8, im_height_8, im_width_8, im_depth_8, k_size_8, stride_8, conv4_1_b, p1_8, p2_8, conv4_1_w, output_size_8, mode, conv4_1_min, conv4_1_max, input_min, input_max, conv4_1_result_min, conv4_1_result_max);
+		std::tie(conv4_1, gemm_time_8, offline_time_8) = convolve(pool3, im_size_8, im_height_8, im_width_8, im_depth_8, k_size_8, stride_8, conv4_1_b, p1_8, p2_8, conv4_1_w, output_size_8, mode, conv4_1_min, conv4_1_max, conv4_1_result_min, conv4_1_result_max);
 		
 		MatrixXd relu4_1 = relu(conv4_1);
 		
 		MatrixXd conv4_2;
 		float gemm_time_9;
 		float offline_time_9;
-		std::tie(conv4_2, gemm_time_9, offline_time_9) = convolve(relu4_1, im_size_9, im_height_9, im_width_9, im_depth_9, k_size_9, stride_9, conv4_2_b, p1_9, p2_9, conv4_2_w, output_size_9, mode, conv4_2_min, conv4_2_max, input_min, input_max, conv4_2_result_min, conv4_2_result_max);
+		std::tie(conv4_2, gemm_time_9, offline_time_9) = convolve(relu4_1, im_size_9, im_height_9, im_width_9, im_depth_9, k_size_9, stride_9, conv4_2_b, p1_9, p2_9, conv4_2_w, output_size_9, mode, conv4_2_min, conv4_2_max, conv4_2_result_min, conv4_2_result_max);
 		
 		MatrixXd relu4_2 = relu(conv4_2);
 		
 		MatrixXd conv4_3;
 		float gemm_time_10;
 		float offline_time_10;
-		std::tie(conv4_3, gemm_time_10, offline_time_10) = convolve(relu4_2, im_size_10, im_height_10, im_width_10, im_depth_10, k_size_10, stride_10, conv4_3_b, p1_10, p2_10, conv4_3_w, output_size_10, mode, conv4_3_min, conv4_3_max, input_min, input_max, conv4_3_result_min, conv4_3_result_max);
+		std::tie(conv4_3, gemm_time_10, offline_time_10) = convolve(relu4_2, im_size_10, im_height_10, im_width_10, im_depth_10, k_size_10, stride_10, conv4_3_b, p1_10, p2_10, conv4_3_w, output_size_10, mode, conv4_3_min, conv4_3_max, conv4_3_result_min, conv4_3_result_max);
 		
 		MatrixXd relu4_3 = relu(conv4_3);
 		
@@ -560,21 +559,21 @@ int main(int argc, char *argv[])
 		MatrixXd conv5_1;
 		float gemm_time_11;
 		float offline_time_11;
-		std::tie(conv5_1, gemm_time_11, offline_time_11) = convolve(pool4, im_size_11, im_height_11, im_width_11, im_depth_11, k_size_11, stride_11, conv5_1_b, p1_11, p2_11, conv5_1_w, output_size_11, mode, conv5_1_min, conv5_1_max, input_min, input_max, conv5_1_result_min, conv5_1_result_max);
+		std::tie(conv5_1, gemm_time_11, offline_time_11) = convolve(pool4, im_size_11, im_height_11, im_width_11, im_depth_11, k_size_11, stride_11, conv5_1_b, p1_11, p2_11, conv5_1_w, output_size_11, mode, conv5_1_min, conv5_1_max, conv5_1_result_min, conv5_1_result_max);
 		
 		MatrixXd relu5_1 = relu(conv5_1);
 		
 		MatrixXd conv5_2;
 		float gemm_time_12;
 		float offline_time_12;
-		std::tie(conv5_2, gemm_time_12, offline_time_12) = convolve(relu5_1, im_size_12, im_height_12, im_width_12, im_depth_12, k_size_12, stride_12, conv5_2_b, p1_12, p2_12, conv5_2_w, output_size_12, mode, conv5_2_min, conv5_2_max, input_min, input_max, conv5_2_result_min, conv5_2_result_max);
+		std::tie(conv5_2, gemm_time_12, offline_time_12) = convolve(relu5_1, im_size_12, im_height_12, im_width_12, im_depth_12, k_size_12, stride_12, conv5_2_b, p1_12, p2_12, conv5_2_w, output_size_12, mode, conv5_2_min, conv5_2_max, conv5_2_result_min, conv5_2_result_max);
 		
 		MatrixXd relu5_2 = relu(conv5_2);
 		
 		MatrixXd conv5_3;
 		float gemm_time_13;
 		float offline_time_13;
-		std::tie(conv5_3, gemm_time_13, offline_time_13) = convolve(relu5_2, im_size_13, im_height_13, im_width_13, im_depth_13, k_size_13, stride_13, conv5_3_b, p1_13, p2_13, conv5_3_w, output_size_13, mode, conv5_3_min, conv5_3_max, input_min, input_max, conv5_3_result_min, conv5_3_result_max);
+		std::tie(conv5_3, gemm_time_13, offline_time_13) = convolve(relu5_2, im_size_13, im_height_13, im_width_13, im_depth_13, k_size_13, stride_13, conv5_3_b, p1_13, p2_13, conv5_3_w, output_size_13, mode, conv5_3_min, conv5_3_max, conv5_3_result_min, conv5_3_result_max);
 		
 		MatrixXd relu5_3 = relu(conv5_3);
 		
@@ -601,8 +600,6 @@ int main(int argc, char *argv[])
     }
 
     infile.close();
-
-    cout << "-----------------------------" << endl;
 
     float avg_run_time = 0.0;
     avg_run_time = run_time_total / im_num;

@@ -297,6 +297,15 @@ layers {
 }
 layers {
   bottom: "fc6"
+  top: "fc6"
+  name: "drop6"
+  type: DROPOUT
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layers {
+  bottom: "fc6"
   top: "fc7"
   name: "fc7"
   type: INNER_PRODUCT
@@ -312,6 +321,15 @@ layers {
 }
 layers {
   bottom: "fc7"
+  top: "fc7"
+  name: "drop7"
+  type: DROPOUT
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layers {
+  bottom: "fc7"
   top: "fc8"
   name: "fc8"
   type: INNER_PRODUCT
@@ -319,3 +337,10 @@ layers {
     num_output: 1000
   }
 }
+layers {
+  bottom: "fc8"
+  top: "prob"
+  name: "prob"
+  type: SOFTMAX
+}
+

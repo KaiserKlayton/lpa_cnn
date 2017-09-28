@@ -6,6 +6,8 @@
 #include "../layers/fully_connected_layer/fully_connected.h"
 #include "../layers/relu_layer/relu.h"
 #include "../layers/eltwise_layer/eltwise.h"
+#include "../layers/scale_layer/scale.h"
+#include "../layers/batchnorm_layer/batchnorm.h"
 
 #include <string.h>
 
@@ -120,7 +122,7 @@ int main(int argc, char *argv[])
 	
     for(int i=0; i < im_num; ++i)
     {
-        cout << i << endl;
+        cout << "image: " << i << endl;
 
 		MatrixXd line = load_csv<MatrixXd>(infile);
 		
@@ -129,22 +131,19 @@ int main(int argc, char *argv[])
 
         MatrixXd image = Map<Matrix<double, im_depth_1, im_size_1, RowMajor>>(img.data());
 
-        const float input_min = image.minCoeff();
-        const float input_max = image.maxCoeff();
-
         clock_t run_time_start = clock();
 
 		MatrixXd conv1;
 		float gemm_time_1;
 		float offline_time_1;
-		std::tie(conv1, gemm_time_1, offline_time_1) = convolve(image, im_size_1, im_height_1, im_width_1, im_depth_1, k_size_1, stride_1, conv1_b, p1_1, p2_1, conv1_w, output_size_1, mode, conv1_min, conv1_max, input_min, input_max, conv1_result_min, conv1_result_max);
+		std::tie(conv1, gemm_time_1, offline_time_1) = convolve(image, im_size_1, im_height_1, im_width_1, im_depth_1, k_size_1, stride_1, conv1_b, p1_1, p2_1, conv1_w, output_size_1, mode, conv1_min, conv1_max, conv1_result_min, conv1_result_max);
 		
 		MatrixXd pool1 = pool(conv1, f_1, s_1, output_width_1, output_height_1, pp1_1, pp2_1, mode_1);
 		
 		MatrixXd conv2;
 		float gemm_time_2;
 		float offline_time_2;
-		std::tie(conv2, gemm_time_2, offline_time_2) = convolve(pool1, im_size_2, im_height_2, im_width_2, im_depth_2, k_size_2, stride_2, conv2_b, p1_2, p2_2, conv2_w, output_size_2, mode, conv2_min, conv2_max, input_min, input_max, conv2_result_min, conv2_result_max);
+		std::tie(conv2, gemm_time_2, offline_time_2) = convolve(pool1, im_size_2, im_height_2, im_width_2, im_depth_2, k_size_2, stride_2, conv2_b, p1_2, p2_2, conv2_w, output_size_2, mode, conv2_min, conv2_max, conv2_result_min, conv2_result_max);
 		
 		MatrixXd pool2 = pool(conv2, f_2, s_2, output_width_2, output_height_2, pp1_2, pp2_2, mode_2);
 		
@@ -165,8 +164,6 @@ int main(int argc, char *argv[])
     }
 
     infile.close();
-
-    cout << "-----------------------------" << endl;
 
     float avg_run_time = 0.0;
     avg_run_time = run_time_total / im_num;

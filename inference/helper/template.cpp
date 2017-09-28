@@ -6,6 +6,8 @@
 #include "../layers/fully_connected_layer/fully_connected.h"
 #include "../layers/relu_layer/relu.h"
 #include "../layers/eltwise_layer/eltwise.h"
+#include "../layers/scale_layer/scale.h"
+#include "../layers/batchnorm_layer/batchnorm.h"
 
 #include <string.h>
 
