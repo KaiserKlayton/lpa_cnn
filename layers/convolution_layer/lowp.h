@@ -1,6 +1,6 @@
 #ifndef LOWP_H
 #define LOWP_H
- 
+
 #include <eigen3/Eigen/Dense>
 #include <iostream>
 

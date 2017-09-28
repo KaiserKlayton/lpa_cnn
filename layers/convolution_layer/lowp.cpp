@@ -252,15 +252,15 @@ std::tuple<MatrixXd, float, float> glp(const int r, const int d, const int c, co
   float_rhs.FillMatrix(b);
 
   clock_t convert_from_eigen_end = clock();
-  float convert_from_eigen_time = (float) (convert_from_eigen_end-convert_from_eigen_start) / CLOCKS_PER_SEC;           
+  float convert_from_eigen_time = (float) (convert_from_eigen_end-convert_from_eigen_start) / CLOCKS_PER_SEC;
 
-  clock_t get_params_start = clock();  
+  clock_t get_params_start = clock();
 
   //MatrixWithStorage<float, kOrder> reference_float_result(rows, cols);
   //auto reference_float_result_map = reference_float_result.Map();
   //FloatMatrixMultiplication(float_lhs.ConstMap(), float_rhs.ConstMap(),
   //                          &reference_float_result_map);
-                            
+
 //  std::cout << "Here is the float LHS matrix:\n" << float_lhs << std::endl;
 //  std::cout << "Here is the float RHS matrix:\n" << float_rhs << std::endl;
 //  std::cout << "Here is the float product (LHS * RHS) matrix obtained by "
@@ -308,7 +308,7 @@ std::tuple<MatrixXd, float, float> glp(const int r, const int d, const int c, co
   const auto result_qparams = ChooseQuantizationParams(result_min, result_max);
 
   clock_t get_params_end = clock();
-  float get_params_time = (float) (get_params_end-get_params_start) / CLOCKS_PER_SEC; 
+  float get_params_time = (float) (get_params_end-get_params_start) / CLOCKS_PER_SEC;
 
 //  std::cout << "For LHS, we have min = " << lhs_min << ", max = " << lhs_max
 //            << ", scale = " << lhs_qparams.scale
@@ -361,7 +361,7 @@ std::tuple<MatrixXd, float, float> glp(const int r, const int d, const int c, co
 //            << "This is the part that is performance-critical and may only "
 //            << "use quantized arithmetic.\n"
 //            << std::endl;
-  
+
   clock_t gemm_start = clock();
 
   gemmlowp::OutputStageQuantizeDownInt32ToUint8ScaleByFixedPoint
@@ -375,14 +375,14 @@ std::tuple<MatrixXd, float, float> glp(const int r, const int d, const int c, co
 
   auto actual_uint8_result_map = actual_uint8_result.Map();
   gemmlowp::GemmContext gemm_context;
-  
+
   gemmlowp::GemmWithOutputPipeline<std::uint8_t, std::uint8_t,
                                    gemmlowp::DefaultL8R8BitDepthParams>(
       &gemm_context, uint8_lhs.ConstMap(), uint8_rhs.ConstMap(),
       &actual_uint8_result_map, lhs_offset, rhs_offset, output_pipeline);
 
   clock_t gemm_end = clock();
-  float gemm_time = (float) (gemm_end-gemm_start) / CLOCKS_PER_SEC;           
+  float gemm_time = (float) (gemm_end-gemm_start) / CLOCKS_PER_SEC;
 
 //  std::cout << "Quantized uint8 result matrix obtained by quantized "
 //            << "multiplication:\n"
@@ -427,16 +427,17 @@ std::tuple<MatrixXd, float, float> glp(const int r, const int d, const int c, co
 
   clock_t convert_to_eigen_end = clock();
   float convert_to_eigen_time = (float) (convert_to_eigen_end-convert_to_eigen_start) / CLOCKS_PER_SEC;
-  
+
+  std::cout << d << "." << r << "." << c << "." << b.rows() << "." << b.cols() << std::endl;
   std::cout << "convert_from_eigen: " << convert_from_eigen_time << std::endl;
   std::cout << "get_params: " << get_params_time << std::endl;
   std::cout << "quantize_offline: " << quantize_offline_time << std::endl;
   std::cout << "quantize: " << quantize_time << std::endl;
-  std::cout << "gemm: " << gemm_time << std::endl;  
+  std::cout << "gemm: " << gemm_time << std::endl;
   std::cout << "dequantize: " << dequantize_time << std::endl;
   std::cout << "convert_to_eigen: " << convert_to_eigen_time << std::endl;
 
   float offline_time = convert_from_eigen_time + get_params_time + quantize_offline_time + convert_to_eigen_time;
-  
+
   return std::make_tuple(result, gemm_time, offline_time);
 }

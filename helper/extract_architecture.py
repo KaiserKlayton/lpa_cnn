@@ -14,7 +14,7 @@ import sys
 from collections import OrderedDict
 
 def extract_architecture(d):
-    layer_types = ['convolution', 'pooling', 'relu', 'eltwise', 'innerproduct']
+    layer_types = ['convolution', 'pooling', 'relu', 'eltwise', 'innerproduct', 'scale', 'batchnorm']
     param_types = ['num_output', 'pad', 'kernel_size', 'stride', 'bias_term', 'pool']
     special_types = ['shape', 'input_dim']
     shape_dims = ['n','d','w','h']
@@ -56,7 +56,7 @@ def extract_architecture(d):
                 ave_match = re.search(p + ': (AVE)', l)
                 max_match = re.search(p + ': (MAX)', l)
                 param_match = re.search(p + ': ([0-9]+)', l)
-                bias_param_match = re.search(p + ': ([a-z]+)', l)
+                boolean_param_match = re.search(p + ': ([a-z]+)', l)
                 if ave_match:
                     value = ave_match.group(1).lower()
                     architecture[layer_name][p] = value
@@ -66,8 +66,8 @@ def extract_architecture(d):
                 if param_match:
                     value = int(param_match.group(1))
                     architecture[layer_name][p] = value
-                if bias_param_match:
-                    value = bias_param_match.group(1).lower()
+                if boolean_param_match:
+                    value = boolean_param_match.group(1).lower()
                     architecture[layer_name][p] = value
 
     return architecture

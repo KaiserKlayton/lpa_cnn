@@ -4,12 +4,12 @@ MatrixXd add_pool_padding(const MatrixXd &box, const int im_height, const int im
     const int ppa1 = im_width;
     const int ppa2 = im_height+(2*pp1);
     MatrixXd padding1 = MatrixXd::Zero(ppa1,pp1);
-    MatrixXd padding2 = MatrixXd::Zero(pp2,ppa2); 
+    MatrixXd padding2 = MatrixXd::Zero(pp2,ppa2);
 
     MatrixXd temp(box.rows(), box.cols()+padding1.cols()+padding1.cols());
     temp << padding1, box, padding1;
-    
-    MatrixXd padded_box(temp.rows()+padding2.rows()+padding2.rows(), temp.cols());  
+
+    MatrixXd padded_box(temp.rows()+padding2.rows()+padding2.rows(), temp.cols());
     padded_box << padding2, temp, padding2;
 
     return padded_box;
@@ -31,6 +31,8 @@ MatrixXd add_special_padding(const MatrixXd &box, const int im_height, const int
 }
 
 MatrixXd pool(const MatrixXd &convolved, const int f, const int s, const int im_width, const int im_height, const int pp1, const int pp2, std::string mode) {
+    cout << convolved.rows() << endl;
+    cout << convolved.cols() << endl;
     int w = static_cast<int>(ceil(static_cast<float>(im_width - f + 2 * pp1) / s)) + 1;
     int h = static_cast<int>(ceil(static_cast<float>(im_height - f + 2 * pp2) / s)) + 1;
 

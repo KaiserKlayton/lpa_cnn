@@ -99,7 +99,7 @@ do
         echo "DONE running inference on" ${m%/} "w/" $a "DONE"
         echo "-----------------------------------------------"
     done
-    
+
 done
 
 # Return to home directory.

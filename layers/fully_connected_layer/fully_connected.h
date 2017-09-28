@@ -1,6 +1,6 @@
 #ifndef FULLY_CONNECTED_H
 #define FULLY_CONNECTED_H
- 
+
 #include <eigen3/Eigen/Dense>
 #include <iostream>
 

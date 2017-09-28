@@ -13,6 +13,6 @@ To use imagenet_tools:
 
 2. Run `$ python helper/imagenet_tools/preprocess_imagenet.py <mean_image> | <mean_pixel>`.
 
-Results are in `helper/imagenet_tools/mean_image_reduced` or `helper/imagenet_tools/mean_pixel_reduced`. 
+Results are in `helper/imagenet_tools/mean_image_reduced/` or `helper/imagenet_tools/mean_pixel_reduced/`. 
 
 These files can now be moved or linked to an `input/<model_name>/production/` directory.

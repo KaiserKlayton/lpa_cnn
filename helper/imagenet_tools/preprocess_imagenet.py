@@ -19,7 +19,7 @@ def load_image(infile):
     image = Image.open(infile)
     image.load()
     data = np.asarray(image, dtype="float")
-    
+
     return data
 
 def main(option):
@@ -44,7 +44,7 @@ def main(option):
     # Load the labels
     labels = np.genfromtxt(LABEL_FILE, dtype=int, delimiter=',')
     labels = labels[:,0]
-    
+
     index = 0
     result = np.empty((0, 150529))
     for i in sorted(glob.glob(READ_DIR + '*.JPEG')):
@@ -54,6 +54,7 @@ def main(option):
         image = np.moveaxis(image, 2, 0)
         image = image.astype(float)
 
+        # Deal with grayscale images.
         if len(image.shape) == 2:
             image = np.stack((image, ) * 3)
 
@@ -61,7 +62,7 @@ def main(option):
             image[0,:,:] = np.subtract(image[0,:,:], 103.939)
             image[1,:,:] = np.subtract(image[1,:,:], 116.779)
             image[2,:,:] = np.subtract(image[2,:,:], 123.68)
-        elif option == "mean_image":
+        else:
             image -= mean_image
 
         flattened_image = image.reshape(1, image.shape[0] * image.shape[1] * image.shape[2])
@@ -72,15 +73,15 @@ def main(option):
 
     results = np.append(labels, result)
     np.savetxt(WRITE_FILE, result, fmt='%i', delimiter=',')
-            
+
 if __name__ == "__main__":
     try:
-        option = sys.argv[1]
+        option = sys.argv[1].lower()
     except IndexError:
         print "Usage: python helper/preprocess_imagenet.py <mean_image> | <mean_pixel>"
         sys.exit(1)
 
-    if option.lower() != "mean_image" and option.lower() != "mean_pixel":
+    if option != "mean_image" and option != "mean_pixel":
         print "Usage: python helper/preprocess_imagenet.py <mean_image> | <mean_pixel>"
         sys.exit(1)
 
