@@ -26,6 +26,9 @@
 \usepackage{algpseudocode} %for listing pseudocode
 \usepackage{algorithm} %wrap algpseudocode and enrich with label etc.
 \usepackage{float} % for [H] after floats
+\usepackage[toc,page]{appendix}
+\usepackage{standalone}
+\usepackage{hyperref}
 
 \titleformat{\paragraph}[hang]{\normalfont\bfseries}{\theparagraph}{.5em}{}
 
@@ -160,7 +163,6 @@ Berlin, 19.08.2017\\\\\\\\\\\\
 \newpage
 \setlength{\baselineskip}{3ex}
 
-\pagenumbering{roman}  % default is "roman", not "Roman"
 \newpage
 \addcontentsline{toc}{chapter}{List of Figures}
 \listoffigures
@@ -183,7 +185,12 @@ Berlin, 19.08.2017\\\\\\\\\\\\
 \newpage
 \thispagestyle{empty}
 \null
-	
+
+\begin{appendices}
+\chapter{lpa\_cnn documentation}
+\include{README}
+\end{appendices}
+
 % Generierung des Literaturverzeichnisses
 \bibliography{references}
 

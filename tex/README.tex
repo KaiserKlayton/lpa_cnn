@@ -1,0 +1,122 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+\date{}
+
+\begin{document}
+
+\section{Obtaining the system}\label{Obtaining the system}
+
+Clone the repository from GitHub: \url{git@github.com:KaiserKlayton/lpa\_cnn.git}
+
+or download as a zip @ \url{https://github.com/KaiserKlayton/lpa_cnn/archive/master.zip}
+
+\section{Dependencies}\label{dependencies}
+
+gcc 5.4 w/ Eigen 3 \& Armadillo
+
+Python 2.7 w/ NumPy \& PIL
+
+R w/ gtools
+
+\section{Setup}\label{setup}
+
+Add caffe Python module directory to \texttt{\$PYTHONPATH}.
+
+Have the following files in place for each desired model:
+
+\begin{verbatim}
+  models/<model_name>/<model_name.caffemodel>
+  models/<model_name>/<model_name.prototxt>
+  ...
+\end{verbatim}
+
+Have the following input file in place for each installed model:
+
+\begin{verbatim}
+  inputs/<model_name>/production/<input_file_name.csv>
+\end{verbatim}
+
+having the form:
+
+\begin{verbatim}
+  <img_0_label><img_0_channel_1>...<img_0_channel_2><img_0_channel_3>
+  <img_1_label><img_1_channel_1>...<img_1_channel_2><img_1_channel_3>
+  ...
+\end{verbatim}
+
+\section{Reproduction}\label{reproduction}
+
+To reproduce the experiments with the installed models, call
+\texttt{run/run\_routine.py}.
+
+Results are written to \texttt{results/}.
+
+\section{Installing new
+models}\label{installing-new-models}
+
+A great resource for finding new Caffe models is Model Zoo @
+\url{https://github.com/BVLC/caffe/wiki/Model-Zoo}
+
+To install a new model, follow the \texttt{Setup} directions above,
+providing an appropriate and consistent model name as
+\texttt{\textless{}model\_name\textgreater{}}.
+
+\texttt{NOTE} that when preparing .prototxt files, \texttt{lpa\_cnn}
+supports the following parameters:
+
+\begin{verbatim}
+  layer_types = ['convolution', 'pooling', 'relu', 'eltwise', 'innerproduct']
+  param_types = ['num_output', 'pad', 'kernel_size', 'stride', 'bias_term', 'pool']
+  special_types = ['shape', 'input_dim']
+  shape_dims = ['n','d','w','h']
+\end{verbatim}
+
+\texttt{NOTE} that batch processing is not supported.
+
+\end{document}

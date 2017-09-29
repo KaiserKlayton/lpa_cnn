@@ -2,7 +2,9 @@
 
 \section{Background}
     
-Computation in convolutional neural networks require large matrix multiplication operations, with most of the heavy lifting being performed by the convolutional layer. In the case of the well-known Imagenet architecture, 89 of CPU processing time is spent on convolutions. As such, these networks can be costly and are slow at inference time. Different methods exist to implement convolution: the GEMM method is a popular method and involves only one large matrix multiplication operation in the convolutional layer. Still, this operation can be slow due to the size of the matrices and the nature of matrix multiplication, which is intensive. One solution to this problem is to reduce the computation precision at the convolutional layer. This would speed up inference. However, it may also reduce performance accuracy. This paper deals with the trade-off between speed and performance accuracy in performing convolution with different computation precisions.
+%file:///home/clayton/Documents/cnn/cnns_1.html
+
+Computations in convolutional neural networks require large matrix multiplication operations, with most of the heavy lifting being performed by the convolutional layer. In the case of the well-known Imagenet architecture, 89\% of CPU processing time is spent on convolutions. As such, these networks can be costly and are slow at inference time. Different methods exist to implement convolution: the GEMM method is a popular method and involves only one large matrix multiplication operation per convolutional layer. Still, this operation can be slow due to the size of the matrices and the intensive nature of matrix multiplication. One solution to this problem is to reduce the computation precision at the convolutional layer, thus speeding up inference. However, this adjustment may also reduce performance accuracy. This paper deals with the trade-off between speed and performance accuracy as a result of performing integer multiplication for convolutions with GEMM.
 
 Convolutional neural networks are a type of neural network specifically made for image processing. Like normal neural networks, the computation involves "neurons" with weights and biases that are learnable through training. The weights and biases in each neuron are multiplied with some input matrix, and the dot products of each neuron in a particular layer is summed with the other neurons. The output is then passed on to a non-linear transformation function, and pushed forward in the pipeline of layers.
 
@@ -12,17 +14,13 @@ Convolutional neural networks solve this through computation in a convolution la
 
 This duplication of parameters is possible due to the inerhent nature of images. It can be said that a pattern that is useful in one section of the image might also be useful in another section of the image. Therefore, kernel weights are duplicated across dot-product iterations over the input.
 
-There are two convolutions involved in our mnist model. These include one convolution at 576x20x25 (length, depth, width) and another convolution at 64x50x500.
-
-There are three convolutions involved in our cifar model. These include one convolution at 1024x32x75, one convolution at 256x32x800, and a final convultion at 64x64x800.
-
-The mean processing time over 100 images is reported for each convolution in Table on page. As seen in Table on page , one can see that there is a linear correlation between the total dimensional magnitude of the GEMM multiplication and the percentage increase in speed, with low dimensionalities (here 288,000) even being a detriment when using integer multiplication.
-
 \section{Problem definition}
 \section{Summary of findings}
 \subsection{Speed}
+
+The mean processing time over 100 images is reported for each convolution in Table on page. As seen in Table on page , one can see that there is a linear correlation between the total dimensional magnitude of the GEMM multiplication and the percentage increase in speed, with low dimensionalities (here 288,000) even being a detriment when using integer multiplication.
+
 \subsection{Accuracy}
-\subsection{Memory utilization}
 
 \section{Definition of terms}
 \section{Review of literature}

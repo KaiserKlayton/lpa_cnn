@@ -25,7 +25,7 @@ adjusting the .prototxt input layer to receive one image (i.e. `1 x <depth> x <w
 Have the following input file in place for each installed model:
 
       inputs/<model_name>/production/<input_file_name.csv>
-      
+
 having the form:
   
       <img_0_label><img_0_channel_1>...<img_0_channel_2><img_0_channel_3>
@@ -37,3 +37,18 @@ having the form:
 To run experiments with the installed models, call `$ bash run_routine.sh`.
 
 Results are written to `results/`.
+
+## **Installing new models**
+
+A great resource for finding new Caffe models is Model Zoo @ https://github.com/BVLC/caffe/wiki/Model-Zoo
+
+To install a new model, follow the `Setup` directions above, providing an appropriate and consistent model name as `<model_name>`.
+
+`NOTE` that when preparing .prototxt files, `lpa_cnn` supports the following parameters:
+
+      layer_types = ['convolution', 'pooling', 'relu', 'eltwise', 'innerproduct', 'scale', 'batchnorm']
+      param_types = ['num_output', 'pad', 'kernel_size', 'stride', 'bias_term', 'pool']
+      special_types = ['shape', 'input_dim']
+      shape_dims = ['n','d','w','h']
+
+`NOTE` that batch processing is not supported.
