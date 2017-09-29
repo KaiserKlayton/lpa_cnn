@@ -31,8 +31,6 @@ MatrixXd add_special_padding(const MatrixXd &box, const int im_height, const int
 }
 
 MatrixXd pool(const MatrixXd &convolved, const int f, const int s, const int im_width, const int im_height, const int pp1, const int pp2, std::string mode) {
-    cout << convolved.rows() << endl;
-    cout << convolved.cols() << endl;
     int w = static_cast<int>(ceil(static_cast<float>(im_width - f + 2 * pp1) / s)) + 1;
     int h = static_cast<int>(ceil(static_cast<float>(im_height - f + 2 * pp2) / s)) + 1;
 

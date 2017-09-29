@@ -7,7 +7,7 @@ gcc 5.4 w/ Eigen 3 & Armadillo
 
 Python 2.7 w/ NumPy & PIL
 
-R w/ gtools & stringr & dplyr & tidyr
+R w/ gtools & stringr
 
 Caffe (see `Setup` below for installation)
 

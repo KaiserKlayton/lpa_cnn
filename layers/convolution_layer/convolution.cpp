@@ -11,27 +11,15 @@ MatrixXd add_padding(const MatrixXd &box, const int im_height, const int im_widt
     const int pa1 = im_width;
     const int pa2 = im_height+(2*p1);
     MatrixXd padding1 = MatrixXd::Zero(pa1,p1);
-    MatrixXd padding2 = MatrixXd::Zero(p2,pa2); 
+    MatrixXd padding2 = MatrixXd::Zero(p2,pa2);
 
     MatrixXd temp(box.rows(), box.cols()+padding1.cols()+padding1.cols());
     temp << padding1, box, padding1;
-    
-    MatrixXd padded_box(temp.rows()+padding2.rows()+padding2.rows(), temp.cols());  
+
+    MatrixXd padded_box(temp.rows()+padding2.rows()+padding2.rows(), temp.cols());
     padded_box << padding2, temp, padding2;
 
     return padded_box;
-}
-
-MatrixXd kernel2col(MatrixXd &kernel) {
-    // kernel: n x m
-    const int m = kernel.rows();
-    const int n = kernel.cols();
-
-    kernel.transposeInPlace();
-
-    MatrixXd kcollapsed(Map<VectorXd>(kernel.data(), kernel.cols()*kernel.rows()));
-
-    return kcollapsed;
 }
 
 MatrixXd im2col(const MatrixXd &input, const int k_size, const int stride) {
@@ -48,23 +36,30 @@ MatrixXd im2col(const MatrixXd &input, const int k_size, const int stride) {
     // yB = (B - D / stride) + 1
     const int yB = ((m - kRows) / stride) + 1;
     const int xB = ((n - kCols) / stride) + 1;
-    
+
     MatrixXd result(xB*yB, kRows*kCols);
-    
+
+    int indxc = 0;
     for(int i = 0; i < yB; i++)
     {
+        int indxr = 0;
         for (int j = 0; j < xB; j++)
         {
             int rowIdx = i + j*yB;
 
+            // Get block.
             for(unsigned int yy =0; yy < kRows; ++yy)
+            {
                 for(unsigned int xx=0; xx < kCols; ++xx)
                 {
-                    int colIdx = xx*kRows + yy; 
+                    int colIdx = xx*kRows + yy;
 
-                    result(rowIdx, colIdx) = input(i+yy, j+xx);
+                    result(rowIdx, colIdx) = input(indxc+yy, indxr+xx);
                 }
+            }
+            indxr += stride;
         }
+        indxc += stride;
     }
     return result;
 }
@@ -83,7 +78,7 @@ std::tuple<MatrixXd, float, float> convolve(const MatrixXd &image, const int im_
         MatrixXd col_slice = im2col(padded_box, k_size, stride);
         // Concatinate col_slice to output 'im'.
         im.block(0,k_size*d, output_size, k_size) = col_slice;
-    } 
+    }
 
     if (mode == "eigen") {
         // GEMM Multiplication Operation w/ Eigen.
@@ -92,11 +87,14 @@ std::tuple<MatrixXd, float, float> convolve(const MatrixXd &image, const int im_
         clock_t end = clock();
         float gemm_time = (float) (end-start) / CLOCKS_PER_SEC;
         float offline_time = 0;
-        
+        std::cout << im_depth << "." << im.rows() << "." << im.cols() << "." << w.rows() << "." << w.cols() << std::endl;
+        std::cout << gemm_time << "." << offline_time << std::endl;
+
+
         // Add biases.
         c.rowwise() += b.transpose();
-     
-        // Reshape back to image./    
+
+        // Reshape back to image./
         MatrixXd convolved = col2im(c);
 
         return make_tuple(convolved, gemm_time, offline_time);
@@ -108,11 +106,11 @@ std::tuple<MatrixXd, float, float> convolve(const MatrixXd &image, const int im_
         float gemm_time;
         float offline_time;
         std::tie(c, gemm_time, offline_time) = glp(im.rows(), im.cols(), w.transpose().cols(), im, w.transpose(), w_min, w_max, result_min, result_max);
-        
+
         // Add biases.
         c.rowwise() += b.transpose();
-     
-        // Reshape back to image./    
+
+        // Reshape back to image./
         MatrixXd convolved = col2im(c);
 
         return make_tuple(convolved, gemm_time, offline_time);
