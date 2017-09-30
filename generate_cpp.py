@@ -26,6 +26,9 @@ def main():
 
     # For every model.
     for m in models:
+        if os.path.exists("inference/main_%s.cpp" % m):
+            continue
+
         # Create file from template.
         infile = open("inference/helper/template.cpp", "r+").readlines()
 

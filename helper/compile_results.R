@@ -16,6 +16,7 @@ library(stringr)
 
 modes <- c("caffe", "eigen", "gemmlowp")
 models <- list.files("models", pattern = "[^[README.md]]*")
+models <- models[sapply(models, function(x) { !file.exists(paste0("results/", x, "_accuracies.csv")) })]
 
 ################
 ## Accuracies ##
@@ -78,13 +79,26 @@ for (model in models) {  # for each model...
     mds <- split(model.results, model.results$mode)
 
     accuracies <- lapply(mds, function(md) {
-        result <- round(table(md$score)[2] / nrow(md), 4) * 100
+        if (length(table(md$score)) == 2)
+            result <- round(table(md$score)[2] / nrow(md), 4) * 100
+        else if (0 %in% md$score) {
+            result <- 0
+        }
+        else {
+            result <- 100
+        }
 
         return(result)
     })
 
     accuracies.top.5 <- lapply(mds, function(md) {
-        result <- round(table(md$score.top.5)[2] / nrow(md), 4) * 100
+        if (length(table(md$score.top.5)) == 2)
+            result <- round(table(md$score.top.5)[2] / nrow(md), 4) * 100
+        else if (0 %in% md$score.top.5) {
+            result <- 0
+        } else {
+            result <- 100
+        }
 
         return(result)
     })
@@ -108,56 +122,69 @@ for (model in models) {  # for each model...
 ############
 ## SPEEDS ##
 ############
-n <- nrow(model.results) / length(models) / 3
 speed.files <- list.files("results", pattern = "*.txt", full.names = TRUE)
+
 for (f in speed.files) {
     model.name <- str_match(f, "results/run_log_(.+)_.+[.]txt")[2]
     mode.name <- str_match(f, "results/run_log_.+_(.+)[.]txt")[2]
+
+    if (file.exists(paste0(file.path("results", paste(model.name, mode.name, "speeds.csv", sep = "_"))))) {
+        next
+    }
+
     temp.data <- read.csv(f, header = FALSE, sep = ":", stringsAsFactors = FALSE)
 
     if (mode.name == "eigen") {
-        data <- temp.data
-        count <- 1
-        for (i in 1:nrow(data)) {
-            type <- str_count(data[i, 1], "[.]")
-            if (type == 4) {
-                data[i, 1] <- paste(paste0("(", count, ")"), data[i, 1])
-                count <- count + 1
-            } else if (type == 2) {
-                data[i, 1] <- str_replace(data[i, 1], ".0$", "")
-                data[i - 1, 2] <- as.numeric(data[i, 1])
-            } else if (data[i, 1] == "image") {
-                count <- 1
-            }
-        }
+        data <- temp.data[1:(nrow(temp.data) - 2), ]
+        ids <- data$V2[data$V1 == "image"]
+        gaps <- as.numeric(row.names(data)[data$V1 == "image"])
+        gap <- diff(gaps)
+        data$V2 <- as.integer(rep(ids, each = gap))
+        data <- data[data$V1 != "image", ]
+        chunk.size <- nrow(data[data$V2 == 0, ]) / 2
+        temp <- vector(length = nrow(data))
+        temp <- rep(c(1:chunk.size), each = 2)
+        data$V2 <- temp
+        data <- cbind(data[c(TRUE, FALSE), ],
+                      data[c(FALSE, TRUE), ])[, 1:3]
+        data[, 3] <- str_replace(data[, 3], ".0$", "")
+        data$V1 <- paste0("(", data$V2, ") ", data$V1)
+        data <- data[, c(1,3)]
     } else {
         data <- temp.data
-        count <- 1
-        for (i in 1:nrow(data)) {
-            type <- str_count(data[i, 1], "[.]")
-            if (type == 4) {
-                data[i, 1] <- paste(paste0("(", count, ")"), data[i, 1])
-                dims <- data[i, 1]
-                count <- count + 1
-            } else if (type == 0 & !data[i, 1] %in% c("image", "average online run time", "average total time for GEMM")) {
-                data[i, 1] <- paste(dims, data[i, 1])
-            } else if (data[i, 1] == "image") {
-                count <- 1
-            }
-        }
+        data <- temp.data[1:(nrow(temp.data) - 2), ]
+        ids <- data$V2[data$V1 == "image"]
+        sizes <- data$V1[is.na(data$V2)]
+        gaps <- as.numeric(row.names(data)[data$V1 == "image"])
+        gap <- diff(gaps)
+        data$V3 <- as.integer(rep(ids, each = gap))
+        data <- data[data$V1 != "image", ]
+        chunk.size <- nrow(data[data$V3 == 0, ]) / 8
+        temp <- vector(length = nrow(data))
+        temp <- rep(c(1:chunk.size), each = 8)
+        data$V3 <- temp
+        data$V4 <- rep(sizes, each = 8)
+        data$V2 <- str_replace(data$V2, ".0$", "")
+        data$V1 <- paste(paste0("(", data$V3, ")"), data$V4, data$V1)
+        data <- data[complete.cases(data), ]
+        data <- data[, 1:2]
     }
 
-    data <- data[!temp.data$V1 == "image", ]
-    data <- data[complete.cases(data), ]
+    names(data) <- c("V1", "V2")
+    data <- rbind(data, temp.data[(nrow(temp.data) - 1):nrow(temp.data), ])
+    data$V2 <- as.numeric(data$V2)
+    row.names(data) <- c(1:nrow(data))
+    targets <- unique(data$V1)
     totals <- aggregate(V2 ~ V1, data = data, sum)
     avgs <- aggregate(V2 ~ V1, data = data, mean)
     data <- merge(avgs, totals, by = "V1")
-    names(data) <- c("measure", "batch avg (ms)", "batch total (ms)")
+    data <- data[match(targets, data$V1), ]
     row.names(data) <- c(1:nrow(data))
+    names(data) <- c("measure", "batch avg (ms)", "batch total (ms)")
     data$measure[c(nrow(data) - 1, nrow(data))] <- c("online run time", "aggregate GEMM time")
     data$`batch avg (ms)` <- round(data$`batch avg (ms)` * 1000, 4)
     data$`batch total (ms)` <- round(data$`batch total (ms)` * 1000, 4)
-    data[(nrow(data) - 1):nrow(data), ]$`batch total (ms)` <- round(data[(nrow(data) - 1):nrow(data), ]$`batch total (ms)` * n, 4)
+    data[(nrow(data) - 1):nrow(data), ]$`batch total (ms)` <- round(data[(nrow(data) - 1):nrow(data), ]$`batch total (ms)` * 1000, 4)
 
     if (mode.name == "gemmlowp") {
         data.minimized <- apply(data, 2, function(x) {

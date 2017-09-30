@@ -79,27 +79,37 @@ cd inference
 
 for m in "${MODELS[@]}"
 do
-    :
-    echo "compiling inference file for" ${m%/}
-    echo "..."
-    # Call make on models' Makefile.
-    eval make -f Makefile.${m%/}
-    echo "..."
-    echo "DONE compiling inference file for" ${m%/} "DONE"
-    echo "-----------------------------------------------"
-
     for a in "${ARITHMETIC_MODES[@]}"
     do
-        :
-        # Run executable
-        echo "running inference on" ${m%/} "w/" $a
-        echo "..."
-        eval ./lpa_cnn.out $a | tee ../results/run_log_${m%/}_$a.txt
-        echo "..."
-        echo "DONE running inference on" ${m%/} "w/" $a "DONE"
-        echo "-----------------------------------------------"
-    done
+        if [ ! -f ../results/run_log_${m%/}_$a.txt ]
+        then
+            echo "compiling inference file for" ${m%/}
+            echo "..."
+            # Call make on models' Makefile.
+            eval make -f Makefile.${m%/}
+            echo "..."
+            echo "DONE compiling inference file for" ${m%/} "DONE"
+            echo "-----------------------------------------------"
 
+            echo "running inference on" ${m%/} "w/" $a
+            echo "..."
+            # Run executable
+            eval ./lpa_cnn.out $a | tee ../results/run_log_${m%/}_$a.txt
+            echo "..."
+            echo "DONE running inference on" ${m%/} "w/" $a "DONE"
+            echo "-----------------------------------------------"
+        else
+            echo "compiling inference file for" ${m%/}
+            echo "..."
+            echo "DONE compiling inference file for" ${m%/} "DONE"
+            echo "-----------------------------------------------"
+
+            echo "running inference on" ${m%/} "w/" $a
+            echo "..."
+            echo "DONE running inference on" ${m%/} "w/" $a "DONE"
+            echo "-----------------------------------------------"
+        fi
+    done
 done
 
 # Return to home directory.
