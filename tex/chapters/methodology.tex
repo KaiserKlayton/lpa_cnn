@@ -1,0 +1,80 @@
+\chapter{Methodology}
+
+In this chapter, the process of preparing and benchmarking neural networks with varying arithmetic precisions, as well as the creation of an end-to-end system for carrying out these tests, is detailed.
+
+The experimentation preparation process consists of several steps. Firstly, model architectures are selected and inputs are prepped and standardized for means of effective comparison. Secondly, baseline results are collected using the popular deep-learning framework Caffe \cite{caffe}. Weights and features are extracted. Thirdly, model layers are re-written as new C++ scripts using the linear algebra framework Eigen \cite{eigen}. Next, the model definitions are systematically translated into C++ scripts ideal for streamlined and reproducable benchmarking via an ``architecture extraction'' script. Lastly, a low-precision arithmetic mode (8-bit) is integrated into the existing process, making the system ready for running timing and accuracy experiments.
+
+\section{Model architectures}
+The models chosen in this work represent small, medium and large models in terms of *the number of trainable weight parameters*. ``LeNet'' \cite{mnist} and ``cifar-10\_quick'' \cite{cifar} represent the two smaller models. The larger models include the popular ``VGG-16'' and the even larger ``VGG-19'' \cite{return}. The medium-sized models included in experimentation consit of the revolutionary ``ResNet50'' and ``Resnet101'' \cite{resnets2} models. For the purpose of the experiments the convolutional layers are of most interest. Each model has a different number of convolution layers. LeNet has a mere 2 such layers, cifar-10\_quick has 3, and VGG-16 and VGG-19 have 13 and 16 convolution layers, respectively. Refer to table \ref{tbl:cnns} on page \pageref{tbl:cnns} for the outline of these model architectures. ResNet50 and ResNet101 have---by far---the most number of layers, totaling 53 such operations for ResNet50, and 104 for ResNet101.
+
+The model architectures and their properties are highlighted in \ref{tbl:models} on page \pageref{tbl:models}.
+
+\begin{table}[]
+\centering
+\caption[Model properties]{The models and their properties}
+\label{tbl:models}
+\begin{tabular}{|l|l|l|l|l|l|l|l}
+\cline{1-7}
+Experiment modules & \textbf{layers} & \textbf{parameters} & \textbf{input size} & \textbf{convolutions} & \textbf{poolings} & \textbf{products} &  \\ \cline{1-7}
+\textbf{LeNet}     & 4               & 430.5K              & 1X28X28             & 2                     & 2                 & 2                       &  \\ \cline{1-7}
+\textbf{Cifar-10}  & 5               & 145.4K              & 3x32x32             & 3                     & 3                 & 2                       &  \\ \cline{1-7}
+\textbf{VGG-16}    & 16              & 138.3M              & 3x224x224           & 13                    & 5                 & 3                       &  \\ \cline{1-7}
+\textbf{VGG-19}    & 19              & 143.7M              & 3x224x224           & 16                    & 5                 & 3                       &  \\ \cline{1-7}
+\textbf{ResNet50}  & 50              & 25.6M               & 3x224x224           & 53                    & 2                 & 1                       &  \\ \cline{1-7}
+\textbf{ResNet101} & 101             & 44.5M               & 3x224x224           & 104                   & 4                 & 1                       &  \\ \cline{1-7}
+\end{tabular}
+\end{table}
+
+\section{Model inputs}
+The size and nature of inputs also differs amongst models used. The LeNet models uses its famous MNIST handwritten database dataset of hand-written digits \cite{mnist}. These are 1-channel (gayscale) images of size $28\times28$. The cifar-10\_quick model is fed with $32\times32$ 3-channel (RGB) images. They are mean-image normalized. All four other models take ImageNet images as input, specifically the first 1000 images of the ILSVRC 2012 competition's validation set \cite{imagenet}. They are either mean-pixel or mean-image normalized, depending on what was done at training-time, and are of size $224\times224$.
+
+\section{Caffe feature and weight extraction}
+Caffe is a popular deep-learning framework born out of Berkely College \cite{caffe}. It has a vast number of publicly-accessible models made available, and processes in 32-bit float \cite{caffe}, thus making it an ideal candidate for building in to our custom system as a means to select models and provide model weights and baseline features.
+
+At this point, it's important to keep track of the number representations of the various libraries involved in extracting weights and features, as to be able to effectively compare to the Caffe baseline, and to keep our weights in the right precision.
+
+Weights are extracted from the forward-pass of the Caffe network, instantiated through Caffe's ``Caffe.Net()'' method, taking a .prototxt and .caffemodel file and called with ``Caffe.Net.().forward()'' \cite{caffe}. Caffe processes in single floating-point precision, so the current state is 32-bit. After extraction, weights are saved via Python's Numpy package, which uses double precision \cite{scipy}, so our precision is maintained.
+
+First in the pipeline of the Caffe feature extraction is, after the forward pass, the saving of activations by Python's Numpy \cite{scipy}. Therefore the reference feaures are of the correct precision and are comparable to the 32-bit experiment results.
+
+The inputs, having values typically ranging from 0-255, are inherintly integers and remain so until activated in the first layer of the network (or rather are represented by floats with a trailing ``.0'', unless quantized), where they either remain integers (in integer mode) or become floats due to multiplication with weights.
+
+\section{Preparing for inference}
+In both modes, input is run through the custom system related to this work. The system includes bare-bones implementations of all relevant layers: convolution, pooling, relu, fully-connected, batch-normalization, scale, and eltwise. The inference files and makefiles are automatically generated via a script-generation script written in Python, which parses the Caffe .prototxt files and outputs a C++ script in the most minimal way possible. Great care has been taken in ensuring that the script is minimal: all large objects are passed-by-reference when possible, Eigen routines are called conservativley, the loading of parameters, weight sand inputs, handled by the Armadillo package \cite{eigen_vs_armadillo}, is optimized, and the compiler is set to optimize for speed. The options used at compile time are as follows: 
+
+\lstset{language=make}
+-c -O3 -march=native -std=c++11
+
+The option ``-O3'' sets the compiler to make full optimization: it attempts to reduce code size and execution time, and performs all other optimizations possible. Furthermore, ``-march=native'' tells the compiler to use the platform's specific assembly-code instructions.
+
+\section{Integrating low precision}
+The low arithmetic precision module was taken from gemmlowp, a "small self-contained low-precision GEMM library" \cite{gemmlowp}. Gemmlowp performs several tasks needed for the experiments in this work. Apart from performing the actual GEMM procedure, gemmlowp quantizes inputs, dequantizes, retrieves parameters needed for these quantizations, and quantizes weights. This section will detail the processes involved in replacing regular floating-point gemm operations with a custom call to the gemmlowp module.
+
+\subsection{Breaking down the low-precision process}
+The requirements for integrating low precision into convolutions can be broken down into several components. Some of these can, and are, obtained or performed offline, while others are strictly online run-time processes. These components are, briefly: result matrix quantization parameters, input quantization parameters, weight quantization parameters, the actual quantization process for inputs, activations and weights, the gemm operation, and dequantization. Figure \ref{tbl:gemmlowp} on page \pageref{tbl:gemmlowp} shows the different steps involved, whether they can be performed offline, and whether they are involved in calculating timings for the experiments.
+
+\begin{table}[]
+\centering
+\caption[Sub-processes of low-precision GEMM]{Sub-processes of low-precision GEMM. Although low-precision arithmetic is in theory faster, computation time can quickly add up with other online operations}
+\label{tbl:gemmlowp}
+\begin{tabular}{|l|l|l|}
+\hline
+\multicolumn{3}{|l|}{low-precision GEMM broken down by process}                                          \\ \hline
+\textbf{Process}                & \textbf{possible offline?} & \textbf{included in timing calculations?} \\ \hline
+Calculate input matrix MIN/ MAX  & yes		                 & yes                                       \\ \hline
+Calculate weight matrix MIN/ MAX & yes                        & no                                        \\ \hline
+Calculate activation matrix MIN/ MAX & can estimate              & no                                        \\ \hline
+Quantize input matrix           & yes             		     & yes                                       \\ \hline
+Quantize weight matrix          & yes                        & no                                        \\ \hline
+GEMM                            & no                         & yes                                       \\ \hline
+Dequantize activation matrix    & no                         & yes                                       \\ \hline
+\end{tabular}
+\end{table}
+
+One of the convenient things that make low-precision GEMM work is the fact that many, and sometimes all, of the parameters can be calculated offline \cite{warden_quantize}. For the weights of a cnn, this is always the case, as the weight parameters are learned at training-time. Thus, the minimum and maximum of these matrices can be stored as constants. For the inputs, it is also possible to collect parameters offline. This is straightforward for standard RGB images, known to hold values in the range [0-255].
+
+For result/ activation parameters, this is a bit more complex. One cannot know beforehand the resulting matrices at each convolution. However, it's possible to collect estimations of these parameters using the training images. In this experiment, this is what was done. This cuts down on timing and apparantly doesn't cost much in terms of accuracy, as we will see in the next chapter.
+
+Quantizing inputs and weights, like finding their parameters, can also be done offline. However here, quantization parameters and quantizations of the input layer have been treated equally with other activation layers, and thus are computed online. We assume for the purposes of these experiments that the input matrix range was not pre-known.
+
+GEMM, of course, is an online operation, as well as dequantizing activation matrices, as results are of course not known until after GEMM.

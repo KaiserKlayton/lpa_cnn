@@ -26,6 +26,8 @@ inputs/*
 results/*
 !results/README.md
 
+results_rpi/
+
 helper/imagenet_tools/imagenet_1000/*
 !helper/imagenet_tools/imagenet_1000/README.md
 

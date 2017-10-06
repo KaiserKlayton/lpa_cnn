@@ -1,0 +1,69 @@
+\chapter{Experiments}
+In this chapter, results of the experiments are discussed as they relate to speed and accuracy of convolutional neural networks. The experimental setups are explored, and the sub-processes of low-precision GEMM are outlined. Additionally, some results on an embedded system are evaluated.
+
+\section{Experimental setup}
+All 6 models are run through the system, which, as detailed perviously, first extracts the weights and features from caffe. Then the architecture is parsed from the Caffe prototxt and the inference file is generated. The script is then compiled with the options previously mentioned, and inference runs its course. From this inference the results are derived.
+
+\subsection{Model and input configurations}
+Six different model architectures were explored in this work. Some information regarding the modules used in the experiment---namely network depth, the input size, the number of convolutions, and the number of trainable parameters---are showcased in table \ref{tbl:models} on page \pageref{tbl:models}.
+
+\section{Accuracies}
+\subsection{Evaluation criteria}
+The first part of the experiment involves accuracy testing, where the accuracy of image-recognition model inferences, run on 32-bit float precision and then integer precision, are compared. The criteria for an accuracy here is two-fold. Both top-1 and top-5 accuracy are used. Top-1 accuracy is classic model precision. Top-5 accuracy differs in that it rewards the system a correct prediction as long as the model predicts the appropriate class *within* its top 5 predictions. Thus, the predictions with the 5-highest values are considered ``correct predictions.'' This is a common heuristic in image recognition, but the reasoning is not that well defined. One suspicion is that it is to account for the fact that there can be several things going on in an image simultaneously, perhaps making not only the top choice correct. In these experiments, its used really just to adhere to image recognition evaluation standards.
+
+\subsection{Results}
+Table \ref{tbl:accuracies} on \pageref{tbl:accuracies} reports the results for the accuracy tets. To evaluate, the results are broken down into three sections: small-sized models results, medium-sized model results, and large-sized model results.
+
+TODO: ANALYZE
+
+\begin{table}[]
+\centering
+\caption[Accuracy results]{The accuracy results}
+\label{tbl:accuracies}
+\begin{tabular}{lllll}
+\multicolumn{5}{l}{Accuracies}                                                                                                   \\
+\textbf{model/ mode} & \textbf{top-1 accuracy (\%)} & \textbf{top-1 error} & \textbf{top-5 accuracy (\%)} & \textbf{top-5 error} \\
+\multicolumn{5}{l}{\textbf{LeNet}}                                                                                               \\
+caffe                & 97.6                         & 2.4                  & 100                          & 0                    \\
+eigen                & 97.6                         & 2.4                  & 100                          & 0                    \\
+gemmlowp             & 97.6                         & 2.4                  & 100                          & 0                    \\
+\multicolumn{5}{l}{\textbf{Cifar-10}}                                                                                            \\
+caffe                & 74.6                         & 25.4                 & 98.8                         & 1.2                  \\
+eigen                & 74.8                         & 25.2                 & 98.7                         & 1.3                  \\
+gemmlowp             & 74.7                         & 25.3                 & 98.6                         & 1.4                  \\
+\multicolumn{5}{l}{\textbf{VGG-16}}                                                                                              \\
+caffe                & 70.2                         & 29.8                 & 80.8                         & 19.2                 \\
+eigen                & 70.2                         & 29.8                 & 80.8                         & 19.2                 \\
+gemmlowp             & 70.1                         & 29.9                 & 80.5                         & 19.5                 \\
+\multicolumn{5}{l}{\textbf{VGG-19}}                                                                                              \\
+caffe                & 69.9                         & 30.1                 & 80.5                         & 19.5                 \\
+eigen                & 69.9                         & 30.1                 & 80.5                         & 19.5                 \\
+gemmlowp             & 70.6                         & 29.4                 & 80.9                         & 19.1                 \\
+\multicolumn{5}{l}{\textbf{ResNet50}}                                                                                            \\
+caffe                & 75.2                         & 24.8                 & 83.5                         & 16.5                 \\
+eigen                & 75.2                         & 24.8                 & 83.5                         & 16.5                 \\
+gemmlowp             & 0.1                          & 99.9                 & 0.3                          & 99.7                 \\
+\multicolumn{5}{l}{\textbf{ResNet101}}                                                                                           \\
+caffe                & 75.1                         & 24.9                 & 84.3                         & 15.7                 \\
+eigen                & 75.1                         & 24.9                 & 84.3                         & 15.7                 \\
+gemmlowp             & 0                            & 100                  & 0.3                          & 99.7                
+\end{tabular}
+\end{table}
+
+\section{Speeds}
+\subsection{Evaluation criteria}
+The second part of the experiment is speed testing. For Eigen mode, the speed heuristic is simple: the time taken for GEMM multiplication. For gemmlowp, it's a bit more complex.
+
+In figure \ref{tbl:gemmlowp} on page \pageref{tbl:gemmlowp} one can see the gemmlowp call broken down by sub-process. Amongst these sub-processes, some are ``online'', or considered in the timing-scheme, or are ``offline'', meaning they are able to be performed before inference time. For these experiments, gemmlowp GEMM time is the sum of the online processes:
+
+Total Gemm Time = ONLINE PARAMETER DETERMINATION + ONLINE QUANTIZATION + GEMM + DEQUANTIZATION
+
+\subsection{Results}
+TODO: TABLE OF RESULTS
+
+TODO: ANALYZE
+
+\subsection{Speed tests on an embedded system}
+TODO: TABLE OF RESULTS
+
+TODO: ANALYZE

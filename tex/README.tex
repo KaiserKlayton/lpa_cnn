@@ -35,7 +35,7 @@ Have the following files in place for each desired model:
 adjusting the .prototxt input layer to receive one image as follows:
 
 \begin{verbatim}
-  `1 x <depth> x <width> x <height>`
+  1 x <depth> x <width> x <height>
 \end{verbatim}
 
 Have the following input file in place for each installed model:
@@ -73,10 +73,9 @@ providing an appropriate and consistent model name as
 supports the following parameters:
 
 \begin{verbatim}
-  layer_types = ['convolution', 'pooling', 'relu', 'eltwise', 'innerproduct', 'scale', 'batchnorm']
-  param_types = ['num_output', 'pad', 'kernel_size', 'stride', 'bias_term', 'pool']
-  special_types = ['shape', 'input_dim']
-  shape_dims = ['n','d','w','h']
+  layers=[`convolution',`pooling',`relu',`eltwise',`innerproduct',`scale',`batchnorm']
+  params=[`num_output',`pad',`kernel_size',`stride',`bias_term',`pool']
+  dims=[`n',`d',`w',`h',`shape',`input_dim']
 \end{verbatim}
 
 \texttt{NOTE} that batch processing is not supported.

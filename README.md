@@ -25,7 +25,7 @@ Have the following files in place for each desired model:
 
 adjusting the .prototxt input layer to receive one image as follows:
 
-      `1 x <depth> x <width> x <height>`
+      1 x <depth> x <width> x <height>
 
 Have the following input file in place for each installed model:
 

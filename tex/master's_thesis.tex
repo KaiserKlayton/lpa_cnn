@@ -45,7 +45,7 @@
 \oddsidemargin0cm
 \evensidemargin0cm
 
-\newcommand{\bildklein}[3]{  
+\newcommand{\bildklein}[3]{
 	\begin{figure}[hp]
 	\begin{center}
 	\includegraphics[width=0.5\textwidth]{#1}
@@ -54,7 +54,7 @@
 	\end{figure}
 }
   	
-\newcommand{\bildgross}[3]{  
+\newcommand{\bildgross}[3]{ 
 	\begin{figure}[hp]
 	\begin{center}
 	\includegraphics[width=0.95\textwidth]{#1}
@@ -86,7 +86,7 @@
 	\bigskip \bigskip \bigskip
 	{\Large \bf Master's Thesis in Cognitive Systems: Language, Learning and Reasoning} \\
 	\bigskip \bigskip \bigskip \bigskip \bigskip
-	{\Large Low Precision Arithmetic for Convolutional Neural Network Inference} \\        
+	{\Large Low-Precision Arithmetic for Convolutional Neural Network Inference} \\        
 	\bigskip \bigskip \bigskip \bigskip
 	{\Large C. Clayton Violand} \\    
 	\bigskip 
@@ -108,7 +108,7 @@
 	\bigskip \bigskip \bigskip
 	{\Large \bf Master's Thesis in Cognitive Systems: Language, Learning and Reasoning} \\
 	\bigskip \bigskip \bigskip \bigskip \bigskip
-	{\Large Low Precision Arithmetic for Convolutional Neural Network Inference} \\
+	{\Large Low-Precision Arithmetic for Convolutional Neural Network Inference} \\
 	\bigskip
 \end{center}
 
@@ -143,7 +143,7 @@ Berlin, 19.08.2017\\\\\\\\\\\\
 
 \bigskip
 \providecommand{\keywords}[1]{\textbf{Keywords:} #1}
-\keywords{Convolutional Neural Networks, Integer Multiplication, GEMM.}
+\keywords{convolutional neural networks, benchmarking, GEMM, integer arithmetic.}
 
 \section*{Inhaltsangabe}
 \begin{spacing}{1.2}
@@ -151,37 +151,39 @@ Berlin, 19.08.2017\\\\\\\\\\\\
 \end{spacing}
 
 \newpage
-\setcounter{page}{1}
 \hoffset=0mm
 \bibliographystyle{wmaainf} % quotation style
 \setcounter{tocdepth}{3}
 \setcounter{secnumdepth}{3}
 \fboxsep 0mm
 
+\newpage
+\setlength{\baselineskip}{3ex}
+
+\pagenumbering{roman}
+\setcounter{page}{1}
 \tableofcontents
 
 \newpage
-\setlength{\baselineskip}{3ex}
+\addcontentsline{toc}{chapter}{List of Tables}
+\listoftables\begin{center}\end{center}
 
 \newpage
 \addcontentsline{toc}{chapter}{List of Figures}
 \listoffigures
 
-\newpage
-\addcontentsline{toc}{chapter}{List of Tables}
-\listoftables
+\clearpage
 
 \pagenumbering{arabic}  % default is "roman", not "Roman"
+\setcounter{page}{1}
+
 \begin{spacing}{1.15}
 	\input{chapters/introduction}
-	\input{chapters/setup}
-	\input{chapters/results}
+	\input{chapters/background}
+	\input{chapters/methodology}
+	\input{chapters/experiments}	
 	\input{chapters/conclusion}
 \end{spacing}
-\newpage
-\thispagestyle{empty}
-\null
-
 \newpage
 \thispagestyle{empty}
 \null
