@@ -29,6 +29,7 @@
 \usepackage[toc,page]{appendix}
 \usepackage{standalone}
 \usepackage{hyperref}
+\usepackage{tocloft}
 
 \titleformat{\paragraph}[hang]{\normalfont\bfseries}{\theparagraph}{.5em}{}
 
@@ -45,30 +46,30 @@
 \oddsidemargin0cm
 \evensidemargin0cm
 
-\newcommand{\bildklein}[3]{
+\newcommand{\bildklein}[4]{
 	\begin{figure}[hp]
 	\begin{center}
 	\includegraphics[width=0.5\textwidth]{#1}
 	\end{center}
 	\caption[#2]{#3}
+	\label{#4}
 	\end{figure}
 }
   	
-\newcommand{\bildgross}[3]{ 
+\newcommand{\bildgross}[4]{ 
 	\begin{figure}[hp]
 	\begin{center}
 	\includegraphics[width=0.95\textwidth]{#1}
 	\end{center}
 	\caption[#2]{#3}
+	\label{#4}
 	\end{figure}
 }
-  
-\newcommand{\eqn}[3]{
-	\begin{figure}[hp]
-	\begin{equation}#1\end{equation}
-	\caption[#2]{#3}
-	\end{figure}
-}
+
+\newcommand{\listequationsname}{List of equations}
+\newlistof{myequations}{equ}{\listequationsname}
+\newcommand{\myequations}[1]{
+\addcontentsline{equ}{myequations}{\protect\numberline{\theequation}#1}\par}
 
 \begin{document}
 
@@ -118,7 +119,7 @@
 {\Large \bf Author:} & {\Large C. Clayton Violand} \\\\
 {\Large \bf Advisor:} & {\Large Dr. Niels Landwehr} \\\\
 {\Large \bf Add. Reader:} & {\Large Dr. Paul Prasse} \\\\
-{\Large \bf Submission:} & {\Large 19.08.2017}
+{\Large \bf Submission:} & {\Large 23.10.2017}
 \end{tabular}
 
 \newpage	
@@ -126,7 +127,7 @@
 \hoffset=0mm
 \vspace*{\fill}
 \noindent I assure the single handed composition of this master's thesis only supported by declared resources.\\\\
-Berlin, 19.08.2017\\\\\\\\\\\\
+Berlin, 19.08.2017\\\\
 \noindent \textit{(C. Clayton Violand)}
 
 \newpage
@@ -143,7 +144,7 @@ Berlin, 19.08.2017\\\\\\\\\\\\
 
 \bigskip
 \providecommand{\keywords}[1]{\textbf{Keywords:} #1}
-\keywords{convolutional neural networks, benchmarking, GEMM, integer arithmetic.}
+\keywords{convolutional neural networks, benchmarking, GEMM, integer arithmetic, image recognition}
 
 \section*{Inhaltsangabe}
 \begin{spacing}{1.2}
@@ -165,12 +166,16 @@ Berlin, 19.08.2017\\\\\\\\\\\\
 \tableofcontents
 
 \newpage
-\addcontentsline{toc}{chapter}{List of Tables}
+\addcontentsline{toc}{chapter}{List of tables}
 \listoftables\begin{center}\end{center}
 
 \newpage
-\addcontentsline{toc}{chapter}{List of Figures}
+\addcontentsline{toc}{chapter}{List of figures}
 \listoffigures
+
+\newpage
+\addcontentsline{toc}{chapter}{List of equations}
+\listofmyequations
 
 \clearpage
 
@@ -191,6 +196,8 @@ Berlin, 19.08.2017\\\\\\\\\\\\
 \begin{appendices}
 \chapter{lpa\_cnn documentation}
 \include{README}
+\chapter{Detailed runtime results}
+%\include{detailed_results}
 \end{appendices}
 
 % Generierung des Literaturverzeichnisses
