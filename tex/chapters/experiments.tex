@@ -1,10 +1,11 @@
 \chapter{Experiments}
-In this chapter, results of the experiments are discussed as they relate to speed and accuracy of convolutional neural networks. The experimental setups are explored, and the subprocesses of low-precision GEMM are outlined. Additionally, some results on an embedded system are evaluated.
+In this chapter, results of the experiments are discussed as they relate to speed and accuracy of convolutional neural networks. The experimental setup is explored, and the subprocesses of low-precision GEMM are outlined. Additionally, some results on an embedded system are given.
 
 \section{Experimental setup}
-All six chosen models are run through the system. First, Caffe extracts weights and features. Then the architecture is parsed from the Caffe prototxt and the inference file is generated. The script is then compiled with both eigen and gemmlowp arithmetic options, and inference runs its course. From this inference the results are derived.
+The chosen models in section \ref{sec:input} are run through the system. First, Caffe extracts weights and features. Then the architecture is parsed from the Caffe prototxt and the inference file is generated. The script is then compiled with both eigen and gemmlowp arithmetic options, and inference runs its course. From this inference the results are derived.
 
 \subsection{Model and input configurations}
+\label{sec:input}
 Six different model architectures were explored in this work. Some information regarding the modules used in the experiment---namely network depth, the input size, the number of convolutions and the number of trainable parameters---are showcased in table \ref{tbl:models} on page \pageref{tbl:models}.
 
 \section{Accuracies}
@@ -20,7 +21,7 @@ The large models, VGG-16 and VGG-19, also displayed fantastic results, the latte
 
 In terms of top-5 accuracy, LeNet and cifar-10 stayed steady relative to the floating-point counterparts, while VGG-16 and VGG-19 both deviated, the former suffering a 0.3\% loss, and the latter gaining 0.4\% in accuracy.
 
-The last models, ResNet50 and ResNet101, did not perform well with integer arithmetic. Run with gemmlowp, the top-1 results of these networks were as good as 0\/ 0.1\%. Residual neural networks operate on decidedly different principles: namely, they refer back to old convolution results earlier in the network as participants in later convolutions \cite{resnets2}. This modification, being the most profound perceivable architectural difference setting it apart from other types of CNNs, apparently causes integer arithmetic, as it's performed by gemmlowp, to fail completely.
+The last models, ResNet50 and ResNet101, did not perform well with integer arithmetic. Run with gemmlowp, the top-1 results of these networks were as good as 0\/ 0.1\%. Residual neural networks operate on decidedly different principles: namely, they refer back to old convolution results earlier in the network as participants in later convolutions \cite{resnets2}. This modification, being the most profound perceivable architectural difference setting it apart from other types of CNNs, apparently causes integer arithmetic, as it's performed by gemmlowp, to fail completely. This is perhaps because inputs to a given convolution are not necessarily taken from the previous layer's output, but often from layers prior. As these networks can be considered equivalent to many shallower networks stacked together, where tight layer relationships are not necessarily a reality, individual quantized perturbations of low-precision calculations do not carry over from layer to layer.
 
 \begin{table}[]
 \centering
@@ -91,7 +92,7 @@ ResNet101 & 1215.48        & 665               & 1215480        & 665000
 \end{tabular}
 \end{table}
 
-However, the speed gained with quantized GEMM in regards to the ResNet architecture is---as in the results for accuracies---irregular. These two models appear to be effected proportionally by quantized GEMM on a different scale. While they represent the models with the most number of convolution parameters, ResNet50 still reduces speed on a lesser scale than the smaller cifar-10 model. ResNet101, whose speed-gain is again postulated to respond differently than the non-residual models, receives none-the-less the most benefit from quantized GEMM. It can then be inferred that residual models are more ``radical'' in their potential benefit through low-precision, in that their unique nature either further contribute to or reduce timing, depending on their scope.
+However, the speed gained with quantized GEMM in regards to the ResNet architecture is---as in the results for accuracies---irregular. These two models appear to be effected proportionally by quantized GEMM on a different scale. While they represent the models with the most number of convolution parameters, ResNet50 still reduces speed on a lesser scale than the smaller cifar-10 model. ResNet101, whose speed-gain is again postulated to respond differently than the non-residual models, receives none-the-less the most benefit from quantized GEMM.
 
 With two convolutions, gemmlowp decreased the time needed for LeNet GEMM by 25\%. Cifar-10, with four convolutions, benefited from a 33\% decrease. VGG-16 and VGG-19, being fairly similar in parameter count, with 13 and 16 convolutions, respectively, both decreased their GEMM processing times by 40\%. ResNet50 with 53 convolutions reduced GEMM by 28\%, while ResNet101 with 104 convolutions reduced by 45\%. Table \ref{tbl:gains} on page \pageref{tbl:gains} shows the GEMM speed gain relative to model architecture.
 
@@ -151,31 +152,31 @@ to eigen   & 0.0284         & 2.435             & 112.6077       & 113.4924     
 \end{table}
 
 \subsection{Embedded system tests}
-Experiments run on a Raspberry Pi 3 were decidedly slower than on the Core i5. The results are shown below in tables \ref{tbl:gemmtimerpi} and \ref{tbl:runtimerpi}.
+Experiments run on a Raspberry Pi 3 were decidedly slower than on the Core i5. The results of inference with gemmlowp are shown below in tables \ref{tbl:gemmtimerpi} and \ref{tbl:runtimerpi}.
 
 \begin{table}[]
 \centering
-\caption[Raspberry Pi GEMM timings]{GEMM times on a Raspberry Pi 3 (s).}
+\caption[Raspberry Pi GEMM times (gemmlowp)]{GEMM times (s) on a Raspberry Pi 3 with gemmlowp.}
 \label{tbl:gemmtimerpi}
-\begin{tabular}{lllll}
-                  & \textbf{batch averages} &                   & \textbf{batch totals} &                   \\
-\textbf{Model}    & \textbf{eigen}         & \textbf{gemmlowp} & \textbf{eigen}        & \textbf{gemmlowp} \\
-\textbf{LeNet}    & 0.0062417               & 0.0139            & 6.2417                & 13.9           	\\
-\textbf{cifar-10} & 0.0540101               & 0.0736            & 54.0101               & 73.6           	\\
-\textbf{ResNet50} & 12.3745              	& 24.6        		& 12374.5          		& 24600       
+\begin{tabular}{lll}
+
+\textbf{Model}    & \textbf{batch averages}                    & \textbf{batch totals}                    \\  
+\textbf{LeNet}                 & 0.0139                           & 13.9           	\\
+\textbf{cifar-10}             & 0.0736                           & 73.6           	\\
+\textbf{ResNet50}             	& 24.6        		          		& 24600       
 \end{tabular}
 \end{table}
 
 \begin{table}[]
 \centering
-\caption[Raspberry Pi inference runtimes]{Inference runtimes on a Raspberry Pi 3 (s).}
+\caption[Raspberry Pi inference runtimes with (gemmlowp)]{Inference runtimes (s) on a Raspberry Pi 3 with gemmlowp.}
 \label{tbl:runtimerpi}
-\begin{tabular}{lllll}
-                  & \textbf{batch averages} &                   & \textbf{batch totals} &                   \\
-\textbf{Model}    & \textbf{eigen}         & \textbf{gemmlowp} & \textbf{eigen}        & \textbf{gemmlowp} \\
-\textbf{LeNet}    & 0.0174823                  & 0.0287          & 17.4823                & 28.7          \\
-\textbf{cifar-10} & 0.0833529                & 0.121          & 83.3529              & 121          \\
-\textbf{ResNet50} & 19.7014              & 36.400       & 19701.4            & 36400       
+\begin{tabular}{lll}
+
+\textbf{Model}    & \textbf{batch averages}                   & \textbf{batch totals}                  \\
+\textbf{LeNet}                      & 0.0287                        & 28.7          \\
+\textbf{cifar-10}                 & 0.121                      & 121          \\
+\textbf{ResNet50}              & 36.400                 & 36400       
 \end{tabular}
 \end{table}
 

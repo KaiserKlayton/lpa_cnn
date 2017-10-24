@@ -1,5 +1,9 @@
 \chapter{Conclusion}
 
 \section{Summary}
+This work shows that GEMM for convolutional neural network inference can be accelerated by as much as 45\% with low-precision integer arithmetic. In addition, the experiment results demonstrate negligible loss in image recognition accuracy in the case of four popular neural network architectures. To achieve such a speed-up, quantization methods were employed. The work showcases the quantization technique for inference speed improvement in the context of the image recognition problem, whereby a lexical description is predicted given an image.
 
 \section{System limitations and future work}
+However, two architectures are concluded to be incompatible with the quantization method used. Namely, inference with residual neural networks fail with such a technique and therefore completely break down when quantized. This is speculated to be because of the nature of such networks, where inputs to a given convolution are not necessarily taken from the previous layer's output, but often from layers prior. As these networks can be considered equivalent to many shallower networks stacked together, where tight layer relationships are not necessarily a reality, individual quantized perturbations of low-precision calculations do not carry over from layer to layer.
+
+As the size of convolutional neural networks grow, the demands for accurate classifications persist, and smaller and smaller devices like phones and other embedded systems are expected to run image recognition software, quantization of neural networks is a research field worthy of continuation. This work demonstrates that in order to reap the benefits of low-precision GEMM, total runtime must be reduced by optimizing or off-lining the online processes involved in quantization as much as possible: online parameter calculation (i.e. maxima and minima of input and output volumes), online quantization of GEMM components, and dequantization.
