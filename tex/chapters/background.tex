@@ -3,56 +3,55 @@
 This chapter will familiarize the reader with the various topics, strategies and technologies involved in this research. Namely, convolutional neural networks, convolutions, computer precision and integer representation, and other relevant topics will be discussed.
 
 \section{Image recognition}
-Image recognition is a sub-task in the field of computer vision in which the computer's goal is to correctly predict a text label for the most dominant object in the image \cite{history}. Convolutional Neural networks are designed to handle the image recognition problem. They got their start at the ILSVRC challenege in 2012, where AlexNet, the first CNN, won by a significant factor \cite{history}. Since then, convolutional neural network architectures have been modified and experimented with, keeping the core concept of the convolutional layer in mind. As a result of this research, there now exist CNNs which perform at near-human levels. One example is the popular LeNet architecture \cite{mnist}, where top-5 accuracy for the task of recognizing hand-written numbers has reached 100\%. Another example is the family of residual neural networks, whos very deep architectures and interwoven stacks of convolutional layers have achieved an error of only 3.57\% on the famous Imagenet dataset \cite{resnets2}.
+Image recognition is a subtask in the field of computer vision in which the computer's goal is to correctly predict a text label for the most dominant object in the image \cite{history}. Convolutional neural networks are designed to handle the image recognition problem. They got their start at the ILSVRC challenege in 2012, where AlexNet, the first CNN, won by a significant factor \cite{history}. Since then, convolutional neural network architectures have been modified and experimented with, keeping the core concept of the convolution layer in mind. As a result of this research, there now exist CNNs which perform at near-human levels. One example is the popular LeNet architecture \cite{mnist}, where top-5 accuracy for the task of recognizing hand-written numbers has reached 100\%. Another example is the family of residual neural networks, whose very deep architectures and interwoven stacks of convolution layers have achieved an error of only 3.57\% on the famous Imagenet dataset \cite{resnets2}.
 
 \section{Convolutional neural networks}
 \subsection{Motivation}
 \subsubsection{The limitations of non-convolutional neural networks}
-In a traditional neural network, each node in each layer is fully-connected to each node in the preceding layer. This means that every activation is derived from the full scope of input from the previous layer, making the process computationaly expensive and slow. The memory needed for such a network is staggering. Imagine a modestly-sized network that takes images of size $224\times224$ and 3 channels (RGB), with perhaps only two hidden layers comprising of 4096 and 1000 nodes, sequentially. All together this network would require $224\times224\times3 = ~150K$ values for the input layer, ~4K and 1K values to represent the first and second hidden layers, with $224\times224\times3\times4096 = ~616M$ and $4096\times1000 = ~4M$ values in weights for these hidden layers, respectively. This would amount to a total of $775M\times4 = 3,1 GB$ of storage needed---at floating point precision---for this relatively simple network. It's also of note that in such a scheme in which there is such a large amount of independant and individual parameters, it would be difficult not to over-fit the data at training time. One can easily see that the traditional non-convolutional network is not ideal for image input. Although large CNN architectures, such as VGG, can reach a similar number of parameters, they can afford to be much deeper and expressive. In the case of VGG-19, for example, the fully-connected layer (usually occuring at the end of the network in the case of CNNs), bring the total parameter count to 138.3M \cite{return}. However, a similar multi-layer perceptron network of the same layer-size would far exceed this number.
+In a traditional neural network, each node in each layer is fully-connected to each node in the preceding layer. This means that every activation is derived from the full scope of input from the previous layer, making the process computationally expensive, and thus slow. The memory needed for such a network is staggering. Imagine a modestly-sized network that takes images of size $224\times224$ and three channels (RGB), with perhaps only two hidden layers comprising of 4096 and 1000 nodes, sequentially. All together this network would require $224\times224\times3 = ~150K$ values for the input layer, ~4K and 1K values to represent the first and second hidden layers, with $224\times224\times3\times4096 = ~616M$ and $4096\times1000 = ~4M$ values in weights for these hidden layers, respectively. This would amount to a total of $775M\times4 = 3,1 GB$ of storage needed---at floating-point precision---for this relatively simple network. It's also of note that in such a scheme in which there is such a large amount of independent and individual parameters, it would be difficult not to overfit the data at training time. One can easily see that the traditional non-convolutional network is not ideal for image input. Although large CNN architectures, such as VGG, can reach a similar number of parameters, they can afford to be much deeper and expressive. In the case of VGG-19, for example, the fully-connected layer (usually occurring at the end of a CNN network), bring the total parameter count to 138.3M \cite{return}. However, a similar multi-layer perceptron network of the same layer-size would far exceed this number.
 
 \bildklein{figures/nn.png}{A traditional neural network}{A traditional neural network. Notice how each node is connected to every previous node. Weights add up quickly and the image recognition problem soon becomes unmanageable. [CC Image courtesy of Chrislb on Wikimedia Commons]}{fig:nn}
 
 \subsubsection{Convolutional neural networks as a solution}
-Convolutional neural networks approach the image recognition problem differently. Namely, they make one main assumption and one crucial adjustment. The assumption made is that the input is an image, and nothing else. The adjustment is the introduction of parameter recycling and the replacement of fully-connected layers with convolutions. Because of the nature of images, sharing of parameters across the network is possible, thus reducing their number drastically. By expecting image input, and by recognizing the regular ``nature of images'' to be consistant, one can build in pre-meditated adjustments to the network through various techniques \cite{convnets}. One clear way in which this works is by recognizing that one section of an image may share properties with another section of the image. It's possible in such a situation to replace the fully-connected ``filter'' with local and smaller filters (e.g. $3\times3$), only looking at one section of the image at a time. This filter can then be moved, *with the same weight parameters*, to other sections of the image, keeping in mind that if the filter works at one location in the image, it should also be applicable at another location. This, again, is realizable due to the ``nature of images'': namely that they share properties throughout their field \cite{convnets}. Replacing our first fully-connected layer in our previous example with a reasonable convolution layer with, say, 64 outputs and a filter-size of $3\times3$ would result in a weight parameter matrix of only size $3\times3\times3\times64 = ~1.7K$.
+Convolutional neural networks approach the image recognition problem differently. Namely, they make one main assumption and one crucial adjustment. The assumption made is that the input is an image, and nothing else. The adjustment is the introduction of parameter recycling and the replacement of fully-connected layers with convolutions. Because of the nature of images, sharing of parameters across the network is possible, thus reducing their number drastically. By expecting image input, and by recognizing the regular ``nature of images'' to be consistent, one can build in premeditated adjustments to the network through various techniques \cite{convnets}. One clear way in which this works is by recognizing that one section of an image may share properties with another section of the image. It's possible in such a situation to replace the fully-connected ``filter'' with local and smaller filters (e.g. $3\times3$), only looking at one section of the image at a time. This filter can then be moved, *with the same weight parameters*, to other sections of the image, keeping in mind that if the filter works at one location in the image, it should also be applicable at another location. This, again, is realizable due to the ``nature of images'': namely that they share properties throughout their field \cite{convnets}. Replacing our first fully-connected layer in our previous example with a reasonable convolution layer with, say, 64 outputs and a filter-size of $3\times3$ would result in a weight parameter matrix of only size $3\times3\times3\times64 = ~1.7K$.
 
-\bildgross{figures/cnn.png}{A basic convolutional neural network}{A basic convolutional neural network. Weight parameters are stored only for a pre-determined amount of filters (here, ``f.maps'') of a certain dimension. For example, shown are five filters of size $5\times5$ for one convolution, followed by twelve filters of size $3\times3$ for the second). [CC Image courtesy of Aphex34 on Wikimedia Commons]}{fig:cnn}
+\bildgross{figures/cnn.png}{A basic convolutional neural network}{A basic convolutional neural network. Weight parameters are stored only for a predetermined amount of filters (here, ``f.maps'') of a certain dimension. For example, shown are five filters of size $5\times5$ for one convolution, followed by twelve filters of size $3\times3$ for the second). [CC Image courtesy of Aphex34 on Wikimedia Commons]}{fig:cnn}
 
 \subsection{Architecture}
 \subsubsection{Overview}
-Popular convolutional neural network models, although diverse, tend to vary in systematic ways. In their most basic form, CNNs may be comprised of only a few types of layers: the input layer, the convolution, the pooling layer, activation layers (e.g. ReLU), and the fully-connected layer \cite{convnets}. Typically, most of the heavy lifting in terms of computational resources will be---by a strong margin---the convolutional layer. Famous convolutional neural network architectures include AlexNet, GooglNet, ResNet and VGG, all of which differ in layer number, layer ordering, and layer parameters, such as the number of convolution filters, the size of filter, and the stride of the filter. These layers are arranged in varying fashion to make up the skeletons of the well-known convolutional neural network. To see some typical architectures outlined, see table \ref{tbl:cnns} on page \pageref{tbl:cnns}.
+Popular convolutional neural network models, although diverse, tend to vary in systematic ways. In their most basic form, CNNs may be comprised of only a few types of layers: the input layer, the convolution, the pooling layer, activation layers (e.g. ReLU), and the fully-connected layer \cite{convnets}. Typically, most of the heavy lifting in terms of computational resources will be---by a strong margin---the convolutional layer. Famous convolutional neural network architectures include AlexNet, GooglNet, ResNet and VGG, all of which differ in layer number, layer ordering, and layer parameters, such as the number of convolution filters, the size of the filter, and the stride of the filter. These layers are arranged in varying fashion to make up the skeletons of the well-known convolutional neural networks. To see some typical architectures outlined, refer to table \ref{tbl:cnns} on page \pageref{tbl:cnns}.
 
 \begin{table}[]
 \centering
 \caption[Some well-known cnn architectures]{The basic outline of some well-known cnn architectures.}
 \label{tbl:cnns}
-\begin{tabular}{|l|l|l|l|l}
-\cline{1-4}
-\multicolumn{4}{|l|}{(ReLU layers omitted)} &  \\ \cline{1-4}
-\textbf{LeNet}   & \textbf{cifar-10}      	& \textbf{VGG-16}         & \textbf{VGG-19}         &  \\ \cline{1-4}
-conv             & conv     				& conv                    & conv                    &  \\ \cline{1-4}
-pool             & pool     				& conv                    & conv                    &  \\ \cline{1-4}
-conv             & conv     				& pool                    & pool                    &  \\ \cline{1-4}
-pool             & pool  				    & conv                    & conv                    &  \\ \cline{1-4}
-fc               & conv   				    & conv                    & conv                    &  \\ \cline{1-4}
-fc               & pool     				& pool                    & pool                    &  \\ \cline{1-4}
-                 & fc     					& conv                    & conv                    &  \\ \cline{1-4}
-                 & fc      					& conv                    & conv                    &  \\ \cline{1-4}
-                &       						& conv                    & conv                    &  \\ \cline{1-4}
-                &       						& pool                    & conv                    &  \\ \cline{1-4}
-                &      						& conv                    & pool                    &  \\ \cline{1-4}
-                &       						& conv                    & conv                    &  \\ \cline{1-4}
-                &       						& conv                    & conv                    &  \\ \cline{1-4}
-                &      						& pool                    & conv                    &  \\ \cline{1-4}
-                &       						& conv                    & conv                    &  \\ \cline{1-4}
-                &       						& conv                    & pool                    &  \\ \cline{1-4}
-                &       						& conv                    & conv                    &  \\ \cline{1-4}
-                &       						& pool                    & conv                    &  \\ \cline{1-4}
-                &       						& fc                      & conv                    &  \\ \cline{1-4}
-                &       						& fc                      & conv                    &  \\ \cline{1-4}
-                &       						& fc                      & pool                    &  \\ \cline{1-4}
-                &       						&                         & fc                      &  \\ \cline{1-4}
-                &       						&                         & fc                      &  \\ \cline{1-4}
-                &       						&                         & fc                      &  \\ \cline{1-4}
+\begin{tabular}{llll}
+\multicolumn{4}{l}{(ReLU layers omitted)}                              \\
+\textbf{LeNet} & \textbf{cifar-10} & \textbf{VGG-16} & \textbf{VGG-19} \\
+conv           & conv              & conv            & conv            \\
+pool           & pool              & conv            & conv            \\
+conv           & conv              & pool            & pool            \\
+pool           & pool              & conv            & conv            \\
+fc             & conv              & conv            & conv            \\
+fc             & pool              & pool            & pool            \\
+               & fc                & conv            & conv            \\
+               & fc                & conv            & conv            \\
+               &                   & conv            & conv            \\
+               &                   & pool            & conv            \\
+               &                   & conv            & pool            \\
+               &                   & conv            & conv            \\
+               &                   & conv            & conv            \\
+               &                   & pool            & conv            \\
+               &                   & conv            & conv            \\
+               &                   & conv            & pool            \\
+               &                   & conv            & conv            \\
+               &                   & pool            & conv            \\
+               &                   & fc              & conv            \\
+               &                   & fc              & conv            \\
+               &                   & fc              & pool            \\
+               &                   &                 & fc              \\
+               &                   &                 & fc              \\
+               &                   &                 & fc             
 \end{tabular}
 \end{table}
 
@@ -69,15 +68,15 @@ input_{a_{i}} = a_{i-1}.
 
 Therefore the initial image or first layer of a network is an $x*y*3$ tensor, where $k$ in this case represents the RGB color channels of the original image. Beyond the input layer, the value of $k$ in $a'$ is then the number of kernels just applied to the input $a$.
 
-The second component is the kernel. Its job is to slide across the input at a pre-determined ``stride'', much like a moving window, multiplying itself with the current input lying within this window \cite{convnets}. The kernel at $a'$ is also a three-dimensional tensor and is of shape $m*n*d$. Where $m$ and $n$, or the kernel width and height, are of a pre-determined dimension (usually small, e.g. $3\times3$ or perhaps $7\times7$). Each kernel of size $m*n$ is ``stacked'' along $d$, making up the three-dimensional filter tensor reaching through the entire depth of the input.
+The second component is the kernel. Its job is to slide across the input at a predetermined ``stride'', much like a moving window, multiplying itself with the current input lying within this window \cite{convnets}. The kernel at $a'$ is also a three-dimensional tensor and is of shape $m*n*d$. Where $m$ and $n$, or the kernel width and height, are of a predetermined dimension (usually small, e.g. $3\times3$ or perhaps $7\times7$). Each kernel of size $m*n$ is ``stacked'' along $d$, making up the three-dimensional filter tensor reaching through the entire depth of the input.
 
 The third component is the hyperparameter of kernel depth $k$. This does not refer to the depth of the input volume, but rather the number of kernels used. There are typically several kernels, and each of these kernels performs its task as described above, delivering a two-dimensional matrix product result. These two-dimensional results are then stacked to form the three-dimensional volume $a'$ seen in figure \ref{fig:convlayer} on page \pageref{fig:convlayer}.
 
 \bildklein{figures/convlayer.png}{The convolution kernel at work}{Each ``set'' of kernels (here, of count five) focuses on a small section of the input (in pink) at a time, reaching through its entire depth. The result from each of these sets of three-dimensional kernels is a stack of two-dimensional activations, making up one three-dimensional section (small rectangle in blue) of the total output volume (large box in blue), having the depth of the number of kernels in the set. This operation is repeated all over the image. [CC Image courtesy of Aphex34 on Wikimedia Commons]}{fig:convlayer}
 
-The remaining components make up what can be viewed as the hyperparameters of the kernel, and include its shape, its stride and the amount, if any, of padding it adds to the input layer. A typical size is $3\times3$, and a typical stride is 1.
+The remaining components make up what can be viewed as the hyperparameters of the kernel, and include its shape, its stride and the amount---if any---of padding it adds to the input layer. A typical size is $3\times3$, and a typical stride is 1.
 
-During the forward pass, each element $a'[x,y,z]$ is then computed by applying the $kernel_{z}$ to a region of $a$ of size $m*n$ and performing a dot product. After each product, the kernel moves along from left to right, top to bottom at an increment equal to the stride parameter. Equation \ref{eqn:conv} below shows this operation, assuming that stride is set to one and there is no zero-padding.
+During the forward pass, each element $a'[x,y,z]$ is then computed by applying the $kernel_{z}$ to a region of $a$ of size $m*n$ and performing a dot product. After each product, the kernel moves along from left-to-right, top-to-bottom at an increment equal to the stride parameter. Equation \ref{eqn:conv} below shows this operation, assuming that stride is set to one and there is no zero-padding.
 
 \begin{equation}
 \label{eqn:conv}
@@ -86,11 +85,11 @@ a'[x,y,k] = \sum_{i=0}^{m-1}\sum_{j=0}^{n-1}{a[x+i,y+j,k] * kernel[i,j,k]}
 \myequations{The convolution operation}
 
 \subsubsection{Pooling and relu layers}
-Pooling layers are also important in understanding how CNNs change the input volume. They are different in that they do not contain weights, and are therefore lightweight and not a natural candidate for optimization like the convolution layer.
+Pooling layers are also important in understanding how CNNs change the input volume. They are different in that they don't contain weights, and are therefore lightweight and not a natural candidate for optimization like the convolution layer.
 
-The pooling layer takes three required hyper-parameters: pooling size and pooling mode, and stride (for the sake of simplicity, this description will assume a padding of 0). Pooling size, or the pooling dimensions $a$ and $b$, define the size of the pooling ``kernel'', much like the kernel in the convolution layer. The pooling mode is typically average-pool or max-pool \cite{convnets}, denoting mathematical operations of mean-value or maximum-value.
+The pooling layer takes three required hyperparameters: pooling size, pooling mode and stride (for the sake of simplicity, this description will assume a padding of 0). Pooling size, or the pooling dimensions $a$ and $b$, define the size of the pooling ``kernel'', much like the kernel in the convolution layer. The pooling mode is typically average-pool or max-pool \cite{convnets}, denoting mathematical operations of mean-value or maximum-value.
 
-The layer takes an input volume $p$ of size $[x,y]$ and, assuming a stride of 1, returns a reduced input volume $p'$ of size $[x/a,y/b]$, where $a$ and $b$ are the kernel dimensions. To determine an element at the output volume $p'$, with a pooling mode of maximum-value, a kernel with dimensions of $a*b$ and a stride of 1, the pooling layer performs the following operation:
+The layer takes an input volume $p$ of size $[x,y]$ and---assuming a stride of 1---returns a reduced input volume $p'$ of size $[x/a,y/b]$, where $a$ and $b$ are the kernel dimensions. To determine an element at the output volume $p'$, with a pooling mode of maximum-value, a kernel with dimensions of $a*b$ and a stride of 1, the pooling layer performs the following operation:
 
 \begin{equation}
 \label{eqn:pool}
@@ -98,12 +97,12 @@ p'[x,y] = \max_{i=0}^{a-1}\max_{j=0}^{b-1}{p[x+i,y+j]}.
 \end{equation}
 \myequations{Maximum-value pooling}
 
-Notice that unlike convolution, the are no kernel parameters. The pooling-layer serves to reduce the size of the input layer and in this sense, can inderectly have a dramatic effect on the speed of the network by reducing the input size of a subsequent convolution layer, thus reducing the total number of FLOPS needed for such an operation.
+Notice that unlike convolution, the are no kernel parameters. The pooling layer serves to reduce the size of the input layer and in this sense, can indirectly have a dramatic effect on the speed of the network by reducing the input size of a subsequent convolution layer, thus reducing the total number of FLOPS needed for such an operation.
 
-ReLU layers, like pooling layers, don't contain parameters. However unlike pooling layers, they do not change the input volume size. Their purpose is to apply an element-wise non-linearity to a layer, and are somewhat unintersting in the context of this work.
+ReLU layers, like pooling layers, don't contain parameters. However unlike pooling layers, they do not change the input volume size. Their purpose is to apply an element-wise non-linearity to a layer, and are somewhat uninteresting in the context of this work.
 
 \section{GEMM}
-As previously mentioned, in the case of the famous AlexNet architecture, 89\% of computational processing time is taken up by convolutions. Thus, it is a worthy undertaking to optimize the mathematical operation itself, making it as efficient as possible for the computer. The agreed upon solution is the GEMM operation, or General Matrix to Matrix Multiplication, dating back to 1979 and described in ``Basic Linear Algebra Subprograms for Fortran Usage,'' \cite{BLAS}. BLAS improves upon the normal convolution operation by transforming it into one single matrix-matrix multiplication. Normally, a convolution involves the process described in equation \ref{eqn:conv} on page \pageref{eqn:conv}, where a filter performs tiny matrix-matrix multiplications all over the image. Instead, GEMM performs the ``image-to-column'' operation (commonly known as ``im2col'') \cite{im2col}, succesfully translating the input volume and weight kernels such that the result of a convolution involves one and only one matrix multiplication between the im2col output of input and the im2col output of weights.
+As previously mentioned, in the case of the famous AlexNet architecture, 89\% of computational processing time is taken up by convolutions. Thus, it is a worthy undertaking to optimize the mathematical operation itself, making it as efficient as possible for the computer. The agreed upon solution is the GEMM operation, or General Matrix to Matrix Multiplication, dating back to 1979 and described in ``Basic Linear Algebra Subprograms for Fortran Usage,'' \cite{BLAS}. BLAS improves upon the normal convolution operation by transforming it into one single matrix-matrix multiplication. Normally, a convolution involves the process described in equation \ref{eqn:conv} on page \pageref{eqn:conv}, where a filter performs tiny matrix-matrix multiplications all over the image. Instead, GEMM performs the ``image-to-column'' operation (commonly known as ``im2col'') \cite{im2col}, successfully translating the input volume and weight kernels such that the result of a convolution involves one and only one matrix multiplication between the im2col output of input and the im2col output of weights.
 
 Behind the scenes, im2col is simply serializing each input selection (small pink box in figure \ref{fig:convlayer} on page \pageref{fig:convlayer}) into one row of the new input matrix. Similarly, each kernel is serialized as a column of the new weight matrix. The result is now a classic matrix-matrix multiplication, visualized in figure \ref{fig:mm} on page \pageref{fig:mm}.
 
@@ -115,7 +114,7 @@ In the next section, now with a firm understanding of the inner workings of conv
 \subsection{Computer number representation}
 In order to understand why quantization is important, it would be beneficial to review how the computer stores numbers.
 
-32-bit floating-point representation is a computer representation of real numbers. Although an estimation in itself---as real numbers are infinite and computer-representations cannot be---they offer a certain degree of precision in number representation and calculations \cite{ieee}. In a computer, they take scientific notation form (see equation \ref{eqn:floatrep} on \pageref{eqn:floatrep}) and can represent $2^{32}$ individual values. They use 1 bit for the sign, 8 bits for the exponent, and 23 bits for the fraction \cite{ieee}.
+32-bit floating-point representation is a computer representation of real numbers. Although an estimation in itself---as real numbers are infinite and computer-representations cannot be---they offer a certain degree of precision in number representation and calculations \cite{ieee}. In a computer, they take scientific notation form (see equation \ref{eqn:floatrep} on \pageref{eqn:floatrep}) and can represent $2^{32}$ individual values. They use one bit for the sign, eight bits for the exponent, and 23 bits for the fraction \cite{ieee}.
 
 \begin{equation}
 \label{eqn:floatrep}
@@ -123,22 +122,20 @@ In order to understand why quantization is important, it would be beneficial to 
 \end{equation}
 \myequations{32-bit floating-point representation}
 
-Integers, on the other hand, are represented by a fixed amount of bits, such as 8 \cite{ieee}. 32-bit/64-bit processors are able to access large chunks of memory at a time, and it would in theory be faster to use integers rather than floating point, as $\times4$ the amount of numbers would be accessed within a single memory-retrieval operation, reducing memory bandwidth by 75\%. However, 8-bit integers have the potential to represent only $2^{8}$ distinct numbers, and thus using them comes at a precision cost. It will be shown, despite this significantly reduced precision, That using integer representation in convolution calculations is still successfull.
+Integers, on the other hand, are represented by a fixed amount of bits, such as eight \cite{ieee}. 32-bit/ 64-bit processors are able to access large chunks of memory at a time, and it would in theory be faster to use integers rather than floating-point representation, as $\times4$ the amount of numbers would be accessed within a single memory-retrieval operation, reducing memory bandwidth by 75\%. However, 8-bit integers have the potential to represent only $2^{8}$ distinct numbers, and thus using them comes at a precision cost. It will be shown, despite this significantly reduced precision, that using integer representation in convolution calculations is still worthwhile.
 
 \subsection{The quantization process}
 In short, quantization is a conversion of floating-point representation, specifically 32-bit floating-point, to integer representation, or 8-bit fixed-point. The process of quantization is relatively straightforward. Taking the minimum and maximum of the floating-point representation, a new range is defined using an appropriate integer representation, such as 0 to 255. \cite{warden_quantize}. In other words, 0 will now represent the minimum value from the original unquantized matrix and 255 the maximum value (see table \ref{tbl:quantize} on page \pageref{tbl:quantize}).
 
 \begin{table}[]
 \centering
-\caption{Quantizing 32-bit floats}
+\caption[Quantized value representation]{Quantized value representation.}
 \label{tbl:quantize}
-\begin{tabular}{|l|l|l}
-\cline{1-2}
-\multicolumn{2}{|l|}{Quantized value representation} &  \\ \cline{1-2}
-\textbf{32-bit}           & \textbf{8-bit}           &  \\ \cline{1-2}
--2.356                    & 0                        &  \\ \cline{1-2}
-1.201                     & 127                      &  \\ \cline{1-2}
-4.758                     & 255                      &  \\ \cline{1-2}
+\begin{tabular}{ll}
+\textbf{32-bit} & \textbf{8-bit} \\
+-2.356          & 0              \\
+1.201           & 127            \\
+4.758           & 255           
 \end{tabular}
 \end{table}
 
@@ -184,4 +181,4 @@ where $x$, $y$ and $z$ represent tensor coordinates.
 
 After quantization, calculations are performed as usual. The result is then converted back into 32-bit float using more minimum and maximum parameters and passed along the network.
 
-It may be apparant to the reader at this point that there is not insignificant overhead involved in this process: namely, determining parameters and converting back and forth between quantized and dequantized representations. This will be addressed later in this work.
+It may be apparent to the reader at this point that there is not insignificant overhead involved in this process: namely, determining parameters and converting back and forth between quantized and dequantized representations. This will be addressed later in this work.

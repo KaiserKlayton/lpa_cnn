@@ -30,6 +30,7 @@
 \usepackage{standalone}
 \usepackage{hyperref}
 \usepackage{tocloft}
+\usepackage{longtable}
 
 \titleformat{\paragraph}[hang]{\normalfont\bfseries}{\theparagraph}{.5em}{}
 
@@ -66,7 +67,7 @@
 	\end{figure}
 }
 
-\newcommand{\listequationsname}{List of equations}
+\newcommand{\listequationsname}{List of Equations}
 \newlistof{myequations}{equ}{\listequationsname}
 \newcommand{\myequations}[1]{
 \addcontentsline{equ}{myequations}{\protect\numberline{\theequation}#1}\par}
@@ -119,7 +120,7 @@
 {\Large \bf Author:} & {\Large C. Clayton Violand} \\\\
 {\Large \bf Advisor:} & {\Large Dr. Niels Landwehr} \\\\
 {\Large \bf Add. Reader:} & {\Large Dr. Paul Prasse} \\\\
-{\Large \bf Submission:} & {\Large 23.10.2017}
+{\Large \bf Submission:} & {\Large 24.10.2017}
 \end{tabular}
 
 \newpage	
@@ -197,7 +198,7 @@ Berlin, 19.08.2017\\\\
 \chapter{lpa\_cnn documentation}
 \include{README}
 \chapter{Detailed runtime results}
-%\include{detailed_results}
+\include{detailed_results}
 \end{appendices}
 
 % Generierung des Literaturverzeichnisses
