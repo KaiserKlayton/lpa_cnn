@@ -2,18 +2,14 @@
 In this chapter, results of the experiments are discussed as they relate to speed and accuracy of convolutional neural networks. The experimental setup is explored, and the subprocesses of low-precision GEMM are outlined. Additionally, some results on an embedded system are given.
 
 \section{Experimental setup}
-The chosen models in section \ref{sec:input} are run through the system. First, Caffe extracts weights and features. Then the architecture is parsed from the Caffe prototxt and the inference file is generated. The script is then compiled with both eigen and gemmlowp arithmetic options, and inference runs its course. From this inference the results are derived.
-
-\subsection{Model and input configurations}
-\label{sec:input}
-Six different model architectures were explored in this work. Some information regarding the modules used in the experiment---namely network depth, the input size, the number of convolutions and the number of trainable parameters---are showcased in table \ref{tbl:models} on page \pageref{tbl:models}.
+Six different model architectures were explored in this work. Some information regarding the modules used in the experiment---namely network depth, the input size, the number of convolutions and the number of trainable parameters---are showcased in Table \ref{tbl:models} on page \pageref{tbl:models}. The chosen models are run through the system with the inputs described in Section \ref{sec:infinputs}. First, Caffe extracts weights and features. Then the architecture is parsed from the Caffe prototxt and the inference file is generated. The script is then compiled with both eigen and gemmlowp arithmetic options, and inference runs its course. Finally, from ground-truth labels the inference results are derived, and speeds are collected.
 
 \section{Accuracies}
 \subsection{Evaluation criteria}
 The first part of the experiment involves accuracy testing, where the accuracy of image recognition model inferences, run on 32-bit float precision and then integer precision, are compared. The criteria for an accuracy here is two-fold. Both top-1 and top-5 accuracy are used. Top-1 accuracy is classic model precision. Top-5 accuracy differs in that it rewards the system a correct prediction as long as the model predicts the appropriate class *within* its top five predictions. Thus, the predictions with the 5-highest values are considered ``correct predictions.'' This is a common heuristic in image recognition, but the reasoning is not that well defined. One suspicion is that it is to account for the fact that there can be several labels attributable to an image simultaneously, perhaps creating a situation in which there is more than one ``correct'' answer. In these experiments, it's used really just to adhere to image recognition evaluation standards.
 
 \subsection{Accuracy results}
-Table \ref{tbl:accuracies} on \pageref{tbl:accuracies} reports the results of the accuracy tests. To evaluate, the results are broken down into three sections: small-sized models results, medium-sized model results, and large-sized model results.
+Table \ref{tbl:accuracies} on page \pageref{tbl:accuracies} reports the results of the accuracy tests. To evaluate, the results are broken down into three sections: small-sized models results, medium-sized model results, and large-sized model results.
 
 The integer versions of the small sized models, LeNet and cifar-10, both performed at nearly the same or exactly the same top-1 accuracy as their floating-point counterparts. In the case of cifar-10, a 0.1\% reduction in accuracy was observed; however, the floating-point recreation of the Caffe baseline was already 0.1\% higher than the baseline itself. Therefore, it can be said that integer multiplication in the case of this model suffers no loss of accuracy from the Caffe baseline.
 
@@ -21,7 +17,7 @@ The large models, VGG-16 and VGG-19, also displayed fantastic results, the latte
 
 In terms of top-5 accuracy, LeNet and cifar-10 stayed steady relative to the floating-point counterparts, while VGG-16 and VGG-19 both deviated, the former suffering a 0.3\% loss, and the latter gaining 0.4\% in accuracy.
 
-The last models, ResNet50 and ResNet101, did not perform well with integer arithmetic. Run with gemmlowp, the top-1 results of these networks were as good as 0\/ 0.1\%. Residual neural networks operate on decidedly different principles: namely, they refer back to old convolution results earlier in the network as participants in later convolutions \cite{resnets2}. This modification, being the most profound perceivable architectural difference setting it apart from other types of CNNs, apparently causes integer arithmetic, as it's performed by gemmlowp, to fail completely. This is perhaps because inputs to a given convolution are not necessarily taken from the previous layer's output, but often from layers prior. As these networks can be considered equivalent to many shallower networks stacked together, where tight layer relationships are not necessarily a reality, individual quantized perturbations of low-precision calculations do not carry over from layer to layer.
+The last models, ResNet50 and ResNet101, did not perform well with integer arithmetic. Run with gemmlowp, the top-1 results of these networks were as good as 0\/ 0.1\%. Residual neural networks operate on decidedly different principles: namely, they refer back to old convolution results earlier in the network as participants in later convolutions \cite{resnets2}. This modification, being the most profound perceivable architectural difference setting it apart from other types of CNNs, apparently causes integer arithmetic, as it's performed by gemmlowp, to fail completely. This is perhaps because inputs to a given convolution are not necessarily taken from the previous layer's output, but often from layers prior. As these networks can be considered equivalent to many shallower networks stacked together, where tight layer relationships are not necessarily a reality, individual quantized perturbations of low-precision calculations do not carry over from layer to layer. Additionally, the "eltwise" operation of residual neural networks, where old activations are added or multiplied with more recent activations, is performed in the dequantized 32-bit representation, and this might also have an adverse effect on the network's ability to be converted to low-precision.
 
 \begin{table}[]
 \centering
@@ -58,9 +54,9 @@ gemmlowp             & 0                                             & 0.3
 
 \section{Speeds}
 \subsection{Evaluation criteria}
-The second part of the experiment is speed testing. For Eigen mode, the speed heuristic is simple: the time taken for GEMM multiplication. For gemmlowp, it's more complex.
+The second part of the experiment is speed testing. For eigen mode, the speed heuristic is simple: the time taken for GEMM multiplication. For gemmlowp, it's more complex.
 
-In figure \ref{tbl:gemmlowp} on page \pageref{tbl:gemmlowp} one can see the gemmlowp call broken down by subprocess. Amongst these sub-processes, some are ``online'', or considered in the timing-scheme, or are ``offline'', meaning they are able to be performed before inference time. For these experiments, gemmlowp GEMM time is the sum of the online processes:
+In Figure \ref{tbl:gemmlowp} on page \pageref{tbl:gemmlowp} one can see the gemmlowp call broken down by subprocess. Amongst these sub-processes, some are ``online'', or considered in the timing-scheme, or are ``offline'', meaning they are able to be performed before inference time. For these experiments, gemmlowp GEMM time is the sum of the online processes:
 
 \begin{equation}
 \label{eqn:quantgemm}
@@ -74,7 +70,7 @@ In figure \ref{tbl:gemmlowp} on page \pageref{tbl:gemmlowp} one can see the gemm
 
 \subsection{Speed results}
 \subsubsection{Aggregate GEMM time}
-Generally, the time for GEMM gained by performing quantized calculations appears to be relative to the total size of the network in terms of total parameter count of the convolutions. Table \ref{tbl:gemmtime} on page \pageref{tbl:gemmtime} reports the average and total GEMM times for the 1000-image experiment batch. For the non-residual networks, the benefit of quantizing increases with the total number of parameters for the convolutions, and is therefore more effective with networks like VGG-16 or VGG-19 than for LeNet or cifar-10. See table \ref{tbl:gains} on page \pageref{tbl:gains} for the relative speed gains.
+Generally, the time for GEMM gained by performing quantized calculations appears to be relative to the total number of convolution parameters over the entire network. Table \ref{tbl:gemmtime} on page \pageref{tbl:gemmtime} reports the average and total GEMM times for the 1000-image experiment batch. For the non-residual networks, the benefit of quantizing increases with the total number of weight parameters associated with convolution layers, and is therefore more effective with networks like VGG-16 or VGG-19 than for LeNet or cifar-10. See Table \ref{tbl:gains} on page \pageref{tbl:gains} for the relative speed gains.
 
 \begin{table}[]
 \centering
@@ -94,7 +90,7 @@ ResNet101 & 1215.48        & 665               & 1215480        & 665000
 
 However, the speed gained with quantized GEMM in regards to the ResNet architecture is---as in the results for accuracies---irregular. These two models appear to be effected proportionally by quantized GEMM on a different scale. While they represent the models with the most number of convolution parameters, ResNet50 still reduces speed on a lesser scale than the smaller cifar-10 model. ResNet101, whose speed-gain is again postulated to respond differently than the non-residual models, receives none-the-less the most benefit from quantized GEMM.
 
-With two convolutions, gemmlowp decreased the time needed for LeNet GEMM by 25\%. Cifar-10, with four convolutions, benefited from a 33\% decrease. VGG-16 and VGG-19, being fairly similar in parameter count, with 13 and 16 convolutions, respectively, both decreased their GEMM processing times by 40\%. ResNet50 with 53 convolutions reduced GEMM by 28\%, while ResNet101 with 104 convolutions reduced by 45\%. Table \ref{tbl:gains} on page \pageref{tbl:gains} shows the GEMM speed gain relative to model architecture.
+With two convolutions, gemmlowp decreased the time needed for LeNet GEMM by 25\%. Cifar-10, with four convolutions, benefited from a 33\% decrease. VGG-16 and VGG-19, being fairly similar in parameter count, with 13 and 16 convolutions, respectively, both decreased their GEMM processing times by 40\%. ResNet50 with 53 convolutions reduced GEMM by 28\%, while ResNet101 with 104 convolutions reduced by 45\%. Table \ref{tbl:gains} above shows the GEMM speed gain relative to model architecture.
 
 \begin{table}[]
 \centering
@@ -112,7 +108,7 @@ ResNet101 & 44548160            & 42394816                 & 45.29 \%
 \end{table}
 
 \subsubsection{Inference runtime}
-Total inference runtimes increased with gemmlowp mode. Although GEMM speeds up, the other processes detailed in section \ref{sec:quantization} on page \pageref{sec:quantization} contribute to a total gain in runtime. Namely, as detailed in table \ref{tbl:runtime} on page \pageref{tbl:runtime}, LeNet slowed down by 21\%, cifar-10 by 49\%, VGG-16 and VGG-19 by 8 and 9\%, respectively, ResNet50 by 41\%, and ResNet101 by 6\%.
+Total inference runtimes increased with gemmlowp mode. Although GEMM speeds up, the other processes detailed in Section \ref{sec:quantization} on page \pageref{sec:quantization} contribute to a total gain in runtime. Namely, as detailed in Table \ref{tbl:runtime} on page \pageref{tbl:runtime}, LeNet slowed down by 21\%, cifar-10 by 49\%, VGG-16 and VGG-19 by 8 and 9\%, respectively, ResNet50 by 41\%, and ResNet101 by 6\%.
 
 \begin{table}[]
 \centering
@@ -133,7 +129,7 @@ ResNet101      & 3122.44        & 3310              & 3122440        & 3310000
 \subsubsection{Improving the speed of online calculations}
 In order to make inference with low-precision GEMM worthwhile, the overall online process must be improved by locating a feasible candidate for optimization from the equation detailed in \ref{eqn:quantgemm} on page \pageref{eqn:quantgemm}.
 
-The breakdown of the low-precision timings are shown in more detail in \ref{tbl:detailedgemmlowp} on page \pageref{tbl:detailedgemmlowp}, where online timing measures are indicated in bold. Time for quantization, as detailed in section \ref{sec:quantization} on page \pageref{sec:quantization}, takes up a large proportion of total runtime, and is the obvious candidate for optimization. In the case of LeNet, 60\% of the online process is taken up by quantization, 68\% for cifar-10, 18\% for VGG-16, 40\% for VGG-19, 35\% for ResNet50, and 31\% for ResNet101.   
+The breakdown of the low-precision timings are shown in more detail in \ref{tbl:detailedgemmlowp} on above, where online timing measures are indicated in bold. Time for quantization, as detailed in Section \ref{sec:quantization} on page \pageref{sec:quantization}, takes up a large proportion of total runtime, and is the obvious candidate for optimization. In the case of LeNet, 60\% of the online process is taken up by quantization, 68\% for cifar-10, 18\% for VGG-16, 40\% for VGG-19, 35\% for ResNet50, and 31\% for ResNet101. However, it should be noted that these breakdowns are a matter of the specific implementation of the system: namely, that of gemmlowp. Mathematically speaking, quantization should be faster than GEMM, being (for quadratic matrices of size $n\times n$) of $O(n^{2})$ complexity while GEMM is of $O(n^{3})$ complexity.
 
 \begin{table}[]
 \centering
@@ -152,7 +148,7 @@ to eigen   & 0.0284         & 2.435             & 112.6077       & 113.4924     
 \end{table}
 
 \subsection{Embedded system tests}
-Experiments run on a Raspberry Pi 3 were decidedly slower than on the Core i5. The results of inference with gemmlowp are shown below in tables \ref{tbl:gemmtimerpi} and \ref{tbl:runtimerpi}.
+Experiments run on a Raspberry Pi 3 were decidedly slower than on the Core i5. The results of inference with gemmlowp are shown below in Tables \ref{tbl:gemmtimerpi} and \ref{tbl:runtimerpi}.
 
 \begin{table}[]
 \centering
@@ -169,7 +165,7 @@ Experiments run on a Raspberry Pi 3 were decidedly slower than on the Core i5. T
 
 \begin{table}[]
 \centering
-\caption[Raspberry Pi inference runtimes with (gemmlowp)]{Inference runtimes (s) on a Raspberry Pi 3 with gemmlowp.}
+\caption[Raspberry Pi inference runtimes (gemmlowp)]{Inference runtimes (s) on a Raspberry Pi 3 with gemmlowp.}
 \label{tbl:runtimerpi}
 \begin{tabular}{lll}
 
